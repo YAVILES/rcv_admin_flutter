@@ -39,10 +39,8 @@ class AuthProvider with ChangeNotifier {
       body: json.encode(loginData),
       headers: {'Content-Type': 'application/json'},
     );
-
+    final Map<String, dynamic> responseData = json.decode(response.body);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
       var userData = responseData['user'];
 
       User authUser = User.fromMap(userData);
@@ -56,9 +54,17 @@ class AuthProvider with ChangeNotifier {
 
       result = {'status': true, 'message': 'Successful', 'user': authUser};
     } else {
+      result = {'status': false, 'message': ""};
+      if (responseData['username'] && responseData['password']) {
+        result['message'] = "Las credenciales ingresadas son incorrectas";
+      } else if (responseData['username']) {
+        result['message'] = "El usuario es requerido";
+      } else if (responseData['password']) {
+        result['message'] = "El password es requerido";
+      } else if (responseData['detail']) {}
+
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
-      result = {'status': false, 'message': json.decode(response.body)};
     }
     return result;
   }

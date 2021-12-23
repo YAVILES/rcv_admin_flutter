@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,145 +24,173 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool isLargeScreen = false;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  String password = "";
-  String username = "";
-  bool _loading = false;
-
-  String _errorMessage = "";
-
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    AuthProvider auth = Provider.of<AuthProvider>(context);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    if (MediaQuery.of(context).size.width > 600) {
-      isLargeScreen = true;
-    } else {
-      isLargeScreen = false;
-    }
 
     return Scaffold(
-      body: Form(
-        key: _formKey,
-        onChanged: () {},
-        child: Stack(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Image.asset(
-                "assets/images/rc871.jpg",
-                height: 200,
-              ),
+      body: Stack(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.white,
             ),
-            Transform.translate(
-              offset: const Offset(0, -40),
-              child: Center(
-                child: SizedBox(
-                  width: isLargeScreen ? 500 : double.infinity,
-                  child: SingleChildScrollView(
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+            child: Image.asset(
+              "assets/images/rc871.jpg",
+              height: 200,
+            ),
+          ),
+          Transform.translate(
+            offset: const Offset(0, -40),
+            child: Center(
+              child: CardLogin(),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CardLogin extends StatefulWidget {
+  const CardLogin({Key? key}) : super(key: key);
+
+  @override
+  _CardLoginState createState() => _CardLoginState();
+}
+
+class _CardLoginState extends State<CardLogin> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _loading = false;
+  String password = "";
+  String username = "";
+  String _errorMessage = "";
+
+  @override
+  Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    AuthProvider auth = Provider.of<AuthProvider>(context);
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          child: SizedBox(
+            width: constraints.maxWidth > 600 ? 500 : double.infinity,
+            child: Form(
+              key: _formKey,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                margin: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 240,
+                  bottom: 20,
+                ),
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 45,
+                    vertical: 40,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "Iniciar Sesión",
+                            style: TextStyle(
+                              fontSize: 30,
+                            ),
+                          ),
+                        ],
                       ),
-                      margin: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 240,
-                        bottom: 20,
-                      ),
-                      elevation: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 45,
-                          vertical: 40,
+                      const SizedBox(height: 5),
+                      const Text(
+                        "Inicie sesión en su cuenta para continuar",
+                        style: TextStyle(
+                          fontSize: 14,
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                      ),
+                      const SizedBox(height: 30),
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: "Usuario",
+                          icon: Icon(Icons.person),
+                        ),
+                        onSaved: (value) => {username = value!},
+                        validator: (value) {
+                          if (value == "") {
+                            return "EL usuario es requerido";
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Contraseña",
+                          icon: Icon(
+                            Icons.password,
+                          ),
+                        ),
+                        onSaved: (value) => {password = value!},
+                        validator: (value) {
+                          if (value == "") {
+                            return "La contraseña es requerida";
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 40),
+                      TextButton(
+                        child: const Text("¿Se te olvidó la contraseña?"),
+                        onPressed: () => _showChagePassword(),
+                      ),
+                      if (_errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            _errorMessage,
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      const SizedBox(height: 15),
+                      ElevatedButton(
+                        onPressed: () => _login(userProvider, auth),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            TextFormField(
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: const InputDecoration(
-                                labelText: "Usuario",
-                                icon: Icon(Icons.person),
-                              ),
-                              onSaved: (value) => {username = value!},
-                              validator: (value) {
-                                if (value == "") {
-                                  return "EL usuario es requerido";
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 40),
-                            TextFormField(
-                              decoration: const InputDecoration(
-                                labelText: "Contraseña",
-                                icon: Icon(
-                                  Icons.password,
-                                ),
-                              ),
-                              onSaved: (value) => {password = value!},
-                              validator: (value) {
-                                if (value == "") {
-                                  return "La contraseña es requerida";
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 40),
-                            TextButton(
-                              child: const Text("¿Se te olvidó la contraseña?"),
-                              onPressed: () => _showChagePassword(),
-                            ),
-                            if (_errorMessage.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  _errorMessage,
-                                  style: const TextStyle(color: Colors.red),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            const SizedBox(height: 40),
-                            ElevatedButton(
-                              onPressed: () => _login(userProvider, auth),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("Iniciar Sesión"),
-                                  if (_loading)
-                                    Container(
-                                      height: 20,
-                                      width: 20,
-                                      margin: const EdgeInsets.only(left: 20),
-                                      child: const CircularProgressIndicator(),
-                                    )
-                                ],
-                              ),
-                            )
+                            const Text("Iniciar Sesión"),
+                            if (_loading)
+                              Container(
+                                height: 20,
+                                width: 20,
+                                margin: const EdgeInsets.only(left: 20),
+                                child: const CircularProgressIndicator(),
+                              )
                           ],
                         ),
-                      ),
-                    ),
+                      )
+                    ],
                   ),
                 ),
               ),
-            )
-          ],
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -181,10 +208,11 @@ class _LoginPageState extends State<LoginPage> {
         final Future<Map<String, dynamic>> successfulMessage =
             auth.login(username, password);
 
-        successfulMessage.then((response) {
+        successfulMessage.then((response) async {
           if (response['status']) {
             User user = response['user'];
-            Provider.of<UserProvider>(context, listen: false).setUser(user);
+            await Provider.of<UserProvider>(context, listen: false)
+                .setUser(user);
             Navigator.pushReplacementNamed(context, '/home');
           } else {
             Flushbar(

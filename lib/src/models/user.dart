@@ -58,15 +58,13 @@ class User {
 }
 
 class UserPreferences {
-  Future<bool> saveUser(User user) async {
+  Future<void> saveUser(User user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString("id", user.id ?? "");
     prefs.setString("name", user.name ?? "");
     prefs.setString("email", user.email ?? "");
     prefs.setString("phone", user.phone ?? "");
-
-    return prefs.commit();
   }
 
   Future<User> getUser() async {
@@ -88,13 +86,11 @@ class UserPreferences {
         refresh: refresh);
   }
 
-  Future<bool> setToken(String token, String? refresh) async {
+  Future<void> setToken(String token, String? refresh) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     prefs.setString("token", token);
     prefs.setString("refresh", refresh ?? "");
-
-    return prefs.commit();
   }
 
   void removeUser() async {
