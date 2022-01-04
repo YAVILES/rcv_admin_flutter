@@ -1,59 +1,92 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:rcv_admin_flutter/src/models/user.dart';
+import 'package:rcv_admin_flutter/src/models/auth_model.dart';
+import 'package:rcv_admin_flutter/src/models/user_model.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
 enum Status {
-  NotLoggedIn,
-  NotRegistered,
-  LoggedIn,
-  Registered,
-  Authenticating,
-  Registering,
-  LoggedOut
+  notLoggedIn,
+  notRegistered,
+  loggedIn,
+  registered,
+  authenticating,
+  registering,
+  loggedOut
 }
 
 class AuthProvider with ChangeNotifier {
-  Status _loggedInStatus = Status.NotLoggedIn;
-  Status _registeredInStatus = Status.NotRegistered;
+  Status _loggedInStatus = Status.authenticating;
+  final Status _registeredInStatus = Status.notRegistered;
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
 
-  Future<Map<String, dynamic>> login(String username, String password) async {
-    var result;
+  User? user;
+
+  AuthProvider() {
+    isAuthenticated();
+  }
+
+  Future<bool> isAuthenticated() async {
+    final token = Preferences.getToken();
+    if (token == null) {
+      _loggedInStatus = Status.notLoggedIn;
+      notifyListeners();
+      return false;
+    }
+    try {
+      final resp = await API.list('/security/user/current/');
+      user = User.fromMap(resp);
+      _loggedInStatus = Status.loggedIn;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _loggedInStatus = Status.notLoggedIn;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> login(
+      BuildContext context, String username, String password) async {
+    Map<String, Object> result;
 
     final Map<String, dynamic> loginData = {
       'username': username,
       'password': password
     };
 
-    _loggedInStatus = Status.Authenticating;
+    /* _loggedInStatus = Status.Authenticating;
+    notifyListeners(); */
+    API.add('/token/', loginData).then((value) {
+      var data = Auth.fromMap(value);
+      user = data.user;
+      Preferences.setToken(data.token, data.refresh);
+      _loggedInStatus = Status.loggedIn;
+      API.configureDio();
+      notifyListeners();
+    }).catchError(
+      (e) {
+        print(e);
+        _loggedInStatus = Status.notLoggedIn;
+        notifyListeners();
+        NotificationService.showSnackbarError('Usuario/ contraseña no válido');
+      },
+    );
+
+/*  final Map<String, dynamic> responseData = json.decode(response.toString());
+    // var userData = responseData['user'];
+*/
+    //
+
+    // _loggedInStatus = Status.LoggedIn;
     notifyListeners();
 
-    Response response = await post(
-      Uri.parse(API.login),
-      body: json.encode(loginData),
-      headers: {'Content-Type': 'application/json'},
-    );
-    final Map<String, dynamic> responseData = json.decode(response.body);
-    if (response.statusCode == 200) {
-      var userData = responseData['user'];
-
-      User authUser = User.fromMap(userData);
-
-      UserPreferences().saveUser(authUser);
-      UserPreferences()
-          .setToken(responseData['token'], responseData['refresh']);
-
-      _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
-
-      result = {'status': true, 'message': 'Successful', 'user': authUser};
-    } else {
+    // result = {'status': true, 'message': 'Successful', 'user': authUser};
+    result = {'status': true, 'message': 'Successful', 'user': {}};
+    /* } else {
       result = {'status': false, 'message': ""};
       if (responseData['username'] && responseData['password']) {
         result['message'] = "Las credenciales ingresadas son incorrectas";
@@ -65,11 +98,17 @@ class AuthProvider with ChangeNotifier {
 
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
-    }
+    }  */
     return result;
   }
 
-  Future<FutureOr> register(
+  Future<void> logout() async {
+    Preferences.removetoken();
+    _loggedInStatus = Status.notLoggedIn;
+    notifyListeners();
+  }
+
+/*   Future<FutureOr> register(
       String email, String password, String passwordConfirmation) async {
     final Map<String, dynamic> registrationData = {
       'user': {
@@ -88,8 +127,8 @@ class AuthProvider with ChangeNotifier {
         .then(onValue)
         .catchError(onError);
   }
-
-  static Future<FutureOr> onValue(Response response) async {
+ */
+/*   static Future<FutureOr> onValue(Response response) async {
     Map<String, Object> result;
     final Map<String, dynamic> responseData = json.decode(response.body);
 
@@ -114,9 +153,5 @@ class AuthProvider with ChangeNotifier {
 
     return result;
   }
-
-  static onError(error) {
-    print("the error is $error.detail");
-    return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
-  }
+ */
 }
