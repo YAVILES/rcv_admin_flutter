@@ -89,6 +89,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   navigateTo(BuildContext context, String nameRoute) {
-    NavigationService.navigateTo(context, nameRoute);
+    NavigationService.navigateTo(context, nameRoute, null);
+    NavDrawerProvider.scaffoldKey.currentState?.openEndDrawer();
   }
 }

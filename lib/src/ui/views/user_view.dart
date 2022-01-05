@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
 import 'package:rcv_admin_flutter/src/providers/user_form_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
@@ -39,7 +40,7 @@ class _UserViewState extends State<UserView> {
 
         setState(() => user = userDB);
       } else {
-        NavigationService.replaceTo(usersRoute);
+        // NavigationService.navigateTo(context, usersRoute);
       }
     });
   }
@@ -55,16 +56,16 @@ class _UserViewState extends State<UserView> {
   Widget build(BuildContext context) {
     if (user == null) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: MyProgressIndicator(),
       );
     }
 
     return CenteredView(
       child: ListView(
         physics: const ClampingScrollPhysics(),
-        children: const [
+        children: [
           HeaderView(title: "Usuario"),
-          UserViewBody(),
+          const UserViewBody(),
         ],
       ),
     );

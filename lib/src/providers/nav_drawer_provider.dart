@@ -5,15 +5,11 @@ class NavDrawerProvider with ChangeNotifier {
 
   String _routeCurrent = '/';
 
-  get navDrawer => null;
+  String get routeCurrent => _routeCurrent;
 
   setRouteCurrent(routeName) async {
     _routeCurrent = routeName;
     await Future.delayed(const Duration(milliseconds: 200));
     notifyListeners();
-  }
-
-  String get routeCurrent {
-    return _routeCurrent;
   }
 }

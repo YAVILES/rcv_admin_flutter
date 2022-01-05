@@ -11,10 +11,14 @@ class UserFormProvider with ChangeNotifier {
   Future uploadImage(String id, Uint8List bytes) async {
     try {
       final resp = await API.uploadFile('/security/user/$id/', bytes);
-      user = User.fromMap(resp);
-      notifyListeners();
-      return user;
-    } catch (e) {
+      if (resp.statusCode == 200) {
+        user = User.fromMap(resp.data);
+        notifyListeners();
+        return user;
+      } else {
+        return null;
+      }
+    } on ErrorAPI catch (e) {
       throw 'Error al cargar file';
     }
   }

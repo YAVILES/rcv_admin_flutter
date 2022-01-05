@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/auth_model.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
@@ -38,11 +39,15 @@ class AuthProvider with ChangeNotifier {
     }
     try {
       final resp = await API.list('/security/user/current/');
-      user = User.fromMap(resp);
-      _loggedInStatus = Status.loggedIn;
-      notifyListeners();
-      return true;
-    } catch (e) {
+      if (resp.statusCode == 200) {
+        user = User.fromMap(resp.data);
+        _loggedInStatus = Status.loggedIn;
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
       _loggedInStatus = Status.notLoggedIn;
       notifyListeners();
       return false;
@@ -58,23 +63,30 @@ class AuthProvider with ChangeNotifier {
       'password': password
     };
 
-    /* _loggedInStatus = Status.Authenticating;
-    notifyListeners(); */
-    API.add('/token/', loginData).then((value) {
-      var data = Auth.fromMap(value);
-      user = data.user;
-      Preferences.setToken(data.token, data.refresh);
-      _loggedInStatus = Status.loggedIn;
-      API.configureDio();
-      notifyListeners();
-    }).catchError(
-      (e) {
-        print(e);
+    _loggedInStatus = Status.authenticating;
+    notifyListeners();
+
+    try {
+      Response resp = await API.add('/token/', loginData);
+      if (resp.statusCode == 200 || resp.statusCode == 201) {
+        var data = Auth.fromMap(resp.data);
+        user = data.user;
+        Preferences.setToken(data.token, data.refresh);
+        _loggedInStatus = Status.loggedIn;
+        API.configureDio();
+        notifyListeners();
+      } else {
         _loggedInStatus = Status.notLoggedIn;
         notifyListeners();
-        NotificationService.showSnackbarError('Usuario/ contraseña no válido');
-      },
-    );
+        NotificationService.showSnackbarError('Usuario / contraseña no válido');
+      }
+    } on ErrorAPI catch (e) {
+      NotificationService.showSnackbarError((e.detail == null)
+          ? 'Usuario / contraseña no válido'
+          : e.detail.toString());
+      _loggedInStatus = Status.notLoggedIn;
+      notifyListeners();
+    }
 
 /*  final Map<String, dynamic> responseData = json.decode(response.toString());
     // var userData = responseData['user'];

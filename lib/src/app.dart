@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/router/router.dart';
+import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
+import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart';
+import 'package:rcv_admin_flutter/src/ui/layouts/splash/splash_layout.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -28,6 +33,18 @@ class MyApp extends StatelessWidget {
         ),
       ),
       scaffoldMessengerKey: NotificationService.messengerKey,
+      /*      builder: (context, child) {
+        AuthProvider auth = Provider.of<AuthProvider>(context);
+        if (auth.loggedInStatus == Status.loggedIn) {
+          return DashBoardLayout(child: child!);
+        }
+
+        if (auth.loggedInStatus == Status.authenticating) {
+          return const SplashLayout();
+        }
+
+        return AuthLayout(child: child!);
+      }, */
     );
   }
 }

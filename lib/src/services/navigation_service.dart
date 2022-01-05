@@ -4,13 +4,10 @@ import 'package:go_router/go_router.dart';
 class NavigationService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  static navigateTo(BuildContext context, String routeName) {
-    return context.goNamed(routeName);
+  static navigateTo(
+      BuildContext context, String routeName, Map<String, String>? params) {
+    return context.goNamed(routeName, params: params ?? {});
     // return navigatorKey.currentState!.pushNamed(routeName);
-  }
-
-  static replaceTo(String routeName) {
-    return navigatorKey.currentState!.pushReplacementNamed(routeName);
   }
 
   static backTo(BuildContext context) {

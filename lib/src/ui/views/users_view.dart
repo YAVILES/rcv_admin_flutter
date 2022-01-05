@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
+import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 
@@ -70,7 +71,11 @@ class _ActionsTable extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.edit_outlined),
           onPressed: () {
-            NavigationService.navigateTo(context, '/user/${item['id']}');
+            NavigationService.navigateTo(
+              context,
+              usersRoute,
+              {'id': item['id']},
+            );
           },
         ),
         IconButton(

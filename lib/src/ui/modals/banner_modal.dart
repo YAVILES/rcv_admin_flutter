@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button.dart';
+import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_secundary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
@@ -33,7 +34,6 @@ class _BannerModalState extends State<BannerModal> {
       child: CenteredView(
         child: Column(
           children: [
-            const HeaderView(),
             const SizedBox(height: 20),
             TextFormField(
               initialValue: _banner.title ?? '',
@@ -67,29 +67,39 @@ class _BannerModalState extends State<BannerModal> {
                 labelText: 'Url',
               ),
             ),
+            SwitchListTile(
+              title: const Text('Activo'),
+              onChanged: (bool? value) =>
+                  setState(() => _banner.isActive = value),
+              value: _banner.isActive ?? false,
+              contentPadding: EdgeInsets.zero,
+            ),
             Container(
               margin: const EdgeInsets.only(top: 30),
               alignment: Alignment.center,
-              child: CustomButton(onPressed: () async {
-                try {
-                  if (_banner.id == null) {
-                    await bannerProvider.newBanner(_banner);
+              child: CustomButtonPrimary(
+                onPressed: () async {
+                  try {
+                    if (_banner.id == null) {
+                      await bannerProvider.newBanner(_banner);
+                      NotificationService.showSnackbarSuccess(
+                          '${_banner.title} creado');
+                    } else {
+                      await bannerProvider.editBanner(_banner.id!, _banner);
+                      NotificationService.showSnackbarSuccess(
+                        '${_banner.title} actualizado',
+                      );
+                    }
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    Navigator.of(context).pop();
                     NotificationService.showSnackbarSuccess(
-                        '${_banner.title} creado');
-                  } else {
-                    await bannerProvider.editBanner(_banner.id!, _banner);
-                    NotificationService.showSnackbarSuccess(
-                      '${_banner.title} actualizado',
+                      'No se pudo guardar el banner',
                     );
                   }
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  Navigator.of(context).pop();
-                  NotificationService.showSnackbarSuccess(
-                    'No se pudo guardar el banner',
-                  );
-                }
-              }),
+                },
+                title: 'Guardar',
+              ),
             ),
           ],
         ),

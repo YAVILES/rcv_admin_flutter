@@ -8,17 +8,27 @@ class UserProvider with ChangeNotifier {
   List<Map<String, dynamic>> users = [];
 
   Future getUsers() async {
-    final response = await API.list('$url/');
-    ResponseData responseData = ResponseData.fromMap(response);
-    users = responseData.results;
-    notifyListeners();
+    try {
+      final response = await API.list('$url/');
+      if (response.statusCode == 200) {
+        ResponseData responseData = ResponseData.fromMap(response.data);
+        users = responseData.results;
+        notifyListeners();
+      }
+    } on ErrorAPI catch (e) {
+      return null;
+    }
   }
 
   Future<User?> getUser(String uid) async {
     try {
       final response = await API.get('$url/$uid/');
-      return User.fromMap(response);
-    } catch (e) {
+      if (response.statusCode == 200) {
+        return User.fromMap(response.data);
+      } else {
+        return null;
+      }
+    } on ErrorAPI catch (e) {
       return null;
     }
   }
@@ -32,9 +42,11 @@ class UserProvider with ChangeNotifier {
     };
     try {
       final response = await API.add('$url/', data);
-      users.add(response);
-      notifyListeners();
-    } catch (e) {
+      if (response.statusCode == 200) {
+        users.add(response.data);
+        notifyListeners();
+      }
+    } on ErrorAPI catch (e) {
       throw 'Error al crear el usuario';
     }
   }

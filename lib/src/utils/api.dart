@@ -1,89 +1,138 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+
 import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
 class API {
-  static const String api = "";
-
   static const String baseURL = "http://127.0.0.1:8000/api";
-  static const String register = baseURL + "/security/user/";
-  static const String forgotPassword = baseURL + "/security/forgot-password/";
-
-  static const String banner = baseURL + "/core/banner/";
   static final Dio _dio = Dio();
 
   static void configureDio() {
     _dio.options.baseUrl = baseURL;
     _dio.options.headers = {
       'Authorization': 'Bearer ${Preferences.getToken()}',
-      'accept': 'application/json'
+      'accept': '*/*',
     };
+    initializedInterceptors();
   }
 
-  static Future get(String path) async {
+  static initializedInterceptors() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (error, errorHandler) {
+          print('onErrorMessage: ${error.response}');
+          return errorHandler.next(error);
+        },
+        onRequest: (RequestOptions request, requestHandler) {
+          print("onRequest : ${request.method} ${request.uri}");
+          return requestHandler.next(request);
+        },
+        onResponse: (response, responseHandler) {
+          print('${response.statusCode}');
+          return responseHandler.next(response);
+        },
+      ),
+    );
+  }
+
+  static Future<Response> get(String path) async {
+    Response response;
     try {
-      var response = await _dio.get(path);
-      return response.data;
+      response = await _dio.get(path);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
 
-  static Future list(String path) async {
+  static Future<Response> list(String path) async {
+    Response response;
     try {
-      var response = await _dio.get(path);
-      return response.data;
+      response = await _dio.get(path);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
 
-  static Future add(String path, Map<String, dynamic> data) async {
+  static Future<Response> add(String path, data) async {
+    Response response;
     try {
-      var response = await _dio.post(path, data: data);
-      return response.data;
+      response = await _dio.post(path, data: data);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+
+    return response;
   }
 
-  static Future put(String path, Map<String, dynamic> data) async {
+  static Future<Response> put(String path, data) async {
+    Response response;
     try {
-      var response = await _dio.put(path, data: data);
-      return response.data;
+      response = await _dio.put(path, data: data);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
 
-  static Future patch(String path, data) async {
+  static Future<Response> patch(String path, data) async {
+    Response response;
     try {
-      var response = await _dio.patch(path, data: data);
-      return response.data;
+      response = await _dio.patch(path, data: data);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
 
-  static Future delete(String path) async {
+  static Future<Response> delete(String path) async {
+    Response response;
     try {
-      var response = await _dio.delete(path);
-      return response.data;
+      response = await _dio.delete(path);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
 
-  static Future uploadFile(String path, Uint8List bytes) async {
+  static Future<Response> uploadFile(String path, Uint8List bytes) async {
     final formData = FormData.fromMap({
       'photo': MultipartFile.fromBytes(bytes),
     });
+    Response response;
     try {
-      var response = await _dio.patch(path, data: formData);
-      return response.data;
+      response = await _dio.patch(path, data: formData);
     } on DioError catch (e) {
-      return e;
+      throw ErrorAPI.fromJson(e.response.toString());
     }
+    return response;
   }
+}
+
+class ErrorAPI {
+  dynamic detail;
+
+  ErrorAPI({
+    this.detail,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'detail': detail,
+    };
+  }
+
+  factory ErrorAPI.fromMap(Map<String, dynamic> map) {
+    return ErrorAPI(
+      detail: map['detail'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ErrorAPI.fromJson(String source) =>
+      ErrorAPI.fromMap(json.decode(source));
 }

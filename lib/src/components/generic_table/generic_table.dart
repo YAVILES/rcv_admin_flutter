@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table_datasource.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button.dart';
-import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
 class GenericTable extends StatefulWidget {
   List<Map<String, dynamic>> data;
   List<DTColumn> columns;
-  List<CustomButton>? actions;
+
   String? title;
   String? subtitle;
   String? newTitle;
@@ -20,7 +18,6 @@ class GenericTable extends StatefulWidget {
     Key? key,
     required this.data,
     required this.columns,
-    this.actions,
     this.title,
     this.subtitle,
     this.newTitle,
@@ -56,19 +53,12 @@ class _GenericTableState extends State<GenericTable> {
       columns: dataColumns,
       source: GenericTableDTS(
           data: widget.data, context: context, columns: widget.columns),
-      header: HeaderView(title: widget.title, subtitle: widget.subtitle),
-      rowsPerPage: (widget.data.length < 10 && widget.data.isNotEmpty)
+      rowsPerPage: (widget.data.length < 50 && widget.data.isNotEmpty)
           ? widget.data.length
-          : 10,
+          : 50,
       /*     onRowsPerPageChanged: (value) =>
               setState(() => rowsPerPage = value ?? _rowsPerPage), */
       onPageChanged: (value) => {},
-      actions: [
-        ElevatedButton(
-          child: Text(widget.newTitle ?? "Nuevo"),
-          onPressed: () => widget.onNewPressed!(),
-        ),
-      ],
     );
   }
 

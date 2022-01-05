@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
 class SplashLayout extends StatelessWidget {
   const SplashLayout({Key? key}) : super(key: key);
@@ -10,7 +11,7 @@ class SplashLayout extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            CircularProgressIndicator(),
+            MyProgressIndicator(),
             SizedBox(height: 20),
             Text("Verificando Sesión"),
           ],
