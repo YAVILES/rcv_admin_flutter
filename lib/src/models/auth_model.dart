@@ -26,7 +26,6 @@ class Auth {
   }
 
   factory Auth.fromMap(Map<String, dynamic> map) {
-    // print(map['user']);
     return Auth(
       token: map['token'] ?? '',
       refresh: map['refresh'] ?? '',

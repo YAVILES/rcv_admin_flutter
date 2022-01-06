@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/auth_model.dart';
@@ -54,11 +55,9 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>> login(
+  Future<void> login(
       BuildContext context, String username, String password) async {
-    Map<String, Object> result;
-
-    final Map<String, dynamic> loginData = {
+    final Map<String, String> loginData = {
       'username': username,
       'password': password
     };
@@ -70,10 +69,10 @@ class AuthProvider with ChangeNotifier {
       Response resp = await API.add('/token/', loginData);
       if (resp.statusCode == 200 || resp.statusCode == 201) {
         var data = Auth.fromMap(resp.data);
-        user = data.user;
+        if (data.user != null) user = data.user;
         Preferences.setToken(data.token, data.refresh);
-        _loggedInStatus = Status.loggedIn;
         API.configureDio();
+        _loggedInStatus = Status.loggedIn;
         notifyListeners();
       } else {
         _loggedInStatus = Status.notLoggedIn;
@@ -87,31 +86,6 @@ class AuthProvider with ChangeNotifier {
       _loggedInStatus = Status.notLoggedIn;
       notifyListeners();
     }
-
-/*  final Map<String, dynamic> responseData = json.decode(response.toString());
-    // var userData = responseData['user'];
-*/
-    //
-
-    // _loggedInStatus = Status.LoggedIn;
-    notifyListeners();
-
-    // result = {'status': true, 'message': 'Successful', 'user': authUser};
-    result = {'status': true, 'message': 'Successful', 'user': {}};
-    /* } else {
-      result = {'status': false, 'message': ""};
-      if (responseData['username'] && responseData['password']) {
-        result['message'] = "Las credenciales ingresadas son incorrectas";
-      } else if (responseData['username']) {
-        result['message'] = "El usuario es requerido";
-      } else if (responseData['password']) {
-        result['message'] = "El password es requerido";
-      } else if (responseData['detail']) {}
-
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-    }  */
-    return result;
   }
 
   Future<void> logout() async {
