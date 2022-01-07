@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
-import 'package:rcv_admin_flutter/src/providers/banner_form_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
@@ -28,7 +28,7 @@ class BannerView extends StatefulWidget {
 class _BannerViewState extends State<BannerView> {
   @override
   void initState() {
-    Provider.of<BannerFormProvider>(context, listen: false).banner =
+    Provider.of<BannerRCVProvider>(context, listen: false).banner =
         widget.banner ?? BannerRCV();
     super.initState();
   }
@@ -61,19 +61,18 @@ class _BannerFormState extends State<_BannerForm> {
   PlatformFile? image;
   @override
   Widget build(BuildContext context) {
-    BannerFormProvider bannerFormProvider =
-        Provider.of<BannerFormProvider>(context);
+    BannerRCVProvider bannerProvider = Provider.of<BannerRCVProvider>(context);
     return Column(
       children: [
         Stack(
           children: [
             Hero(
-              tag: bannerFormProvider.banner?.id ?? 'newBanner',
+              tag: bannerProvider.banner?.id ?? 'newBanner',
               child: (image?.bytes != null)
                   ? Image.memory(Uint8List.fromList(image!.bytes!))
-                  : bannerFormProvider.banner?.image != null
-                      ? Image.network(bannerFormProvider.banner!.image!)
-                      : Image.asset('images/upload.png'),
+                  : bannerProvider.banner?.image != null
+                      ? Image.network(bannerProvider.banner!.image!)
+                      : Image.asset('assets/images/upload.png'),
             ),
             Positioned(
               bottom: 4,
@@ -117,24 +116,24 @@ class _BannerFormState extends State<_BannerForm> {
         ),
         const SizedBox(height: 20),
         TextFormField(
-          initialValue: bannerFormProvider.banner!.title,
-          onChanged: (value) => bannerFormProvider.banner!.title = value,
+          initialValue: bannerProvider.banner!.title,
+          onChanged: (value) => bannerProvider.banner!.title = value,
           decoration: const InputDecoration(
             hintText: 'Ingrese el titulo',
             labelText: 'titulo',
           ),
         ),
         TextFormField(
-          initialValue: bannerFormProvider.banner!.subtitle,
-          onChanged: (value) => bannerFormProvider.banner!.subtitle = value,
+          initialValue: bannerProvider.banner!.subtitle,
+          onChanged: (value) => bannerProvider.banner!.subtitle = value,
           decoration: const InputDecoration(
             hintText: 'Ingrese el subtitulo',
             labelText: 'Sub titulo',
           ),
         ),
         TextFormField(
-          initialValue: bannerFormProvider.banner!.content,
-          onChanged: (value) => bannerFormProvider.banner!.content = value,
+          initialValue: bannerProvider.banner!.content,
+          onChanged: (value) => bannerProvider.banner!.content = value,
           onFieldSubmitted: (value) {},
           decoration: const InputDecoration(
             hintText: 'Ingrese el contenido',
@@ -142,8 +141,8 @@ class _BannerFormState extends State<_BannerForm> {
           ),
         ),
         TextFormField(
-          initialValue: bannerFormProvider.banner!.url ?? '',
-          onChanged: (value) => bannerFormProvider.banner!.url = value,
+          initialValue: bannerProvider.banner!.url ?? '',
+          onChanged: (value) => bannerProvider.banner!.url = value,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'La url es obligatoria';
@@ -156,8 +155,8 @@ class _BannerFormState extends State<_BannerForm> {
           ),
         ),
         CustomCheckBox(
-          value: bannerFormProvider.banner!.isActive ?? true,
-          onChanged: (value) => bannerFormProvider.banner!.isActive = value,
+          value: bannerProvider.banner!.isActive ?? true,
+          onChanged: (value) => bannerProvider.banner!.isActive = value,
         ),
         Container(
           margin: const EdgeInsets.only(top: 30),
@@ -165,22 +164,21 @@ class _BannerFormState extends State<_BannerForm> {
           child: CustomButtonPrimary(
             onPressed: () async {
               try {
-                final bool create = bannerFormProvider.banner!.id == null;
-                final saved = await bannerFormProvider.saveData(
-                    bannerFormProvider.banner!, image);
-                if (saved) {
-                  NavigationService.backTo(context);
-                  if (create) {
-                    NotificationService.showSnackbarSuccess(
-                        '${bannerFormProvider.banner!.title} creado');
-                  } else {
-                    NotificationService.showSnackbarSuccess(
-                      '${bannerFormProvider.banner!.title} actualizado',
-                    );
-                  }
+                final bool create = bannerProvider.banner!.id == null;
+
+                if (create) {
+                  await bannerProvider.newBanner(bannerProvider.banner!, image);
+                  NotificationService.showSnackbarSuccess(
+                      '${bannerProvider.banner!.title} creado');
+                } else {
+                  await bannerProvider.editBanner(bannerProvider.banner!.id!,
+                      bannerProvider.banner!, image);
+                  NotificationService.showSnackbarSuccess(
+                    '${bannerProvider.banner!.title} actualizado',
+                  );
                 }
-              } catch (e) {
                 NavigationService.backTo(context);
+              } catch (e) {
                 NotificationService.showSnackbarError(
                   'No se pudo guardar el banner',
                 );

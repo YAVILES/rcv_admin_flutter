@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
@@ -6,6 +8,9 @@ import 'package:rcv_admin_flutter/src/utils/api.dart';
 class BannerRCVProvider with ChangeNotifier {
   String url = '/core/banner';
   List<Map<String, dynamic>> banners = [];
+  BannerRCV? banner;
+
+  late GlobalKey<FormState> formKey;
 
   Future getBanners() async {
     try {
@@ -33,39 +38,54 @@ class BannerRCVProvider with ChangeNotifier {
     }
   }
 
-  Future newBanner(BannerRCV banner) async {
-    final data = banner.toMap();
+  Future newBanner(BannerRCV bannerRCV, PlatformFile? image) async {
+    final mapDAta = {
+      if (image?.bytes != null)
+        'image': MultipartFile.fromBytes(
+          image!.bytes!,
+          filename: image.name,
+        ),
+      ...bannerRCV.toMap(excludeImage: true),
+    };
+    final formData = FormData.fromMap(mapDAta);
     try {
-      final response = await API.add('$url/', data);
-      if (response.statusCode == 200) {
+      final response = await API.add('$url/', formData);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        banner = BannerRCV.fromMap(response.data);
         banners.add(response.data);
         notifyListeners();
       }
       return response;
-    } on ErrorAPI catch (e) {
-      print(e);
+    } on ErrorAPI {
+      rethrow;
     }
   }
 
-  Future editBanner(String id, BannerRCV data) async {
+  Future editBanner(String id, BannerRCV bannerRCV, PlatformFile? image) async {
+    final mapDAta = {
+      if (image?.bytes != null)
+        'image': MultipartFile.fromBytes(
+          image!.bytes!,
+          filename: image.name,
+        ),
+      ...bannerRCV.toMap(excludeImage: true),
+    };
+    final formData = FormData.fromMap(mapDAta);
+
     try {
-      final resp = await API.put('$url/$id/', data.toMap());
-      if (resp.statusCode == 200) {
-        banners = banners.map((banner) {
-          if (banner['id'] != id) return banner;
-          banner['title'] = data.title;
-          banner['subtitle'] = data.subtitle;
-          banner['content'] = data.content;
-          banner['image'] = data.image;
-          banner['secuence_order'] = data.sequenceOrder;
-          banner['url'] = data.url;
-          banner['is_active'] = data.isActive;
-          return banner;
+      final response = await API.put('$url/$id/', formData);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        banner = BannerRCV.fromMap(response.data);
+        banners = banners.map((_banner) {
+          if (_banner['id'] == banner!.id) {
+            _banner = banner!.toMap();
+          }
+          return _banner;
         }).toList();
         notifyListeners();
       }
-    } on ErrorAPI catch (e) {
-      return e;
+    } on ErrorAPI {
+      rethrow;
     }
   }
 
@@ -73,7 +93,8 @@ class BannerRCVProvider with ChangeNotifier {
     try {
       final resp = await API.delete('$url/$id/');
       if (resp.statusCode == 204) {
-        banners.removeWhere((banner) => banner['id'] == id);
+        banners
+            .removeWhere((banner) => banner['id'].toString() == id.toString());
         notifyListeners();
         return true;
       } else {

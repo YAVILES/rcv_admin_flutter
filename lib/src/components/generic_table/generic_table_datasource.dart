@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
+import 'package:intl/intl.dart';
 
 class GenericTableDTS extends DataTableSource {
   final List<dynamic> data;
@@ -20,6 +21,29 @@ class GenericTableDTS extends DataTableSource {
         ...columns.map((c) {
           if (c.widget != null) {
             return DataCell(c.widget!(d));
+          }
+          if (c.type == TypeColumn.dateTime) {
+            var formatterDate = DateFormat('yyyy-MM-dd');
+            var formatterHour = DateFormat('h:m:s a');
+            return DataCell(
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  children: [
+                    Text(
+                      formatterDate.format(
+                        DateTime.parse(d[c.dataAttribute]),
+                      ),
+                    ),
+                    Text(
+                      formatterHour.format(
+                        DateTime.parse(d[c.dataAttribute]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
           return DataCell(
             Text(d[c.dataAttribute]),

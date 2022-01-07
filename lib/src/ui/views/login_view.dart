@@ -26,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
               color: Colors.white,
             ),
             child: Image.asset(
-              "images/rc871.jpg",
+              "assets/images/rc871.jpg",
               height: 200,
             ),
           ),
@@ -75,8 +75,8 @@ class _CardLoginState extends State<CardLogin> {
                 elevation: 3,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 45,
-                    vertical: 40,
+                    horizontal: 35,
+                    vertical: 30,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

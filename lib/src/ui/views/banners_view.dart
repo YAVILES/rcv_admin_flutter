@@ -3,14 +3,11 @@ import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_secundary.dart';
 import 'package:rcv_admin_flutter/src/ui/modals/banner_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
@@ -69,10 +66,10 @@ class _BannersViewState extends State<BannersView> {
                                 'accept': '*/*',
                               },
                             ),
-                            placeholder:
-                                const AssetImage('images/img_avatar.png'),
+                            placeholder: const AssetImage(
+                                'assets/images/img_avatar.png'),
                           )
-                        : Image.asset('images/img_avatar.png',
+                        : Image.asset('assets/images/img_avatar.png',
                             width: 30, height: 30),
                   ),
                 ),
@@ -97,7 +94,16 @@ class _BannersViewState extends State<BannersView> {
               DTColumn(header: "Sub Titulo", dataAttribute: 'subtitle'),
               DTColumn(header: "Contenido", dataAttribute: 'content'),
               DTColumn(header: "Url", dataAttribute: 'url'),
-              DTColumn(header: "Fecha de creación", dataAttribute: 'created'),
+              DTColumn(
+                header: "Fecha de creación",
+                dataAttribute: 'created',
+                type: TypeColumn.dateTime,
+              ),
+              DTColumn(
+                header: "Fecha ult. actualización",
+                dataAttribute: 'created',
+                type: TypeColumn.dateTime,
+              ),
               DTColumn(
                 header: "Acciones",
                 dataAttribute: 'id',
@@ -107,15 +113,7 @@ class _BannersViewState extends State<BannersView> {
                 onSort: false,
               ),
             ],
-            newTitle: 'Crear Banner',
-            onNewPressed: () {
-              showModalBottomSheet(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (_) => const BannerModal(banner: null),
-              );
-            },
-          )
+          ),
         ],
       ),
     );

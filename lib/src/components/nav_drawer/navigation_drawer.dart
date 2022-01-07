@@ -75,9 +75,9 @@ class NavigationDrawer extends StatelessWidget {
     return UserAccountsDrawerHeader(
       accountName: Text(user!.name ?? ''),
       accountEmail: Text(user.email ?? ''),
-      currentAccountPicture: Image.asset('images/rc871.jpg'),
+      currentAccountPicture: Image.asset('assets/images/rc871.jpg'),
       otherAccountsPictures: [
-        ClipOval(child: Image.asset('images/img_avatar.png')),
+        ClipOval(child: Image.asset('assets/images/img_avatar.png')),
       ],
       onDetailsPressed: () {},
       decoration: const BoxDecoration(

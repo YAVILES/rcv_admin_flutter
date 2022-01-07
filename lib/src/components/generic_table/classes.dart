@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+enum TypeColumn {
+  dateTime,
+}
+
 class DTFilterField {
   String? value;
   String? description;
@@ -29,7 +33,7 @@ class DTColumn {
   String? routerLinkAttribute;
 
   /// Tipo de columna. Por defecto text */
-  String? type;
+  TypeColumn? type;
 
   /// Formato de fecha de la columna. Por defecto defaultDateFormat */
   String? dateFormat;

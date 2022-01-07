@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {
   static late SharedPreferences prefs;
 
-  static Future<void> configurePrefs() async {
+  static Future<SharedPreferences> configurePrefs() async {
+    WidgetsFlutterBinding.ensureInitialized();
     prefs = await SharedPreferences.getInstance();
+    return prefs;
   }
 
   static Future<void> setToken(String token, String? refresh) async {

@@ -4,9 +4,7 @@ import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_secundary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
-import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
 class BannerModal extends StatefulWidget {
   final BannerRCV? banner;
@@ -81,11 +79,12 @@ class _BannerModalState extends State<BannerModal> {
                 onPressed: () async {
                   try {
                     if (_banner.id == null) {
-                      await bannerProvider.newBanner(_banner);
+                      await bannerProvider.newBanner(_banner, null);
                       NotificationService.showSnackbarSuccess(
                           '${_banner.title} creado');
                     } else {
-                      await bannerProvider.editBanner(_banner.id!, _banner);
+                      await bannerProvider.editBanner(
+                          _banner.id!, _banner, null);
                       NotificationService.showSnackbarSuccess(
                         '${_banner.title} actualizado',
                       );

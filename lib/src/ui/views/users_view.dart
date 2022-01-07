@@ -5,7 +5,9 @@ import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dar
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
+import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
 class UsersView extends StatefulWidget {
   const UsersView({Key? key}) : super(key: key);
@@ -29,16 +31,70 @@ class _UsersViewState extends State<UsersView> {
       child: ListView(
         physics: const ClampingScrollPhysics(),
         children: [
+          HeaderView(
+            title: "Administración de Sistema",
+            subtitle: "Usuarios",
+            actions: [
+              CustomButtonPrimary(
+                onPressed: () =>
+                    NavigationService.navigateTo(context, userRoute, null),
+                title: 'Nuevo',
+              )
+            ],
+          ),
           GenericTable(
             data: users,
             columns: [
               DTColumn(
-                header: "id",
-                dataAttribute: 'id',
+                header: "Foto",
+                dataAttribute: 'photo',
+                onSort: false,
+                widget: (item) => Container(
+                  constraints: const BoxConstraints(maxWidth: 50),
+                  margin: const EdgeInsets.all(5),
+                  child: Hero(
+                    tag: item['id'],
+                    child: item['photo'] != null
+                        ? FadeInImage(
+                            image: NetworkImage(
+                              item['photo'],
+                              headers: {
+                                'accept': '*/*',
+                              },
+                            ),
+                            placeholder: const AssetImage(
+                                'assets/images/img_avatar.png'),
+                          )
+                        : Image.asset('assets/images/img_avatar.png',
+                            width: 30, height: 30),
+                  ),
+                ),
+
+                /*             Image.network(
+                          item['photo'].toString(),
+                          width: 30,
+                          height: 30,
+                          loadingBuilder: (context, __, ___) =>
+                              const MyProgressIndicator(),
+                          errorBuilder: (_, data, ___) {
+                            print(data);
+                            return Image.asset(
+                              'images/img_avatar.png',
+                              width: 30,
+                              height: 30,
+                            );
+                          },
+                        ) */
               ),
               DTColumn(
-                header: "Nombre",
-                dataAttribute: 'name',
+                header: "Fecha de creación",
+                dataAttribute: 'created',
+                type: TypeColumn.dateTime,
+              ),
+              DTColumn(
+                header: "Fecha ult. actualización",
+                dataAttribute: 'created',
+                type: TypeColumn.dateTime,
               ),
               DTColumn(
                 header: "Acciones",
@@ -46,9 +102,10 @@ class _UsersViewState extends State<UsersView> {
                 widget: (item) {
                   return _ActionsTable(item: item);
                 },
+                onSort: false,
               ),
             ],
-          )
+          ),
         ],
       ),
     );

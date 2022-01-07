@@ -49,14 +49,14 @@ class BannerRCV {
         isActive: json["is_active"],
       );
 
-  Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap({bool? excludeImage = false}) => {
         "id": id,
         "created": created?.toIso8601String(),
         "updated": updated?.toIso8601String(),
         "title": title,
         "subtitle": subtitle,
         "content": content,
-        "image": image,
+        if (excludeImage == false || excludeImage == null) "image": image,
         "url": url,
         "sequence_order": sequenceOrder,
         "is_active": isActive,

@@ -7,7 +7,8 @@ class NavbarAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ClipOval(
-        child: Image.asset('images/img_avatar.png', width: 30, height: 30),
+        child:
+            Image.asset('assets/images/img_avatar.png', width: 30, height: 30),
       ),
     );
   }

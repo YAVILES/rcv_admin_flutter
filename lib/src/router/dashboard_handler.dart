@@ -47,21 +47,4 @@ class DashBoardHandlers {
       return const LoginView();
     }
   });
-
-  static Handler user = Handler(handlerFunc: (context, params) {
-    AuthProvider authProvider =
-        Provider.of<AuthProvider>(context!, listen: false);
-    Provider.of<NavDrawerProvider>(context, listen: false)
-        .setRouteCurrent(bannersRoute);
-    if (authProvider.loggedInStatus == Status.loggedIn ||
-        Preferences.getToken() != null) {
-      if (params['uid']?.first != null) {
-        return UserView(uid: params['uid']!.first);
-      } else {
-        return const UsersView();
-      }
-    } else {
-      return const LoginView();
-    }
-  });
 }
