@@ -9,6 +9,7 @@ class UserProvider with ChangeNotifier {
   String url = '/security/user';
   List<Map<String, dynamic>> users = [];
   User? user;
+  bool loading = false;
 
   late GlobalKey<FormState> formUserKey;
 
@@ -17,15 +18,20 @@ class UserProvider with ChangeNotifier {
   }
 
   Future getUsers() async {
+    loading = true;
+    notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;
-        notifyListeners();
-        return users;
       }
+      loading = false;
+      notifyListeners();
+      return users;
     } on ErrorAPI catch (e) {
+      loading = false;
+      notifyListeners();
       print(e);
     }
   }

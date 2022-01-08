@@ -9,18 +9,28 @@ class BannerRCVProvider with ChangeNotifier {
   String url = '/core/banner';
   List<Map<String, dynamic>> banners = [];
   BannerRCV? banner;
+  bool loading = false;
 
-  late GlobalKey<FormState> formKey;
+  late GlobalKey<FormState> formBannerKey;
+
+  bool validateForm() {
+    return formBannerKey.currentState!.validate();
+  }
 
   Future getBanners() async {
+    loading = true;
+    notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         banners = responseData.results;
-        notifyListeners();
       }
+      loading = false;
+      notifyListeners();
     } on ErrorAPI catch (e) {
+      loading = false;
+      notifyListeners();
       print(e);
     }
   }
@@ -39,53 +49,59 @@ class BannerRCVProvider with ChangeNotifier {
   }
 
   Future newBanner(BannerRCV bannerRCV, PlatformFile? image) async {
-    final mapDAta = {
-      if (image?.bytes != null)
-        'image': MultipartFile.fromBytes(
-          image!.bytes!,
-          filename: image.name,
-        ),
-      ...bannerRCV.toMap(excludeImage: true),
-    };
-    final formData = FormData.fromMap(mapDAta);
-    try {
-      final response = await API.add('$url/', formData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        banner = BannerRCV.fromMap(response.data);
-        banners.add(response.data);
-        notifyListeners();
+    if (validateForm()) {
+      final mapDAta = {
+        if (image?.bytes != null)
+          'image': MultipartFile.fromBytes(
+            image!.bytes!,
+            filename: image.name,
+          ),
+        ...bannerRCV.toMap(excludeImage: true),
+      };
+      final formData = FormData.fromMap(mapDAta);
+      try {
+        final response = await API.add('$url/', formData);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          banner = BannerRCV.fromMap(response.data);
+          getBanners();
+          // banners.add(response.data);
+          // notifyListeners();
+        }
+        return response;
+      } on ErrorAPI {
+        rethrow;
       }
-      return response;
-    } on ErrorAPI {
-      rethrow;
     }
   }
 
   Future editBanner(String id, BannerRCV bannerRCV, PlatformFile? image) async {
-    final mapDAta = {
-      if (image?.bytes != null)
-        'image': MultipartFile.fromBytes(
-          image!.bytes!,
-          filename: image.name,
-        ),
-      ...bannerRCV.toMap(excludeImage: true),
-    };
-    final formData = FormData.fromMap(mapDAta);
+    if (validateForm()) {
+      final mapDAta = {
+        if (image?.bytes != null)
+          'image': MultipartFile.fromBytes(
+            image!.bytes!,
+            filename: image.name,
+          ),
+        ...bannerRCV.toMap(excludeImage: true),
+      };
+      final formData = FormData.fromMap(mapDAta);
 
-    try {
-      final response = await API.put('$url/$id/', formData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        banner = BannerRCV.fromMap(response.data);
-        banners = banners.map((_banner) {
-          if (_banner['id'] == banner!.id) {
-            _banner = banner!.toMap();
-          }
-          return _banner;
-        }).toList();
-        notifyListeners();
+      try {
+        final response = await API.put('$url/$id/', formData);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          banner = BannerRCV.fromMap(response.data);
+          getBanners();
+/*           banners = banners.map((_banner) {
+            if (_banner['id'] == banner!.id) {
+              _banner = banner!.toMap();
+            }
+            return _banner;
+          }).toList(); */
+          // notifyListeners();
+        }
+      } on ErrorAPI {
+        rethrow;
       }
-    } on ErrorAPI {
-      rethrow;
     }
   }
 

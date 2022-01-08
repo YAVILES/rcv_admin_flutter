@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
+import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
@@ -25,7 +26,9 @@ class _UsersViewState extends State<UsersView> {
 
   @override
   Widget build(BuildContext context) {
-    final users = Provider.of<UserProvider>(context).users;
+    final userProvider = Provider.of<UserProvider>(context);
+    final loading = userProvider.loading;
+    final users = userProvider.users;
     return CenteredView(
       child: ListView(
         physics: const ClampingScrollPhysics(),
@@ -41,70 +44,72 @@ class _UsersViewState extends State<UsersView> {
               )
             ],
           ),
-          GenericTable(
-            data: users,
-            columns: [
-              DTColumn(
-                header: "Foto",
-                dataAttribute: 'photo',
-                onSort: false,
-                widget: (item) => Container(
-                  constraints: const BoxConstraints(maxWidth: 50),
-                  margin: const EdgeInsets.all(5),
-                  child: Hero(
-                    tag: item['id'],
-                    child: ClipOval(
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 30),
-                        child: item['photo'] != null
-                            ? FadeInImage(
-                                image: NetworkImage(
-                                  item['photo'],
-                                  headers: {
-                                    'accept': '*/*',
-                                  },
-                                ),
-                                placeholder: const AssetImage(
-                                    'assets/images/img_avatar.png'),
-                              )
-                            : Image.asset('assets/images/img_avatar.png'),
+          (loading == true)
+              ? const MyProgressIndicator()
+              : GenericTable(
+                  data: users,
+                  columns: [
+                    DTColumn(
+                      header: "Foto",
+                      dataAttribute: 'photo',
+                      onSort: false,
+                      widget: (item) => Container(
+                        constraints: const BoxConstraints(maxWidth: 50),
+                        margin: const EdgeInsets.all(5),
+                        child: Hero(
+                          tag: item['id'],
+                          child: ClipOval(
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 30),
+                              child: item['photo'] != null
+                                  ? FadeInImage(
+                                      image: NetworkImage(
+                                        item['photo'],
+                                        headers: {
+                                          'accept': '*/*',
+                                        },
+                                      ),
+                                      placeholder: const AssetImage(
+                                          'assets/images/img_avatar.png'),
+                                    )
+                                  : Image.asset('assets/images/img_avatar.png'),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    DTColumn(
+                      header: "Usuario",
+                      dataAttribute: 'username',
+                    ),
+                    DTColumn(
+                      header: "Nombre",
+                      dataAttribute: 'full_name',
+                    ),
+                    DTColumn(
+                      header: "Correo",
+                      dataAttribute: 'email',
+                    ),
+                    DTColumn(
+                      header: "Fecha de creación",
+                      dataAttribute: 'created',
+                      type: TypeColumn.dateTime,
+                    ),
+                    DTColumn(
+                      header: "Fecha ult. actualización",
+                      dataAttribute: 'created',
+                      type: TypeColumn.dateTime,
+                    ),
+                    DTColumn(
+                      header: "Acciones",
+                      dataAttribute: 'id',
+                      widget: (item) {
+                        return _ActionsTable(item: item);
+                      },
+                      onSort: false,
+                    ),
+                  ],
                 ),
-              ),
-              DTColumn(
-                header: "Usuario",
-                dataAttribute: 'username',
-              ),
-              DTColumn(
-                header: "Nombre",
-                dataAttribute: 'full_name',
-              ),
-              DTColumn(
-                header: "Correo",
-                dataAttribute: 'email',
-              ),
-              DTColumn(
-                header: "Fecha de creación",
-                dataAttribute: 'created',
-                type: TypeColumn.dateTime,
-              ),
-              DTColumn(
-                header: "Fecha ult. actualización",
-                dataAttribute: 'created',
-                type: TypeColumn.dateTime,
-              ),
-              DTColumn(
-                header: "Acciones",
-                dataAttribute: 'id',
-                widget: (item) {
-                  return _ActionsTable(item: item);
-                },
-                onSort: false,
-              ),
-            ],
-          ),
         ],
       ),
     );

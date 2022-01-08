@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
@@ -8,7 +7,7 @@ class BranchOfficeProvider with ChangeNotifier {
   String url = '/core/branch_office';
   List<Map<String, dynamic>> branchOffices = [];
   BranchOffice? branchOffice;
-
+  bool loading = false;
   late GlobalKey<FormState> formBranchOfficeKey;
 
   bool validateForm() {
@@ -16,15 +15,20 @@ class BranchOfficeProvider with ChangeNotifier {
   }
 
   Future getBranchOffices() async {
+    loading = true;
+    notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         branchOffices = responseData.results;
-        notifyListeners();
-        return branchOffices;
       }
+      loading = false;
+      notifyListeners();
+      return branchOffices;
     } on ErrorAPI {
+      loading = false;
+      notifyListeners();
       rethrow;
     }
   }
@@ -65,15 +69,15 @@ class BranchOfficeProvider with ChangeNotifier {
       try {
         final response = await API.put('$url/$id/', mapData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          getBranchOffices();
           branchOffice = BranchOffice.fromMap(response.data);
+          getBranchOffices();
 /*           BranchOffices = BranchOffices.map((_BranchOffice) {
             if (_BranchOffice['id'] == BranchOffice.id) {
               _BranchOffice = BranchOffice.toMap();
             }
             return _BranchOffice;
           }).toList(); */
-          notifyListeners();
+          // notifyListeners();
           return true;
         }
       } on ErrorAPI {

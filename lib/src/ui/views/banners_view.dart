@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
+import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
@@ -29,7 +30,9 @@ class _BannersViewState extends State<BannersView> {
 
   @override
   Widget build(BuildContext context) {
-    final banners = Provider.of<BannerRCVProvider>(context).banners;
+    final bannerRCVProvider = Provider.of<BannerRCVProvider>(context);
+    final loading = bannerRCVProvider.loading;
+    final banners = bannerRCVProvider.banners;
 
     return CenteredView(
       child: ListView(
@@ -46,35 +49,37 @@ class _BannersViewState extends State<BannersView> {
               )
             ],
           ),
-          GenericTable(
-            data: banners,
-            columns: [
-              DTColumn(
-                header: "Imagen",
-                dataAttribute: 'image',
-                onSort: false,
-                widget: (item) => Container(
-                  constraints: const BoxConstraints(maxWidth: 50),
-                  margin: const EdgeInsets.all(5),
-                  child: Hero(
-                    tag: item['id'],
-                    child: item['image'] != null
-                        ? FadeInImage(
-                            image: NetworkImage(
-                              item['image'],
-                              headers: {
-                                'accept': '*/*',
-                              },
-                            ),
-                            placeholder: const AssetImage(
-                                'assets/images/img_avatar.png'),
-                          )
-                        : Image.asset('assets/images/img_avatar.png',
-                            width: 30, height: 30),
-                  ),
-                ),
+          (loading == true)
+              ? const MyProgressIndicator()
+              : GenericTable(
+                  data: banners,
+                  columns: [
+                    DTColumn(
+                      header: "Imagen",
+                      dataAttribute: 'image',
+                      onSort: false,
+                      widget: (item) => Container(
+                        constraints: const BoxConstraints(maxWidth: 50),
+                        margin: const EdgeInsets.all(5),
+                        child: Hero(
+                          tag: item['id'],
+                          child: item['image'] != null
+                              ? FadeInImage(
+                                  image: NetworkImage(
+                                    item['image'],
+                                    headers: {
+                                      'accept': '*/*',
+                                    },
+                                  ),
+                                  placeholder: const AssetImage(
+                                      'assets/images/img_avatar.png'),
+                                )
+                              : Image.asset('assets/images/img_avatar.png',
+                                  width: 30, height: 30),
+                        ),
+                      ),
 
-                /*             Image.network(
+                      /*             Image.network(
                           item['image'].toString(),
                           width: 30,
                           height: 30,
@@ -89,31 +94,31 @@ class _BannersViewState extends State<BannersView> {
                             );
                           },
                         ) */
-              ),
-              DTColumn(header: "Titulo", dataAttribute: 'title'),
-              DTColumn(header: "Sub Titulo", dataAttribute: 'subtitle'),
-              DTColumn(header: "Contenido", dataAttribute: 'content'),
-              DTColumn(header: "Url", dataAttribute: 'url'),
-              DTColumn(
-                header: "Fecha de creación",
-                dataAttribute: 'created',
-                type: TypeColumn.dateTime,
-              ),
-              DTColumn(
-                header: "Fecha ult. actualización",
-                dataAttribute: 'created',
-                type: TypeColumn.dateTime,
-              ),
-              DTColumn(
-                header: "Acciones",
-                dataAttribute: 'id',
-                widget: (item) {
-                  return _ActionsTable(item: item);
-                },
-                onSort: false,
-              ),
-            ],
-          ),
+                    ),
+                    DTColumn(header: "Titulo", dataAttribute: 'title'),
+                    DTColumn(header: "Sub Titulo", dataAttribute: 'subtitle'),
+                    DTColumn(header: "Contenido", dataAttribute: 'content'),
+                    DTColumn(header: "Url", dataAttribute: 'url'),
+                    DTColumn(
+                      header: "Fecha de creación",
+                      dataAttribute: 'created',
+                      type: TypeColumn.dateTime,
+                    ),
+                    DTColumn(
+                      header: "Fecha ult. actualización",
+                      dataAttribute: 'created',
+                      type: TypeColumn.dateTime,
+                    ),
+                    DTColumn(
+                      header: "Acciones",
+                      dataAttribute: 'id',
+                      widget: (item) {
+                        return _ActionsTable(item: item);
+                      },
+                      onSort: false,
+                    ),
+                  ],
+                ),
         ],
       ),
     );

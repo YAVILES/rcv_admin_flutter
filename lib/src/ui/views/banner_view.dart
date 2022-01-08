@@ -115,76 +115,86 @@ class _BannerFormState extends State<_BannerForm> {
           ],
         ),
         const SizedBox(height: 20),
-        TextFormField(
-          initialValue: bannerProvider.banner!.title,
-          onChanged: (value) => bannerProvider.banner!.title = value,
-          decoration: const InputDecoration(
-            hintText: 'Ingrese el titulo',
-            labelText: 'titulo',
-          ),
-        ),
-        TextFormField(
-          initialValue: bannerProvider.banner!.subtitle,
-          onChanged: (value) => bannerProvider.banner!.subtitle = value,
-          decoration: const InputDecoration(
-            hintText: 'Ingrese el subtitulo',
-            labelText: 'Sub titulo',
-          ),
-        ),
-        TextFormField(
-          initialValue: bannerProvider.banner!.content,
-          onChanged: (value) => bannerProvider.banner!.content = value,
-          onFieldSubmitted: (value) {},
-          decoration: const InputDecoration(
-            hintText: 'Ingrese el contenido',
-            labelText: 'Contenido',
-          ),
-        ),
-        TextFormField(
-          initialValue: bannerProvider.banner!.url ?? '',
-          onChanged: (value) => bannerProvider.banner!.url = value,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'La url es obligatoria';
-            }
-            return null;
-          },
-          decoration: const InputDecoration(
-            hintText: 'Ingrese la url',
-            labelText: 'Url',
-          ),
-        ),
-        CustomCheckBox(
-          value: bannerProvider.banner!.isActive ?? true,
-          onChanged: (value) => bannerProvider.banner!.isActive = value,
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 30),
-          alignment: Alignment.center,
-          child: CustomButtonPrimary(
-            onPressed: () async {
-              try {
-                final bool create = bannerProvider.banner!.id == null;
+        Form(
+          key: bannerProvider.formBannerKey,
+          child: Column(
+            children: [
+              TextFormField(
+                initialValue: bannerProvider.banner!.title,
+                onChanged: (value) => bannerProvider.banner!.title = value,
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese el titulo',
+                  labelText: 'titulo',
+                ),
+              ),
+              TextFormField(
+                initialValue: bannerProvider.banner!.subtitle,
+                onChanged: (value) => bannerProvider.banner!.subtitle = value,
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese el subtitulo',
+                  labelText: 'Sub titulo',
+                ),
+              ),
+              TextFormField(
+                initialValue: bannerProvider.banner!.content,
+                onChanged: (value) => bannerProvider.banner!.content = value,
+                onFieldSubmitted: (value) {},
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese el contenido',
+                  labelText: 'Contenido',
+                ),
+              ),
+              TextFormField(
+                initialValue: bannerProvider.banner!.url ?? '',
+                onChanged: (value) => bannerProvider.banner!.url = value,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'La url es obligatoria';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese la url',
+                  labelText: 'Url',
+                ),
+              ),
+              CustomCheckBox(
+                value: bannerProvider.banner!.isActive ?? true,
+                onChanged: (value) => bannerProvider.banner!.isActive = value,
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 30),
+                alignment: Alignment.center,
+                child: CustomButtonPrimary(
+                  onPressed: () async {
+                    try {
+                      final bool create = bannerProvider.banner!.id == null;
 
-                if (create) {
-                  await bannerProvider.newBanner(bannerProvider.banner!, image);
-                  NotificationService.showSnackbarSuccess(
-                      '${bannerProvider.banner!.title} creado');
-                } else {
-                  await bannerProvider.editBanner(bannerProvider.banner!.id!,
-                      bannerProvider.banner!, image);
-                  NotificationService.showSnackbarSuccess(
-                    '${bannerProvider.banner!.title} actualizado',
-                  );
-                }
-                NavigationService.backTo(context);
-              } catch (e) {
-                NotificationService.showSnackbarError(
-                  'No se pudo guardar el banner',
-                );
-              }
-            },
-            title: 'Guardar',
+                      if (create) {
+                        await bannerProvider.newBanner(
+                            bannerProvider.banner!, image);
+                        NotificationService.showSnackbarSuccess(
+                            '${bannerProvider.banner!.title} creado');
+                      } else {
+                        await bannerProvider.editBanner(
+                            bannerProvider.banner!.id!,
+                            bannerProvider.banner!,
+                            image);
+                        NotificationService.showSnackbarSuccess(
+                          '${bannerProvider.banner!.title} actualizado',
+                        );
+                      }
+                      NavigationService.backTo(context);
+                    } catch (e) {
+                      NotificationService.showSnackbarError(
+                        'No se pudo guardar el banner',
+                      );
+                    }
+                  },
+                  title: 'Guardar',
+                ),
+              ),
+            ],
           ),
         ),
       ],
