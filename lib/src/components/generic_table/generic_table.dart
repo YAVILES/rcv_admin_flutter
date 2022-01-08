@@ -102,11 +102,14 @@ class _GenericTableState extends State<GenericTable> {
         context: context,
         columns: widget.columns,
         onSelectChanged: (DataSelectChange dataChange) {
-          if (dataChange.select == true) {
-            setState(() => widget.itemsIdsSelected.add(dataChange.item['id']));
-          }
-          if (widget.onSelectChanged != null) {
-            widget.onSelectChanged!(dataChange);
+          if (widget.showCheckboxColumn == true) {
+            if (dataChange.select == true) {
+              setState(
+                  () => widget.itemsIdsSelected.add(dataChange.item['id']));
+            }
+            if (widget.onSelectChanged != null) {
+              widget.onSelectChanged!(dataChange);
+            }
           }
         },
         itemsIdsSelected: widget.itemsIdsSelected,
