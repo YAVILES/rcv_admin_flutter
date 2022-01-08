@@ -3,20 +3,31 @@ import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:intl/intl.dart';
 
 class GenericTableDTS extends DataTableSource {
+  List<String>? itemsIdsSelected = [];
   final List<dynamic> data;
   final List<DTColumn> columns;
   final BuildContext context;
+  void Function(DataSelectChange dataChange) onSelectChanged;
+
   GenericTableDTS({
     required this.data,
     required this.columns,
     required this.context,
-  });
+    required this.onSelectChanged,
+    this.itemsIdsSelected,
+  }) {
+    itemsIdsSelected = itemsIdsSelected ?? [];
+  }
 
   @override
   DataRow? getRow(int index) {
     final d = data[index];
     return DataRow.byIndex(
       index: index,
+      selected: itemsIdsSelected!.contains(d['id'].toString()),
+      onSelectChanged: (select) => onSelectChanged(
+        DataSelectChange(index: index, item: d, select: select),
+      ),
       cells: [
         ...columns.map((c) {
           if (c.widget != null) {

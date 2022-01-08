@@ -123,6 +123,21 @@ class BannerRCVProvider with ChangeNotifier {
     }
   }
 
+  Future deleteBanners(List<String> ids) async {
+    try {
+      final resp = await API.delete('$url/remove_multiple/', ids: ids);
+      if (resp.statusCode == 200) {
+        banners.removeWhere((banner) => ids.contains(banner['id'].toString()));
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
   search(value) async {
     seachValue = value;
     loading = true;

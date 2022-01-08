@@ -141,10 +141,14 @@ class API {
     return response;
   }
 
-  static Future<Response> delete(String path) async {
+  static Future<Response> delete(String path, {List<String>? ids}) async {
     Response response;
     try {
-      response = await _dio.delete(path);
+      if (ids == null) {
+        response = await _dio.delete(path);
+      } else {
+        response = await _dio.delete(path, data: {'ids': ids});
+      }
     } on DioError catch (e) {
       throw ErrorAPI.fromJson(e.response.toString());
     }

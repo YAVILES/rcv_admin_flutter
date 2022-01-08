@@ -52,6 +52,48 @@ class _BannersViewState extends State<BannersView> {
           (loading == true)
               ? const MyProgressIndicator()
               : GenericTable(
+                  showCheckboxColumn: true,
+                  onSelectChanged: (data) => print(data.item.toString()),
+                  onDeleteSelectedItems: (items) {
+                    final dialog = AlertDialog(
+                      title: const Text(
+                          '¿Estas seguro de eliminar los items seleccionados?'),
+                      content: const Text('Definitivamente deseas eliminar'),
+                      actions: [
+                        TextButton(
+                          child: const Text("No"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text("Si, eliminar"),
+                          onPressed: () async {
+                            try {
+                              final deleted =
+                                  await Provider.of<BannerRCVProvider>(context,
+                                          listen: false)
+                                      .deleteBanners(items
+                                          .map((e) => e['id'].toString())
+                                          .toList());
+                              if (deleted) {
+                                NotificationService.showSnackbarSuccess(
+                                    'Banners eliminado con exito.');
+                              } else {
+                                NotificationService.showSnackbarSuccess(
+                                    'No se pudieron eliminar los banners.');
+                              }
+                            } on ErrorAPI catch (e) {
+                              NotificationService.showSnackbarError(
+                                  e.detail.toString());
+                            }
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    );
+                    showDialog(context: context, builder: (_) => dialog);
+                  },
                   data: banners,
                   columns: [
                     DTColumn(
@@ -99,6 +141,13 @@ class _BannersViewState extends State<BannersView> {
                     DTColumn(header: "Sub Titulo", dataAttribute: 'subtitle'),
                     DTColumn(header: "Contenido", dataAttribute: 'content'),
                     DTColumn(header: "Url", dataAttribute: 'url'),
+                    DTColumn(
+                      header: "Estatus",
+                      dataAttribute: 'is_active',
+                      widget: (item) => item['is_active'] == true
+                          ? const Text('Activo')
+                          : const Text('Inactivo'),
+                    ),
                     DTColumn(
                       header: "Fecha de creación",
                       dataAttribute: 'created',

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 enum TypeColumn {
@@ -120,4 +122,37 @@ class CheckChangeEvent {
     this.items,
     this.value,
   });
+}
+
+class DataSelectChange {
+  int index;
+  Map<String, dynamic> item;
+  bool? select;
+
+  DataSelectChange({
+    required this.index,
+    required this.item,
+    this.select,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'index': index,
+      'item': item,
+      'select': select,
+    };
+  }
+
+  factory DataSelectChange.fromMap(Map<String, dynamic> map) {
+    return DataSelectChange(
+      index: map['index']?.toInt() ?? 0,
+      item: Map<String, dynamic>.from(map['item']),
+      select: map['select'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory DataSelectChange.fromJson(String source) =>
+      DataSelectChange.fromMap(json.decode(source));
 }

@@ -59,6 +59,14 @@ class _BannerForm extends StatefulWidget {
 
 class _BannerFormState extends State<_BannerForm> {
   PlatformFile? image;
+
+  @override
+  void initState() {
+    Provider.of<BannerRCVProvider>(context, listen: false).formBannerKey =
+        GlobalKey<FormState>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     BannerRCVProvider bannerProvider = Provider.of<BannerRCVProvider>(context);

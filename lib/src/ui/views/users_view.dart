@@ -31,7 +31,7 @@ class _UsersViewState extends State<UsersView> {
     final users = userProvider.users;
     return CenteredView(
       child: ListView(
-        physics: const ClampingScrollPhysics(),
+        // physics: ScrollPhysics(),// const ClampingScrollPhysics(),
         children: [
           HeaderView(
             title: "Administración de Sistema",
@@ -89,6 +89,17 @@ class _UsersViewState extends State<UsersView> {
                     DTColumn(
                       header: "Correo",
                       dataAttribute: 'email',
+                    ),
+                    DTColumn(
+                      header: "Tipo",
+                      dataAttribute: 'is_staff',
+                      widget: (item) {
+                        if (item['is_staff'] == true) {
+                          return const Text('Personal');
+                        } else {
+                          return const Text('Cliente');
+                        }
+                      },
                     ),
                     DTColumn(
                       header: "Fecha de creación",

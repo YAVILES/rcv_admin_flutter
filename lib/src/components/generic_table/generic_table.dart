@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 
+import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table_datasource.dart';
+import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 
 class GenericTable extends StatefulWidget {
+  List<String> itemsIdsSelected = [];
   List<Map<String, dynamic>> data = [];
   List<DTColumn> columns;
 
@@ -15,8 +17,12 @@ class GenericTable extends StatefulWidget {
   Function? onNewPressed;
   String? labelforNoData;
   bool? withSearchEngine;
-  Function? onSearch;
+  Function(String?)? onSearch;
   String? searchInitialValue;
+  Function(bool)? onSelectAll;
+  bool? showCheckboxColumn;
+  void Function(DataSelectChange dataChange)? onSelectChanged;
+  void Function(List<Map<String, dynamic>>)? onDeleteSelectedItems;
 
   GenericTable({
     Key? key,
@@ -31,6 +37,10 @@ class GenericTable extends StatefulWidget {
     this.withSearchEngine = true,
     this.onSearch,
     this.searchInitialValue,
+    this.onSelectAll,
+    this.showCheckboxColumn,
+    this.onSelectChanged,
+    this.onDeleteSelectedItems,
   }) : super(key: key);
 
   @override
@@ -71,14 +81,35 @@ class _GenericTableState extends State<GenericTable> {
       )
     ];
     return PaginatedDataTable(
+      onSelectAll: (value) {
+        setState(() {
+          if (value == true) {
+            widget.itemsIdsSelected =
+                widget.data.map((e) => e['id'].toString()).toList();
+          } else {
+            widget.itemsIdsSelected = [];
+          }
+        });
+        widget.onSelectAll != null ? widget.onSelectAll!(value ?? false) : {};
+      },
       sortAscending: sortAscending,
+      showCheckboxColumn: widget.showCheckboxColumn ?? false,
       header: Row(),
-      // sortColumnIndex: sortColumnIndex,
+      sortColumnIndex: sortColumnIndex,
       columns: dataColumns,
       source: GenericTableDTS(
         data: widget.data,
         context: context,
         columns: widget.columns,
+        onSelectChanged: (DataSelectChange dataChange) {
+          if (dataChange.select == true) {
+            setState(() => widget.itemsIdsSelected.add(dataChange.item['id']));
+          }
+          if (widget.onSelectChanged != null) {
+            widget.onSelectChanged!(dataChange);
+          }
+        },
+        itemsIdsSelected: widget.itemsIdsSelected,
       ),
       rowsPerPage: (widget.data.isNotEmpty)
           ? (widget.data.length < 50)
@@ -89,6 +120,19 @@ class _GenericTableState extends State<GenericTable> {
                   setState(() => rowsPerPage = value ?? _rowsPerPage), */
       onPageChanged: (value) => {},
       actions: [
+        if (widget.itemsIdsSelected.isNotEmpty)
+          CustomButtonPrimary(
+            title: 'Eliminar items seleccionados',
+            color: Colors.red,
+            onPressed: () => widget.onDeleteSelectedItems != null
+                ? widget.onDeleteSelectedItems!(
+                    widget.data
+                        .where((e) => widget.itemsIdsSelected
+                            .contains(e['id'].toString()))
+                        .toList(),
+                  )
+                : {},
+          ),
         if (widget.withSearchEngine == true) ...[
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 300),
