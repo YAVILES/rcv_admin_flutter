@@ -1,10 +1,31 @@
+import 'dart:convert';
+
 // To parse this JSON data, do
 //
 //     final user = userFromMap(jsonString);
 
-import 'dart:convert';
-
 class User {
+  String? id;
+  String? username;
+  String? email;
+  String? emailAlternative;
+  String? name;
+  String? lastName;
+  String? fullName;
+  String? direction;
+  String? telephone;
+  String? phone;
+  String? point;
+  // List<dynamic>? roles;
+  // List<dynamic>? rolesDisplay;
+  String? photo;
+  String? password;
+  bool? isActive;
+  bool? isStaff;
+  bool? isSuperuser;
+  DateTime? created;
+  DateTime? updated;
+
   User({
     this.id,
     this.username,
@@ -17,11 +38,8 @@ class User {
     this.telephone,
     this.phone,
     this.point,
-    this.isStaff = false,
-    this.isSuperuser = false,
-    // this.roles,
-    // this.rolesDisplay,
-    this.info,
+    this.isStaff,
+    this.isSuperuser,
     this.created,
     this.updated,
     this.isActive,
@@ -29,87 +47,53 @@ class User {
     this.password,
   });
 
-  String? id;
-  String? username;
-  String? email;
-  dynamic emailAlternative;
-  String? name;
-  String? lastName;
-  String? fullName;
-  dynamic direction;
-  dynamic telephone;
-  String? phone;
-  dynamic point;
-  bool? isStaff;
-  bool? isSuperuser;
-  // List<dynamic>? roles;
-  // List<dynamic>? rolesDisplay;
-  Info? info;
-  DateTime? created;
-  DateTime? updated;
-  bool? isActive;
-  String? photo;
-  String? password;
+  Map<String, dynamic> toMap({bool? excludePhoto = false}) {
+    return {
+      'id': id,
+      'username': username,
+      'email': email,
+      'email_alternative': emailAlternative,
+      'name': name,
+      'last_name': lastName,
+      'full_name': fullName,
+      'direction': direction,
+      'telephone': telephone,
+      'phone': phone,
+      'point': point,
+      'is_staff': isStaff,
+      'is_superuser': isSuperuser,
+      'created': created?.millisecondsSinceEpoch,
+      'updated': updated?.millisecondsSinceEpoch,
+      'is_active': isActive,
+      if (excludePhoto != true) 'photo': photo,
+      'password': password,
+    };
+  }
 
-  factory User.fromJson(String str) => User.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory User.fromMap(Map<String, dynamic> json) => User(
-        id: json["id"],
-        username: json["username"],
-        email: json["email"],
-        emailAlternative: json["email_alternative"],
-        name: json["name"],
-        lastName: json["last_name"],
-        fullName: json["full_name"],
-        direction: json["direction"],
-        telephone: json["telephone"],
-        phone: json["phone"],
-        point: json["point"],
-        isSuperuser: json["is_superuser"],
-        isStaff: json["is_staff"],
-        // roles: List<dynamic>.from(json["roles"].map((x) => x)),
-        // rolesDisplay: List<dynamic>.from(json["roles_display"].map((x) => x)),
-        info: Info.fromMap(json["info"]),
-        created: DateTime.parse(json["created"]),
-        updated: DateTime.parse(json["updated"]),
-        isActive: json["is_active"],
-        photo: json["photo"],
-      );
-
-  Map<String, dynamic> toMap({bool excludePhoto = false}) => {
-        "id": id,
-        "username": username,
-        "email": email,
-        "email_alternative": emailAlternative,
-        "name": name,
-        "last_name": lastName,
-        // "full_name": fullName ?? '',
-        "direction": direction,
-        "telephone": telephone,
-        "phone": phone,
-        // "point": point,
-        "is_superuser": isSuperuser,
-        "is_staff": isStaff,
-        // "roles": List<dynamic>.from(roles!.map((x) => x)),
-        // "roles_display": List<dynamic>.from(rolesDisplay!.map((x) => x)),
-        // "info": info!.toMap(),
-        "created": created?.toIso8601String(),
-        "updated": updated?.toIso8601String(),
-        "is_active": isActive,
-        if (!excludePhoto) "photo": photo,
-      };
-}
-
-class Info {
-  Info();
-
-  factory Info.fromJson(String str) => Info.fromMap(json.decode(str));
+  factory User.fromMap(Map<String, dynamic> map) {
+    return User(
+      id: map['id'],
+      username: map['username'],
+      email: map['email'],
+      emailAlternative: map['email_alternative'],
+      name: map['name'],
+      lastName: map['last_name'],
+      fullName: map['full_name'],
+      direction: map['direction'],
+      telephone: map['telephone'],
+      phone: map['phone'],
+      point: map['point'],
+      isStaff: map['is_staff'],
+      isSuperuser: map['is_superuser'],
+      created: map['created'] != null ? DateTime.parse(map['created']) : null,
+      updated: map['updated'] != null ? DateTime.parse(map['updated']) : null,
+      isActive: map['is_active'],
+      photo: map['photo'],
+      password: map['password'],
+    );
+  }
 
   String toJson() => json.encode(toMap());
 
-  factory Info.fromMap(Map<String, dynamic> json) => Info();
-
-  Map<String, dynamic> toMap() => {};
+  factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }

@@ -12,6 +12,10 @@ class UserProvider with ChangeNotifier {
 
   late GlobalKey<FormState> formUserKey;
 
+  bool validateForm() {
+    return formUserKey.currentState!.validate();
+  }
+
   Future getUsers() async {
     try {
       final response = await API.list('$url/');
@@ -19,6 +23,7 @@ class UserProvider with ChangeNotifier {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;
         notifyListeners();
+        return users;
       }
     } on ErrorAPI catch (e) {
       print(e);
@@ -38,55 +43,60 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future newUser(User user, PlatformFile? photo) async {
-    final mapData = {
-      if (photo?.bytes != null)
-        'photo': MultipartFile.fromBytes(
-          photo!.bytes!,
-          filename: photo.name,
-        ),
-      ...user.toMap(excludePhoto: true),
-    };
-    print(mapData);
-    final formData = FormData.fromMap(mapData);
-    try {
-      final response = await API.add('$url/', formData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        user = User.fromMap(response.data);
-        users.add(response.data);
-        notifyListeners();
+  Future<bool?> newUser(User user, PlatformFile? photo) async {
+    if (validateForm()) {
+      final mapData = {
+        if (photo?.bytes != null)
+          'photo': MultipartFile.fromBytes(
+            photo!.bytes!,
+            filename: photo.name,
+          ),
+        ...user.toMap(excludePhoto: true),
+      };
+
+      final formData = FormData.fromMap(mapData);
+      try {
+        final response = await API.add('$url/', formData);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          getUsers();
+          user = User.fromMap(response.data);
+          return true;
+        }
+      } catch (e) {
+        rethrow;
       }
-      return response;
-    } on ErrorAPI {
-      rethrow;
     }
   }
 
-  Future editUser(String id, User user, PlatformFile? photo) async {
-    final mapData = {
-      if (photo?.bytes != null)
-        'photo': MultipartFile.fromBytes(
-          photo!.bytes!,
-          filename: photo.name,
-        ),
-      ...user.toMap(excludePhoto: true),
-    };
-    final formData = FormData.fromMap(mapData);
+  Future<bool?> editUser(String id, User user, PlatformFile? photo) async {
+    if (validateForm()) {
+      final mapData = {
+        if (photo?.bytes != null)
+          'photo': MultipartFile.fromBytes(
+            photo!.bytes!,
+            filename: photo.name,
+          ),
+        ...user.toMap(excludePhoto: true),
+      };
+      final formData = FormData.fromMap(mapData);
 
-    try {
-      final response = await API.put('$url/$id/', formData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        user = User.fromMap(response.data);
-        users = users.map((_user) {
-          if (_user['id'] == user.id) {
-            _user = user.toMap();
-          }
-          return _user;
-        }).toList();
-        notifyListeners();
+      try {
+        final response = await API.put('$url/$id/', formData);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          getUsers();
+          user = User.fromMap(response.data);
+/*           users = users.map((_user) {
+            if (_user['id'] == user.id) {
+              _user = user.toMap();
+            }
+            return _user;
+          }).toList(); */
+          notifyListeners();
+          return true;
+        }
+      } on ErrorAPI {
+        rethrow;
       }
-    } on ErrorAPI {
-      rethrow;
     }
   }
 

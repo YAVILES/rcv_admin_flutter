@@ -24,29 +24,28 @@ class GenericTableDTS extends DataTableSource {
           }
           if (c.type == TypeColumn.dateTime) {
             var formatterDate = DateFormat('yyyy-MM-dd');
-            var formatterHour = DateFormat('h:m:s a');
+            var formatterHour = DateFormat('h:mm:ss a');
             return DataCell(
-              Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  children: [
-                    Text(
-                      formatterDate.format(
-                        DateTime.parse(d[c.dataAttribute]),
-                      ),
-                    ),
-                    Text(
-                      formatterHour.format(
-                        DateTime.parse(d[c.dataAttribute]),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              d[c.dataAttribute] != null
+                  ? Column(
+                      children: [
+                        Text(
+                          formatterDate.format(
+                            DateTime.parse(d[c.dataAttribute]),
+                          ),
+                        ),
+                        Text(
+                          formatterHour.format(
+                            DateTime.parse(d[c.dataAttribute]),
+                          ),
+                        ),
+                      ],
+                    )
+                  : const Text('N/A'),
             );
           }
           return DataCell(
-            Text(d[c.dataAttribute]),
+            Text(d[c.dataAttribute]?.toString() ?? 'N/A'),
           );
         })
       ],

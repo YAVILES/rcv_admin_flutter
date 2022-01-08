@@ -24,7 +24,7 @@ class Preferences {
     return prefs.getString("token");
   }
 
-  static Future<String?> getRefreshToken(args) async {
+  static String? getRefreshToken() {
     return prefs.getString("refresh");
   }
 }

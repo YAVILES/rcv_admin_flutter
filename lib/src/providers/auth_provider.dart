@@ -80,9 +80,13 @@ class AuthProvider with ChangeNotifier {
         NotificationService.showSnackbarError('Usuario / contraseña no válido');
       }
     } on ErrorAPI catch (e) {
-      NotificationService.showSnackbarError((e.detail == null)
-          ? 'Usuario / contraseña no válido'
-          : e.detail.toString());
+      if (e.detail == null) {
+        NotificationService.showSnackbarError('Usuario / contraseña no válido');
+      } else {
+        NotificationService.showSnackbarError(
+            (e.detail is String) ? e.detail : 'Usuario / contraseña no válido');
+      }
+
       _loggedInStatus = Status.notLoggedIn;
       notifyListeners();
     }

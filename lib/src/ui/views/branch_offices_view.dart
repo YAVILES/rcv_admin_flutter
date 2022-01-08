@@ -2,88 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
-class UsersView extends StatefulWidget {
-  const UsersView({Key? key}) : super(key: key);
+class BranchOfficesView extends StatefulWidget {
+  const BranchOfficesView({Key? key}) : super(key: key);
 
   @override
-  State<UsersView> createState() => _UsersViewState();
+  State<BranchOfficesView> createState() => _BranchOfficesViewState();
 }
 
-class _UsersViewState extends State<UsersView> {
+class _BranchOfficesViewState extends State<BranchOfficesView> {
   @override
   void initState() {
-    Provider.of<UserProvider>(context, listen: false).getUsers();
+    Provider.of<BranchOfficeProvider>(context, listen: false)
+        .getBranchOffices();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final users = Provider.of<UserProvider>(context).users;
+    final branchOffices =
+        Provider.of<BranchOfficeProvider>(context).branchOffices;
     return CenteredView(
       child: ListView(
         physics: const ClampingScrollPhysics(),
         children: [
           HeaderView(
             title: "Administración de Sistema",
-            subtitle: "Usuarios",
+            subtitle: "Sucursales",
             actions: [
               CustomButtonPrimary(
-                onPressed: () =>
-                    NavigationService.navigateTo(context, userRoute, null),
-                title: 'Nuevo',
+                onPressed: () => NavigationService.navigateTo(
+                    context, branchOfficeRoute, null),
+                title: 'Nueva',
               )
             ],
           ),
           GenericTable(
-            data: users,
+            data: branchOffices,
             columns: [
               DTColumn(
-                header: "Foto",
-                dataAttribute: 'photo',
-                onSort: false,
-                widget: (item) => Container(
-                  constraints: const BoxConstraints(maxWidth: 50),
-                  margin: const EdgeInsets.all(5),
-                  child: Hero(
-                    tag: item['id'],
-                    child: ClipOval(
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 30),
-                        child: item['photo'] != null
-                            ? FadeInImage(
-                                image: NetworkImage(
-                                  item['photo'],
-                                  headers: {
-                                    'accept': '*/*',
-                                  },
-                                ),
-                                placeholder: const AssetImage(
-                                    'assets/images/img_avatar.png'),
-                              )
-                            : Image.asset('assets/images/img_avatar.png'),
-                      ),
-                    ),
-                  ),
-                ),
+                header: "Nro",
+                dataAttribute: 'number',
               ),
               DTColumn(
-                header: "Usuario",
-                dataAttribute: 'username',
+                header: "Código",
+                dataAttribute: 'code',
               ),
               DTColumn(
-                header: "Nombre",
-                dataAttribute: 'full_name',
-              ),
-              DTColumn(
-                header: "Correo",
-                dataAttribute: 'email',
+                header: "Descripción",
+                dataAttribute: 'description',
               ),
               DTColumn(
                 header: "Fecha de creación",
@@ -129,7 +102,7 @@ class _ActionsTable extends StatelessWidget {
           onPressed: () {
             NavigationService.navigateTo(
               context,
-              userDetailRoute,
+              branchOfficeDetailRoute,
               {'id': item['id']},
             );
           },

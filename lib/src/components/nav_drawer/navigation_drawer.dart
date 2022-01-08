@@ -30,7 +30,7 @@ class NavigationDrawer extends StatelessWidget {
           const SizedBox(height: 15),
           DrawerItem(
             title: 'Administración de Sistema',
-            icon: Icons.videocam,
+            icon: Icons.system_update_outlined,
             navigationPath: dashBoardRoute,
             children: [
               NavBarItem(
@@ -40,11 +40,18 @@ class NavigationDrawer extends StatelessWidget {
                 icon: Icons.supervised_user_circle_rounded,
                 onPressed: () => navigateTo(context, usersRoute),
               ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == branchOfficesRoute,
+                title: "Sucursales",
+                navigationPath: branchOfficesRoute,
+                icon: Icons.location_city_outlined,
+                onPressed: () => navigateTo(context, branchOfficesRoute),
+              ),
             ],
           ),
           DrawerItem(
             title: 'Administración Web',
-            icon: Icons.videocam,
+            icon: Icons.web_outlined,
             navigationPath: dashBoardRoute,
             children: [
               NavBarItem(

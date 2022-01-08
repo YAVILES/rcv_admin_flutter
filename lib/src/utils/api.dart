@@ -25,20 +25,66 @@ class API {
   static initializedInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onError: (error, errorHandler) {
-          print('onErrorMessage: ${error.response}');
-          return errorHandler.next(error);
+        onError: (error, errorHandler) async {
+          print(
+              'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
+          if ((error.response?.statusCode == 403 ||
+                  error.response?.statusCode == 401) &&
+              error.requestOptions.path != '/token/') {
+            Response response = await refreshToken();
+            if (response.statusCode == 200) {
+              //get new tokens ...
+              final data = response.data;
+              Preferences.setToken(data['access'], data['refresh']);
+              API.configureDio();
+              //create request with new access token
+              final opts = Options(method: error.requestOptions.method);
+              final cloneReq = await _dio.request(error.requestOptions.path,
+                  options: opts,
+                  data: error.requestOptions.data,
+                  queryParameters: error.requestOptions.queryParameters);
+
+              return errorHandler.resolve(cloneReq);
+            }
+            return errorHandler.next(error);
+          } else {
+            return errorHandler.next(error);
+          }
         },
         onRequest: (RequestOptions request, requestHandler) {
-          print("onRequest : ${request.method} ${request.uri}");
+          print("onRequest: ${request.method} ${request.uri}");
           return requestHandler.next(request);
         },
         onResponse: (response, responseHandler) {
-          print('${response.statusCode}');
+          print('onResponse: ${response.statusCode}');
           return responseHandler.next(response);
         },
       ),
     );
+  }
+
+  static Future<Response> refreshToken() async {
+    Response response;
+    final refreshToken = Preferences.getRefreshToken();
+    try {
+      response =
+          await _dio.post('/token/refresh/', data: {'refresh': refreshToken});
+    } on DioError catch (e) {
+      throw ErrorAPI.fromJson(e.response.toString());
+    }
+    return response;
+  }
+
+  static Future<Response> _retry(RequestOptions requestOptions) async {
+    final options = Options(
+      method: requestOptions.method,
+      headers: requestOptions.headers,
+    );
+
+    return await _dio.post(requestOptions.path,
+        data: requestOptions.data,
+        queryParameters: requestOptions.queryParameters,
+        options: options);
   }
 
   static Future<Response> get(String path) async {
@@ -118,20 +164,24 @@ class API {
 
 class ErrorAPI {
   dynamic detail;
+  List<String>? error;
 
   ErrorAPI({
     this.detail,
+    this.error,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'detail': detail,
+      'error': error,
     };
   }
 
   factory ErrorAPI.fromMap(Map<String, dynamic> map) {
     return ErrorAPI(
       detail: map['detail'],
+      error: map['error'] != null ? List<String>.from(map['error']) : null,
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table_datasource.dart';
 
 class GenericTable extends StatefulWidget {
-  List<Map<String, dynamic>> data;
+  List<Map<String, dynamic>> data = [];
   List<DTColumn> columns;
 
   String? title;
@@ -68,7 +68,10 @@ class _GenericTableState extends State<GenericTable> {
         // sortColumnIndex: sortColumnIndex,
         columns: dataColumns,
         source: GenericTableDTS(
-            data: widget.data, context: context, columns: widget.columns),
+          data: widget.data,
+          context: context,
+          columns: widget.columns,
+        ),
         rowsPerPage: (widget.data.isNotEmpty)
             ? (widget.data.length < 50)
                 ? widget.data.length

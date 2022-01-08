@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/user_form_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -33,7 +33,7 @@ class _AppStateState extends State<AppState> {
         ChangeNotifierProvider(lazy: false, create: (_) => AuthProvider()),
         ChangeNotifierProvider(lazy: false, create: (_) => BannerRCVProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => UserFormProvider()),
+        ChangeNotifierProvider(create: (_) => BranchOfficeProvider()),
       ],
       child: const MyApp(),
     );
