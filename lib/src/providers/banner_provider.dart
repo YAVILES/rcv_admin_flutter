@@ -13,6 +13,8 @@ class BannerRCVProvider with ChangeNotifier {
 
   late GlobalKey<FormState> formBannerKey;
 
+  String? seachValue;
+
   bool validateForm() {
     return formBannerKey.currentState!.validate();
   }
@@ -118,6 +120,25 @@ class BannerRCVProvider with ChangeNotifier {
       }
     } on ErrorAPI {
       rethrow;
+    }
+  }
+
+  search(value) async {
+    seachValue = value;
+    loading = true;
+    notifyListeners();
+    try {
+      final response = await API.list('$url/', params: {"search": value});
+      if (response.statusCode == 200) {
+        ResponseData responseData = ResponseData.fromMap(response.data);
+        banners = responseData.results;
+      }
+      loading = false;
+      notifyListeners();
+    } on ErrorAPI catch (e) {
+      loading = false;
+      notifyListeners();
+      print(e);
     }
   }
 }

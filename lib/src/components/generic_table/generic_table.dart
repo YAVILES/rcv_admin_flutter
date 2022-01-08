@@ -14,6 +14,9 @@ class GenericTable extends StatefulWidget {
   List<DTFilterField>? filterFields = [];
   Function? onNewPressed;
   String? labelforNoData;
+  bool? withSearchEngine;
+  Function? onSearch;
+  String? searchInitialValue;
 
   GenericTable({
     Key? key,
@@ -25,6 +28,9 @@ class GenericTable extends StatefulWidget {
     this.filterFields,
     this.onNewPressed,
     this.labelforNoData,
+    this.withSearchEngine = true,
+    this.onSearch,
+    this.searchInitialValue,
   }) : super(key: key);
 
   @override
@@ -37,7 +43,8 @@ class _GenericTableState extends State<GenericTable> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.data.isEmpty) {
+    String valueSearch = '';
+/*     if (widget.data.isEmpty) {
       return Center(
         child: FittedBox(
           fit: BoxFit.contain,
@@ -50,38 +57,60 @@ class _GenericTableState extends State<GenericTable> {
           ),
         ),
       );
-    } else {
-      final dataColumns = [
-        ...widget.columns.map(
-          (c) => DataColumn(
-            label: Text(c.header ?? c.attribute ?? c.dataAttribute),
-            onSort: (colIndex, _) {
-              if (c.onSort == true) {
-                sort((banner) => banner[c.dataAttribute], colIndex);
-              }
-            },
-          ),
-        )
-      ];
-      return PaginatedDataTable(
-        sortAscending: sortAscending,
-        // sortColumnIndex: sortColumnIndex,
-        columns: dataColumns,
-        source: GenericTableDTS(
-          data: widget.data,
-          context: context,
-          columns: widget.columns,
+    } else { */
+    final dataColumns = [
+      ...widget.columns.map(
+        (c) => DataColumn(
+          label: Text(c.header ?? c.attribute ?? c.dataAttribute),
+          onSort: (colIndex, _) {
+            if (c.onSort == true) {
+              sort((banner) => banner[c.dataAttribute], colIndex);
+            }
+          },
         ),
-        rowsPerPage: (widget.data.isNotEmpty)
-            ? (widget.data.length < 50)
-                ? widget.data.length
-                : 50
-            : 1,
-        /*     onRowsPerPageChanged: (value) =>
-              setState(() => rowsPerPage = value ?? _rowsPerPage), */
-        onPageChanged: (value) => {},
-      );
-    }
+      )
+    ];
+    return PaginatedDataTable(
+      sortAscending: sortAscending,
+      header: Row(),
+      // sortColumnIndex: sortColumnIndex,
+      columns: dataColumns,
+      source: GenericTableDTS(
+        data: widget.data,
+        context: context,
+        columns: widget.columns,
+      ),
+      rowsPerPage: (widget.data.isNotEmpty)
+          ? (widget.data.length < 50)
+              ? widget.data.length
+              : 50
+          : 1,
+      /*     onRowsPerPageChanged: (value) =>
+                  setState(() => rowsPerPage = value ?? _rowsPerPage), */
+      onPageChanged: (value) => {},
+      actions: [
+        if (widget.withSearchEngine == true) ...[
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 300),
+            child: TextFormField(
+              initialValue: valueSearch.isEmpty
+                  ? widget.searchInitialValue ?? ''
+                  : valueSearch,
+              onChanged: (value) => valueSearch = value,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              onPressed: () =>
+                  widget.onSearch != null ? widget.onSearch!(valueSearch) : {},
+              icon: const Icon(Icons.refresh_outlined),
+            ),
+          ),
+        ],
+      ],
+    );
+    // }
   }
 
   void sort<T>(Comparable<T> Function(Map<String, dynamic> info) getField,
