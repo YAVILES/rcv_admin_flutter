@@ -10,6 +10,7 @@ import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
+import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
@@ -130,16 +131,16 @@ class _BannerFormState extends State<_BannerForm> {
               TextFormField(
                 initialValue: bannerProvider.banner!.title,
                 onChanged: (value) => bannerProvider.banner!.title = value,
-                decoration: const InputDecoration(
+                decoration: CustomInputs.buildInputDecoration(
                   hintText: 'Ingrese el titulo',
-                  labelText: 'titulo',
+                  labelText: 'Titulo',
                 ),
               ),
               TextFormField(
                 initialValue: bannerProvider.banner!.subtitle,
                 onChanged: (value) => bannerProvider.banner!.subtitle = value,
-                decoration: const InputDecoration(
-                  hintText: 'Ingrese el subtitulo',
+                decoration: CustomInputs.buildInputDecoration(
+                  hintText: 'Ingrese el sub titulo',
                   labelText: 'Sub titulo',
                 ),
               ),
@@ -147,7 +148,7 @@ class _BannerFormState extends State<_BannerForm> {
                 initialValue: bannerProvider.banner!.content,
                 onChanged: (value) => bannerProvider.banner!.content = value,
                 onFieldSubmitted: (value) {},
-                decoration: const InputDecoration(
+                decoration: CustomInputs.buildInputDecoration(
                   hintText: 'Ingrese el contenido',
                   labelText: 'Contenido',
                 ),
@@ -161,8 +162,8 @@ class _BannerFormState extends State<_BannerForm> {
                   }
                   return null;
                 },
-                decoration: const InputDecoration(
-                  hintText: 'Ingrese la url',
+                decoration: CustomInputs.buildInputDecoration(
+                  hintText: 'Ingrese la  url',
                   labelText: 'Url',
                 ),
               ),

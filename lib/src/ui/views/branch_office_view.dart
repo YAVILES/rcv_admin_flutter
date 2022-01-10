@@ -9,6 +9,7 @@ import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
+import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -97,7 +98,8 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                             _branchOffice.number = int.parse(value),
                         onFieldSubmitted: (value) => _saveBranchOffice(
                             create, branchOfficeProvider, _branchOffice),
-                        decoration: const InputDecoration(
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el  nro.',
                           labelText: 'Nro.',
                         ),
                       ),
@@ -112,8 +114,8 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                       },
                       onFieldSubmitted: (value) => _saveBranchOffice(
                           create, branchOfficeProvider, _branchOffice),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el código',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el código.',
                         labelText: 'Código',
                       ),
                     ),
@@ -128,8 +130,8 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                       },
                       onFieldSubmitted: (value) => _saveBranchOffice(
                           create, branchOfficeProvider, _branchOffice),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese la descripción',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese la descripción.',
                         labelText: 'Descripción',
                       ),
                     ),

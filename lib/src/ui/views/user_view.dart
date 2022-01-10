@@ -12,6 +12,7 @@ import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
+import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -172,8 +173,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       },
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el Usuario',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el usuario.',
                         labelText: 'Usuario',
                       ),
                     ),
@@ -188,8 +189,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       },
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el nombre',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el nombre.',
                         labelText: 'Nombre',
                       ),
                     ),
@@ -204,8 +205,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       },
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el apellido',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el apellido.',
                         labelText: 'Apellido',
                       ),
                     ),
@@ -223,8 +224,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
 
                         return null;
                       },
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el correo',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el correo.',
                         labelText: 'Correo',
                       ),
                     ),
@@ -243,8 +244,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el correo alternativo',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el correo alternativo.',
                         labelText: 'Correo alternativo',
                       ),
                     ),
@@ -256,8 +257,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
                       onChanged: (value) => _user.direction = value,
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese la direccion',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese la dirección.',
                         labelText: 'Dirección',
                       ),
                     ),
@@ -266,8 +267,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       onChanged: (value) => _user.phone = value,
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el nro. celular',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el número celular.',
                         labelText: 'Nro. celular',
                       ),
                     ),
@@ -276,8 +277,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       onChanged: (value) => _user.telephone = value,
                       onFieldSubmitted: (value) =>
                           _saveUser(create, userProvider, _user),
-                      decoration: const InputDecoration(
-                        hintText: 'Ingrese el telefono',
+                      decoration: CustomInputs.buildInputDecoration(
+                        hintText: 'Ingrese el telefono.',
                         labelText: 'Telefono',
                       ),
                     ),
@@ -293,8 +294,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                         },
                         onFieldSubmitted: (value) =>
                             _saveUser(create, userProvider, _user),
-                        decoration: const InputDecoration(
-                          hintText: 'Ingrese la contraseña',
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese la contraseña.',
                           labelText: 'Contraseña',
                         ),
                       ),

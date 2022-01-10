@@ -138,7 +138,8 @@ class _GenericTableState extends State<GenericTable> {
           ),
         if (widget.withSearchEngine == true) ...[
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 300),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 160),
             child: TextFormField(
               initialValue: valueSearch.isEmpty
                   ? widget.searchInitialValue ?? ''
