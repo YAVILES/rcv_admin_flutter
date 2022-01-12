@@ -41,6 +41,13 @@ class NavigationDrawer extends StatelessWidget {
                 onPressed: () => navigateTo(context, usersRoute),
               ),
               NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == rolesRoute,
+                title: "Roles",
+                navigationPath: rolesRoute,
+                icon: Icons.accessibility_rounded,
+                onPressed: () => navigateTo(context, rolesRoute),
+              ),
+              NavBarItem(
                 isActive: navDrawerProvider.routeCurrent == branchOfficesRoute,
                 title: "Sucursales",
                 navigationPath: branchOfficesRoute,

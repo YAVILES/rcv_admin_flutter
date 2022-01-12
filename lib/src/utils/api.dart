@@ -7,10 +7,10 @@ import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
 class API {
   // Development
-  // static const String baseURL = "http://127.0.0.1:8000/api";
+  static const String baseURL = "http://127.0.0.1:8000/api";
 
   // Production
-  static const String baseURL = "http://194.163.161.64:6500/api";
+  // static const String baseURL = "http://194.163.161.64:6500/api";
   static final Dio _dio = Dio();
 
   static void configureDio() {
@@ -30,7 +30,8 @@ class API {
               'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
           if ((error.response?.statusCode == 403 ||
                   error.response?.statusCode == 401) &&
-              error.requestOptions.path != '/token/') {
+              error.requestOptions.path != '/token/' &&
+              error.requestOptions.path != '/security/user/current/') {
             Response response = await refreshToken();
             if (response.statusCode == 200) {
               //get new tokens ...
@@ -99,7 +100,7 @@ class API {
 
   static Future<Response> list(
     String path, {
-    Map<String, String>? params,
+    Map<String, dynamic>? params,
   }) async {
     Response response;
     try {

@@ -5,35 +5,35 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/modals/banner_modal.dart';
+import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
-class BannersView extends StatefulWidget {
-  const BannersView({Key? key}) : super(key: key);
+class RolesView extends StatefulWidget {
+  const RolesView({Key? key}) : super(key: key);
 
   @override
-  State<BannersView> createState() => _BannersViewState();
+  State<RolesView> createState() => _RolesViewState();
 }
 
-class _BannersViewState extends State<BannersView> {
+class _RolesViewState extends State<RolesView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<BannerRCVProvider>(context, listen: false).getBanners();
+    Provider.of<RoleProvider>(context, listen: false).getRoles();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bannerRCVProvider = Provider.of<BannerRCVProvider>(context);
-    final loading = bannerRCVProvider.loading;
-    final banners = bannerRCVProvider.banners;
+    final roleProvider = Provider.of<RoleProvider>(context);
+    final loading = roleProvider.loading;
+    final roles = roleProvider.roles;
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
@@ -48,12 +48,12 @@ class _BannersViewState extends State<BannersView> {
           child: Column(
             children: [
               HeaderView(
-                title: "Administración Web",
-                subtitle: "Banners",
+                title: "Administración de Sistema",
+                subtitle: "Roles",
                 actions: [
                   CustomButtonPrimary(
-                    onPressed: () => NavigationService.navigateTo(
-                        context, bannerRoute, null),
+                    onPressed: () =>
+                        NavigationService.navigateTo(context, roleRoute, null),
                     title: 'Nuevo',
                   )
                 ],
@@ -81,18 +81,17 @@ class _BannersViewState extends State<BannersView> {
                               onPressed: () async {
                                 try {
                                   final deleted =
-                                      await Provider.of<BannerRCVProvider>(
-                                              context,
+                                      await Provider.of<RoleProvider>(context,
                                               listen: false)
-                                          .deleteBanners(items
+                                          .deleteRoles(items
                                               .map((e) => e['id'].toString())
                                               .toList());
                                   if (deleted) {
                                     NotificationService.showSnackbarSuccess(
-                                        'Banners eliminado con exito.');
+                                        'Roles eliminado con exito.');
                                   } else {
                                     NotificationService.showSnackbarSuccess(
-                                        'No se pudieron eliminar los banners.');
+                                        'No se pudieron eliminar los roles.');
                                   }
                                 } on ErrorAPI catch (e) {
                                   NotificationService.showSnackbarError(
@@ -105,54 +104,10 @@ class _BannersViewState extends State<BannersView> {
                         );
                         showDialog(context: context, builder: (_) => dialog);
                       },
-                      data: banners,
+                      data: roles,
                       columns: [
-                        DTColumn(
-                          header: "Imagen",
-                          dataAttribute: 'image',
-                          onSort: false,
-                          widget: (item) => Container(
-                            constraints: const BoxConstraints(maxWidth: 50),
-                            margin: const EdgeInsets.all(5),
-                            child: Hero(
-                              tag: item['id'],
-                              child: item['image'] != null
-                                  ? FadeInImage(
-                                      image: NetworkImage(
-                                        item['image'],
-                                        headers: {
-                                          'accept': '*/*',
-                                        },
-                                      ),
-                                      placeholder: const AssetImage(
-                                          'assets/images/img_avatar.png'),
-                                    )
-                                  : Image.asset('assets/images/img_avatar.png',
-                                      width: 30, height: 30),
-                            ),
-                          ),
-
-                          /*             Image.network(
-                          item['image'].toString(),
-                          width: 30,
-                          height: 30,
-                          loadingBuilder: (context, __, ___) =>
-                              const MyProgressIndicator(),
-                          errorBuilder: (_, data, ___) {
-                            print(data);
-                            return Image.asset(
-                              'images/img_avatar.png',
-                              width: 30,
-                              height: 30,
-                            );
-                          },
-                        ) */
-                        ),
-                        DTColumn(header: "Titulo", dataAttribute: 'title'),
-                        DTColumn(
-                            header: "Sub Titulo", dataAttribute: 'subtitle'),
-                        DTColumn(header: "Contenido", dataAttribute: 'content'),
-                        DTColumn(header: "Url", dataAttribute: 'url'),
+                        DTColumn(header: "Id", dataAttribute: 'Id'),
+                        DTColumn(header: "Nombre", dataAttribute: 'name'),
                         DTColumn(
                           header: "Estatus",
                           dataAttribute: 'is_active',
@@ -161,15 +116,22 @@ class _BannersViewState extends State<BannersView> {
                               : const Text('Inactivo'),
                         ),
                         DTColumn(
-                          header: "Fecha de creación",
-                          dataAttribute: 'created',
-                          type: TypeColumn.dateTime,
-                        ),
-                        DTColumn(
-                          header: "Fecha ult. actualización",
-                          dataAttribute: 'created',
-                          type: TypeColumn.dateTime,
-                        ),
+                            header: "Workflows",
+                            dataAttribute: 'workflows',
+                            widget: (item) {
+                              return item['workflows_display'] == null
+                                  ? const Text('N/A')
+                                  : Wrap(
+                                      children: [
+                                        ...item['workflows_display'].map(
+                                          (w) => CustomChip(
+                                            withGesture: false,
+                                            title: w['title'],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                            }),
                         DTColumn(
                           header: "Acciones",
                           dataAttribute: 'id',
@@ -180,9 +142,9 @@ class _BannersViewState extends State<BannersView> {
                         ),
                       ],
                       onSearch: (value) {
-                        bannerRCVProvider.search(value);
+                        roleProvider.search(value);
                       },
-                      searchInitialValue: bannerRCVProvider.seachValue,
+                      searchInitialValue: roleProvider.seachValue,
                     ),
             ],
           ),
@@ -208,13 +170,13 @@ class _ActionsTable extends StatelessWidget {
           onPressed: () {
             NavigationService.navigateTo(
               context,
-              bannerDetailRoute,
-              {'id': item['id']},
+              roleDetailRoute,
+              {'id': item['id'].toString()},
             );
             /*           showModalBottomSheet(
               backgroundColor: Colors.transparent,
               context: context,
-              builder: (_) => BannerModal(banner: BannerRCV.fromMap(item)),
+              builder: (_) => RoleModal(role: Role.fromMap(item)),
             ); */
           },
         ),
@@ -236,16 +198,15 @@ class _ActionsTable extends StatelessWidget {
                   child: const Text("Si, borrar"),
                   onPressed: () async {
                     try {
-                      final deleted = await Provider.of<BannerRCVProvider>(
-                              context,
+                      final deleted = await Provider.of<RoleProvider>(context,
                               listen: false)
-                          .deleteBanner(item['id']);
+                          .deleteRole(item['id']);
                       if (deleted) {
                         NotificationService.showSnackbarSuccess(
-                            'Banner eliminado con exito.');
+                            'Role eliminado con exito.');
                       } else {
                         NotificationService.showSnackbarSuccess(
-                            'No se pudo eliminar el banner.');
+                            'No se pudo eliminar el role.');
                       }
                     } on ErrorAPI catch (e) {
                       NotificationService.showSnackbarError(

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
@@ -31,59 +32,69 @@ class _BranchOfficesViewState extends State<BranchOfficesView> {
         Provider.of<BranchOfficeProvider>(context);
     final loading = branchOfficeProvider.loading;
     final branchOffices = branchOfficeProvider.branchOffices;
-    return CenteredView(
-      child: ListView(
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        children: [
-          HeaderView(
-            title: "Administración de Sistema",
-            subtitle: "Sucursales",
-            actions: [
-              CustomButtonPrimary(
-                onPressed: () => NavigationService.navigateTo(
-                    context, branchOfficeRoute, null),
-                title: 'Nueva',
-              )
+        child: CenteredView(
+          child: Column(
+            children: [
+              HeaderView(
+                title: "Administración de Sistema",
+                subtitle: "Sucursales",
+                actions: [
+                  CustomButtonPrimary(
+                    onPressed: () => NavigationService.navigateTo(
+                        context, branchOfficeRoute, null),
+                    title: 'Nueva',
+                  )
+                ],
+              ),
+              loading == true
+                  ? const MyProgressIndicator()
+                  : GenericTable(
+                      data: branchOffices,
+                      columns: [
+                        DTColumn(
+                          header: "Nro",
+                          dataAttribute: 'number',
+                        ),
+                        DTColumn(
+                          header: "Código",
+                          dataAttribute: 'code',
+                        ),
+                        DTColumn(
+                          header: "Descripción",
+                          dataAttribute: 'description',
+                        ),
+                        DTColumn(
+                          header: "Fecha de creación",
+                          dataAttribute: 'created',
+                          type: TypeColumn.dateTime,
+                        ),
+                        DTColumn(
+                          header: "Fecha ult. actualización",
+                          dataAttribute: 'created',
+                          type: TypeColumn.dateTime,
+                        ),
+                        DTColumn(
+                          header: "Acciones",
+                          dataAttribute: 'id',
+                          widget: (item) {
+                            return _ActionsTable(item: item);
+                          },
+                          onSort: false,
+                        ),
+                      ],
+                    ),
             ],
           ),
-          loading == true
-              ? const MyProgressIndicator()
-              : GenericTable(
-                  data: branchOffices,
-                  columns: [
-                    DTColumn(
-                      header: "Nro",
-                      dataAttribute: 'number',
-                    ),
-                    DTColumn(
-                      header: "Código",
-                      dataAttribute: 'code',
-                    ),
-                    DTColumn(
-                      header: "Descripción",
-                      dataAttribute: 'description',
-                    ),
-                    DTColumn(
-                      header: "Fecha de creación",
-                      dataAttribute: 'created',
-                      type: TypeColumn.dateTime,
-                    ),
-                    DTColumn(
-                      header: "Fecha ult. actualización",
-                      dataAttribute: 'created',
-                      type: TypeColumn.dateTime,
-                    ),
-                    DTColumn(
-                      header: "Acciones",
-                      dataAttribute: 'id',
-                      widget: (item) {
-                        return _ActionsTable(item: item);
-                      },
-                      onSort: false,
-                    ),
-                  ],
-                ),
-        ],
+        ),
       ),
     );
   }

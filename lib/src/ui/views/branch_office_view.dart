@@ -75,87 +75,89 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
     BranchOffice _branchOffice =
         branchOfficeProvider.branchOffice = widget.branchOffice;
     final bool create = widget.branchOffice.id == null;
-    return CenteredView(
-      child: ListView(
-        physics: const ClampingScrollPhysics(),
-        children: [
-          HeaderView(
-            title: 'Administración de Sistema',
-            subtitle: 'Usuario ${widget.branchOffice.code ?? ''}',
-          ),
-          Column(
-            children: [
-              const SizedBox(height: 20),
-              Form(
-                key: branchOfficeProvider.formBranchOfficeKey,
-                child: Wrap(
-                  children: [
-                    if (!create)
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      child: CenteredView(
+        child: Column(
+          children: [
+            HeaderView(
+              title: 'Administración de Sistema',
+              subtitle: 'Usuario ${widget.branchOffice.code ?? ''}',
+            ),
+            Column(
+              children: [
+                const SizedBox(height: 20),
+                Form(
+                  key: branchOfficeProvider.formBranchOfficeKey,
+                  child: Wrap(
+                    children: [
+                      if (!create)
+                        TextFormField(
+                          readOnly: true,
+                          initialValue: _branchOffice.number?.toString() ?? '',
+                          onChanged: (value) =>
+                              _branchOffice.number = int.parse(value),
+                          onFieldSubmitted: (value) => _saveBranchOffice(
+                              create, branchOfficeProvider, _branchOffice),
+                          decoration: CustomInputs.buildInputDecoration(
+                            hintText: 'Ingrese el  nro.',
+                            labelText: 'Nro.',
+                          ),
+                        ),
                       TextFormField(
-                        readOnly: true,
-                        initialValue: _branchOffice.number?.toString() ?? '',
-                        onChanged: (value) =>
-                            _branchOffice.number = int.parse(value),
+                        initialValue: _branchOffice.code ?? '',
+                        onChanged: (value) => _branchOffice.code = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El código es obligatorio';
+                          }
+                          return null;
+                        },
                         onFieldSubmitted: (value) => _saveBranchOffice(
                             create, branchOfficeProvider, _branchOffice),
                         decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el  nro.',
-                          labelText: 'Nro.',
+                          hintText: 'Ingrese el código.',
+                          labelText: 'Código',
                         ),
                       ),
-                    TextFormField(
-                      initialValue: _branchOffice.code ?? '',
-                      onChanged: (value) => _branchOffice.code = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El código es obligatorio';
-                        }
-                        return null;
-                      },
-                      onFieldSubmitted: (value) => _saveBranchOffice(
-                          create, branchOfficeProvider, _branchOffice),
-                      decoration: CustomInputs.buildInputDecoration(
-                        hintText: 'Ingrese el código.',
-                        labelText: 'Código',
-                      ),
-                    ),
-                    TextFormField(
-                      initialValue: _branchOffice.description ?? '',
-                      onChanged: (value) => _branchOffice.description = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La descripción es obligatoria';
-                        }
-                        return null;
-                      },
-                      onFieldSubmitted: (value) => _saveBranchOffice(
-                          create, branchOfficeProvider, _branchOffice),
-                      decoration: CustomInputs.buildInputDecoration(
-                        hintText: 'Ingrese la descripción.',
-                        labelText: 'Descripción',
-                      ),
-                    ),
-                    CustomCheckBox(
-                      title: 'Activar',
-                      titleActive: 'Inactivar',
-                      value: _branchOffice.isActive ?? true,
-                      onChanged: (value) => _branchOffice.isActive = value,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 30),
-                      alignment: Alignment.center,
-                      child: CustomButtonPrimary(
-                        onPressed: () => _saveBranchOffice(
+                      TextFormField(
+                        initialValue: _branchOffice.description ?? '',
+                        onChanged: (value) => _branchOffice.description = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'La descripción es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) => _saveBranchOffice(
                             create, branchOfficeProvider, _branchOffice),
-                        title: 'Guardar',
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese la descripción.',
+                          labelText: 'Descripción',
+                        ),
                       ),
-                    ),
-                  ],
+                      CustomCheckBox(
+                        title: 'Activar',
+                        titleActive: 'Inactivar',
+                        value: _branchOffice.isActive ?? true,
+                        onChanged: (value) => _branchOffice.isActive = value,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 30),
+                        alignment: Alignment.center,
+                        child: CustomButtonPrimary(
+                          onPressed: () => _saveBranchOffice(
+                              create, branchOfficeProvider, _branchOffice),
+                          title: 'Guardar',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

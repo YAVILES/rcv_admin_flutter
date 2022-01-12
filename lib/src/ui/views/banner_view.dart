@@ -36,16 +36,18 @@ class _BannerViewState extends State<BannerView> {
 
   @override
   Widget build(BuildContext context) {
-    return CenteredView(
-      child: ListView(
-        physics: const ClampingScrollPhysics(),
-        children: [
-          HeaderView(
-            title: 'Administración Web',
-            subtitle: 'Banner ${widget.banner?.title ?? ''}',
-          ),
-          const _BannerForm(),
-        ],
+    return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
+      child: CenteredView(
+        child: Column(
+          children: [
+            HeaderView(
+              title: 'Administración Web',
+              subtitle: 'Banner ${widget.banner?.title ?? ''}',
+            ),
+            const _BannerForm(),
+          ],
+        ),
       ),
     );
   }

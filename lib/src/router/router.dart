@@ -3,11 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
+import 'package:rcv_admin_flutter/src/models/role_model.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
 
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
@@ -20,6 +22,8 @@ import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/login_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/not_found_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/role_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/roles_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/user_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/users_view.dart';
 
@@ -30,7 +34,7 @@ class RouterGoRouter {
     AuthProvider auth = Provider.of<AuthProvider>(context, listen: false);
     return GoRouter(
       // debugLogDiagnostics: true,
-      // initialLocation: '/users/user',
+      // initialLocation: '/banners',
       routes: [
         GoRoute(
           name: rootRoute,
@@ -166,6 +170,43 @@ class RouterGoRouter {
             ),
           ],
         ),
+
+        // Roles
+        GoRoute(
+          name: rolesRoute,
+          path: '/$rolesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const RolesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: roleRoute,
+              path: roleRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: RoleView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: roleDetailRoute,
+              path: '$roleRoute/:id',
+              pageBuilder: (context, state) {
+                Role role = _getRole(
+                  context,
+                  state.params['id'].toString(),
+                );
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: RoleView(role: role),
+                  // child: BranchOfficeView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
       ],
       navigatorBuilder: (context, child) {
         if (auth.loggedInStatus == Status.loggedIn) {
@@ -226,6 +267,16 @@ BranchOffice _getBranchOffice(BuildContext context, String uid) {
           )
           .first;
   return BranchOffice.fromMap(branchOfficeMap);
+}
+
+Role _getRole(BuildContext context, String uid) {
+  final roleMap = Provider.of<RoleProvider>(context, listen: false)
+      .roles
+      .where(
+        (b) => b['id'].toString() == uid,
+      )
+      .first;
+  return Role.fromMap(roleMap);
 }
 
 User _getUser(BuildContext context, String uid) {

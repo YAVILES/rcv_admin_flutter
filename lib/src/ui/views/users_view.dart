@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
@@ -29,100 +30,111 @@ class _UsersViewState extends State<UsersView> {
     final userProvider = Provider.of<UserProvider>(context);
     final loading = userProvider.loading;
     final users = userProvider.users;
-    return CenteredView(
-      child: ListView(
-        // physics: ScrollPhysics(),// const ClampingScrollPhysics(),
-        children: [
-          HeaderView(
-            title: "Administración de Sistema",
-            subtitle: "Usuarios",
-            actions: [
-              CustomButtonPrimary(
-                onPressed: () =>
-                    NavigationService.navigateTo(context, userRoute, null),
-                title: 'Nuevo',
-              )
-            ],
-          ),
-          (loading == true)
-              ? const MyProgressIndicator()
-              : GenericTable(
-                  data: users,
-                  columns: [
-                    DTColumn(
-                      header: "Foto",
-                      dataAttribute: 'photo',
-                      onSort: false,
-                      widget: (item) => Container(
-                        constraints: const BoxConstraints(maxWidth: 50),
-                        margin: const EdgeInsets.all(5),
-                        child: Hero(
-                          tag: item['id'],
-                          child: ClipOval(
-                            child: Container(
-                              constraints: const BoxConstraints(maxWidth: 30),
-                              child: item['photo'] != null
-                                  ? FadeInImage(
-                                      image: NetworkImage(
-                                        item['photo'],
-                                        headers: {
-                                          'accept': '*/*',
-                                        },
-                                      ),
-                                      placeholder: const AssetImage(
-                                          'assets/images/img_avatar.png'),
-                                    )
-                                  : Image.asset('assets/images/img_avatar.png'),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    DTColumn(
-                      header: "Usuario",
-                      dataAttribute: 'username',
-                    ),
-                    DTColumn(
-                      header: "Nombre",
-                      dataAttribute: 'full_name',
-                    ),
-                    DTColumn(
-                      header: "Correo",
-                      dataAttribute: 'email',
-                    ),
-                    DTColumn(
-                      header: "Tipo",
-                      dataAttribute: 'is_staff',
-                      widget: (item) {
-                        if (item['is_staff'] == true) {
-                          return const Text('Personal');
-                        } else {
-                          return const Text('Cliente');
-                        }
-                      },
-                    ),
-                    DTColumn(
-                      header: "Fecha de creación",
-                      dataAttribute: 'created',
-                      type: TypeColumn.dateTime,
-                    ),
-                    DTColumn(
-                      header: "Fecha ult. actualización",
-                      dataAttribute: 'created',
-                      type: TypeColumn.dateTime,
-                    ),
-                    DTColumn(
-                      header: "Acciones",
-                      dataAttribute: 'id',
-                      widget: (item) {
-                        return _ActionsTable(item: item);
-                      },
-                      onSort: false,
-                    ),
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: CenteredView(
+            child: Column(
+              children: [
+                HeaderView(
+                  title: "Administración de Sistema",
+                  subtitle: "Usuarios",
+                  actions: [
+                    CustomButtonPrimary(
+                      onPressed: () => NavigationService.navigateTo(
+                          context, userRoute, null),
+                      title: 'Nuevo',
+                    )
                   ],
                 ),
-        ],
-      ),
+                (loading == true)
+                    ? const MyProgressIndicator()
+                    : GenericTable(
+                        data: users,
+                        columns: [
+                          DTColumn(
+                            header: "Foto",
+                            dataAttribute: 'photo',
+                            onSort: false,
+                            widget: (item) => Container(
+                              constraints: const BoxConstraints(maxWidth: 50),
+                              margin: const EdgeInsets.all(5),
+                              child: Hero(
+                                tag: item['id'],
+                                child: ClipOval(
+                                  child: Container(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 30),
+                                    child: item['photo'] != null
+                                        ? FadeInImage(
+                                            image: NetworkImage(
+                                              item['photo'],
+                                              headers: {
+                                                'accept': '*/*',
+                                              },
+                                            ),
+                                            placeholder: const AssetImage(
+                                                'assets/images/img_avatar.png'),
+                                          )
+                                        : Image.asset(
+                                            'assets/images/img_avatar.png'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          DTColumn(
+                            header: "Usuario",
+                            dataAttribute: 'username',
+                          ),
+                          DTColumn(
+                            header: "Nombre",
+                            dataAttribute: 'full_name',
+                          ),
+                          DTColumn(
+                            header: "Correo",
+                            dataAttribute: 'email',
+                          ),
+                          DTColumn(
+                            header: "Tipo",
+                            dataAttribute: 'is_staff',
+                            widget: (item) {
+                              if (item['is_staff'] == true) {
+                                return const Text('Personal');
+                              } else {
+                                return const Text('Cliente');
+                              }
+                            },
+                          ),
+                          DTColumn(
+                            header: "Fecha de creación",
+                            dataAttribute: 'created',
+                            type: TypeColumn.dateTime,
+                          ),
+                          DTColumn(
+                            header: "Fecha ult. actualización",
+                            dataAttribute: 'created',
+                            type: TypeColumn.dateTime,
+                          ),
+                          DTColumn(
+                            header: "Acciones",
+                            dataAttribute: 'id',
+                            widget: (item) {
+                              return _ActionsTable(item: item);
+                            },
+                            onSort: false,
+                          ),
+                        ],
+                      ),
+              ],
+            ),
+          )),
     );
   }
 }

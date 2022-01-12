@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -31,9 +32,10 @@ class _AppStateState extends State<AppState> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(lazy: false, create: (_) => AuthProvider()),
-        ChangeNotifierProvider(lazy: false, create: (_) => BannerRCVProvider()),
+        ChangeNotifierProvider(create: (_) => BannerRCVProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => BranchOfficeProvider()),
+        ChangeNotifierProvider(create: (_) => RoleProvider()),
       ],
       child: const MyApp(),
     );

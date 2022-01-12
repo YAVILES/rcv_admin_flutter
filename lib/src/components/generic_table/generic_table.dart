@@ -80,6 +80,7 @@ class _GenericTableState extends State<GenericTable> {
         ),
       )
     ];
+
     return PaginatedDataTable(
       onSelectAll: (value) {
         setState(() {
@@ -94,7 +95,27 @@ class _GenericTableState extends State<GenericTable> {
       },
       sortAscending: sortAscending,
       showCheckboxColumn: widget.showCheckboxColumn ?? false,
-      header: Row(),
+      header: Column(
+        children: [
+          if (widget.withSearchEngine == true) ...[
+            ListTile(
+              title: TextFormField(
+                initialValue: valueSearch.isEmpty
+                    ? widget.searchInitialValue ?? ''
+                    : valueSearch,
+                onChanged: (value) => valueSearch = value,
+                textAlignVertical: TextAlignVertical.center,
+              ),
+              trailing: IconButton(
+                onPressed: () => widget.onSearch != null
+                    ? widget.onSearch!(valueSearch)
+                    : {},
+                icon: const Icon(Icons.refresh_outlined),
+              ),
+            ),
+          ]
+        ],
+      ),
       sortColumnIndex: sortColumnIndex,
       columns: dataColumns,
       source: GenericTableDTS(
@@ -106,6 +127,9 @@ class _GenericTableState extends State<GenericTable> {
             if (dataChange.select == true) {
               setState(
                   () => widget.itemsIdsSelected.add(dataChange.item['id']));
+            } else {
+              setState(
+                  () => widget.itemsIdsSelected.remove(dataChange.item['id']));
             }
             if (widget.onSelectChanged != null) {
               widget.onSelectChanged!(dataChange);
@@ -124,9 +148,9 @@ class _GenericTableState extends State<GenericTable> {
       onPageChanged: (value) => {},
       actions: [
         if (widget.itemsIdsSelected.isNotEmpty)
-          CustomButtonPrimary(
-            title: 'Eliminar items seleccionados',
-            color: Colors.red,
+          IconButton(
+            color: Colors.redAccent[700],
+            icon: const Icon(Icons.delete_outline),
             onPressed: () => widget.onDeleteSelectedItems != null
                 ? widget.onDeleteSelectedItems!(
                     widget.data
@@ -136,26 +160,6 @@ class _GenericTableState extends State<GenericTable> {
                   )
                 : {},
           ),
-        if (widget.withSearchEngine == true) ...[
-          ConstrainedBox(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width - 160),
-            child: TextFormField(
-              initialValue: valueSearch.isEmpty
-                  ? widget.searchInitialValue ?? ''
-                  : valueSearch,
-              onChanged: (value) => valueSearch = value,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              onPressed: () =>
-                  widget.onSearch != null ? widget.onSearch!(valueSearch) : {},
-              icon: const Icon(Icons.refresh_outlined),
-            ),
-          ),
-        ],
       ],
     );
     // }
