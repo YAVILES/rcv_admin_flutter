@@ -25,7 +25,10 @@ class NavigationDrawer extends StatelessWidget {
           ListTile(
             title: const Text('Home'),
             leading: const Icon(Icons.home),
-            onTap: () => navigateTo(context, dashBoardRoute),
+            onTap: () {
+              navDrawerProvider.setActiveBackButton(false);
+              navigateTo(context, dashBoardRoute);
+            },
           ),
           const SizedBox(height: 15),
           DrawerItem(
@@ -38,7 +41,10 @@ class NavigationDrawer extends StatelessWidget {
                 title: "Usuarios",
                 navigationPath: bannersRoute,
                 icon: Icons.supervised_user_circle_rounded,
-                onPressed: () => navigateTo(context, usersRoute),
+                onPressed: () {
+                  navDrawerProvider.setActiveBackButton(true);
+                  navigateTo(context, usersRoute);
+                },
               ),
               NavBarItem(
                 isActive: navDrawerProvider.routeCurrent == rolesRoute,
@@ -53,6 +59,34 @@ class NavigationDrawer extends StatelessWidget {
                 navigationPath: branchOfficesRoute,
                 icon: Icons.location_city_outlined,
                 onPressed: () => navigateTo(context, branchOfficesRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == usesRoute,
+                title: "Usos",
+                navigationPath: usesRoute,
+                icon: Icons.verified_outlined,
+                onPressed: () => navigateTo(context, usesRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == plansRoute,
+                title: "Planes",
+                navigationPath: plansRoute,
+                icon: Icons.place_outlined,
+                onPressed: () => navigateTo(context, plansRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == coveragesRoute,
+                title: "Coberturas",
+                navigationPath: coveragesRoute,
+                icon: Icons.local_convenience_store_sharp,
+                onPressed: () => navigateTo(context, coveragesRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == premiumsRoute,
+                title: "Gestión de Primas",
+                navigationPath: premiumsRoute,
+                icon: Icons.price_change_outlined,
+                onPressed: () => navigateTo(context, premiumsRoute),
               ),
             ],
           ),

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:rcv_admin_flutter/src/models/role_model.dart';
+
 // To parse this JSON data, do
 //
 //     final user = userFromMap(jsonString);
@@ -16,8 +18,8 @@ class User {
   String? telephone;
   String? phone;
   String? point;
-  // List<dynamic>? roles;
-  // List<dynamic>? rolesDisplay;
+  List<int>? roles = [];
+  List<Role>? rolesDisplay = [];
   String? photo;
   String? password;
   bool? isActive;
@@ -45,6 +47,8 @@ class User {
     this.isActive = true,
     this.photo,
     this.password,
+    this.roles,
+    this.rolesDisplay,
   });
 
   Map<String, dynamic> toMap({bool? excludePhoto = false}) {
@@ -62,6 +66,8 @@ class User {
       'point': point,
       'is_staff': isStaff,
       'is_superuser': isSuperuser,
+      'roles': roles,
+      'roles_display': rolesDisplay?.map((x) => x.toMap()).toList(),
       'created': created?.millisecondsSinceEpoch,
       'updated': updated?.millisecondsSinceEpoch,
       'is_active': isActive,
@@ -83,13 +89,17 @@ class User {
       telephone: map['telephone'],
       phone: map['phone'],
       point: map['point'],
-      isStaff: map['is_staff'],
-      isSuperuser: map['is_superuser'],
-      created: map['created'] != null ? DateTime.parse(map['created']) : null,
-      updated: map['updated'] != null ? DateTime.parse(map['updated']) : null,
-      isActive: map['is_active'],
+      roles: map["roles"] == null ? [] : List<int>.from(map["roles"]),
+      rolesDisplay: map['roles_display'] != null
+          ? List<Role>.from(map['roles_display']?.map((x) => Role.fromMap(x)))
+          : null,
       photo: map['photo'],
       password: map['password'],
+      isActive: map["is_active"] ?? true,
+      isStaff: map['is_staff'],
+      isSuperuser: map['is_superuser'],
+      created: map['created'] != null ? DateTime.parse(map["created"]) : null,
+      updated: map['updated'] != null ? DateTime.parse(map["updated"]) : null,
     );
   }
 

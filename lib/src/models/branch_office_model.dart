@@ -41,7 +41,7 @@ class BranchOffice {
             : null,
         code: json["code"],
         description: json["description"],
-        isActive: json["is_active"],
+        isActive: json["is_active"] ?? true,
       );
 
   Map<String, dynamic> toMap() => {

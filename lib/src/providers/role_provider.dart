@@ -12,7 +12,7 @@ class RoleProvider with ChangeNotifier {
 
   late GlobalKey<FormState> formRoleKey;
 
-  String? seachValue;
+  String? searchValue;
 
   bool validateForm() {
     return formRoleKey.currentState!.validate();
@@ -123,7 +123,7 @@ class RoleProvider with ChangeNotifier {
   }
 
   search(value) async {
-    seachValue = value;
+    searchValue = value;
     loading = true;
     notifyListeners();
     try {
@@ -137,7 +137,6 @@ class RoleProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 }

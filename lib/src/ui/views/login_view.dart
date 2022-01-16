@@ -20,7 +20,7 @@ class _LoginViewState extends State<LoginView> {
       child: Stack(
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 25),
             width: double.infinity,
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -99,7 +99,7 @@ class _CardLoginState extends State<CardLogin> {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 25),
                       TextFormField(
                         // keyboardType: TextInputType.text,
                         decoration: CustomInputs.buildInputDecoration(
@@ -117,7 +117,7 @@ class _CardLoginState extends State<CardLogin> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 25),
                       TextFormField(
                         obscureText: true,
                         // keyboardType: TextInputType.visiblePassword,
@@ -136,7 +136,7 @@ class _CardLoginState extends State<CardLogin> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                       if (loginFormProvider.errorMessage.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.all(8.0),

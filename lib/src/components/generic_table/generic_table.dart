@@ -23,6 +23,7 @@ class GenericTable extends StatefulWidget {
   bool? showCheckboxColumn;
   void Function(DataSelectChange dataChange)? onSelectChanged;
   void Function(List<Map<String, dynamic>>)? onDeleteSelectedItems;
+  double? dataRowHeight;
 
   GenericTable({
     Key? key,
@@ -41,6 +42,7 @@ class GenericTable extends StatefulWidget {
     this.showCheckboxColumn,
     this.onSelectChanged,
     this.onDeleteSelectedItems,
+    this.dataRowHeight,
   }) : super(key: key);
 
   @override
@@ -74,93 +76,101 @@ class _GenericTableState extends State<GenericTable> {
           label: Text(c.header ?? c.attribute ?? c.dataAttribute),
           onSort: (colIndex, _) {
             if (c.onSort == true) {
-              sort((banner) => banner[c.dataAttribute], colIndex);
+              sort((column) => column[c.dataAttribute], colIndex);
             }
           },
         ),
       )
     ];
 
-    return PaginatedDataTable(
-      onSelectAll: (value) {
-        setState(() {
-          if (value == true) {
-            widget.itemsIdsSelected =
-                widget.data.map((e) => e['id'].toString()).toList();
-          } else {
-            widget.itemsIdsSelected = [];
-          }
-        });
-        widget.onSelectAll != null ? widget.onSelectAll!(value ?? false) : {};
-      },
-      sortAscending: sortAscending,
-      showCheckboxColumn: widget.showCheckboxColumn ?? false,
-      header: Column(
-        children: [
-          if (widget.withSearchEngine == true) ...[
-            ListTile(
-              title: TextFormField(
-                initialValue: valueSearch.isEmpty
-                    ? widget.searchInitialValue ?? ''
-                    : valueSearch,
-                onChanged: (value) => valueSearch = value,
-                textAlignVertical: TextAlignVertical.center,
+    return SizedBox(
+      width: double.maxFinite,
+      child: PaginatedDataTable(
+        onSelectAll: (value) {
+          setState(() {
+            if (value == true) {
+              widget.itemsIdsSelected =
+                  widget.data.map((e) => e['id'].toString()).toList();
+            } else {
+              widget.itemsIdsSelected = [];
+            }
+          });
+          widget.onSelectAll != null ? widget.onSelectAll!(value ?? false) : {};
+        },
+        dataRowHeight: widget.dataRowHeight ?? kMinInteractiveDimension,
+        sortAscending: sortAscending,
+        showCheckboxColumn: widget.showCheckboxColumn ?? false,
+        header: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (widget.withSearchEngine == true) ...[
+              ListTile(
+                title: TextFormField(
+                    initialValue: valueSearch.isEmpty
+                        ? widget.searchInitialValue ?? ''
+                        : valueSearch,
+                    onChanged: (value) => valueSearch = value,
+                    textAlignVertical: TextAlignVertical.center,
+                    onFieldSubmitted: (value) => widget.onSearch != null
+                        ? widget.onSearch!(valueSearch)
+                        : {}),
+                trailing: IconButton(
+                  splashRadius: 15,
+                  onPressed: () => widget.onSearch != null
+                      ? widget.onSearch!(valueSearch)
+                      : {},
+                  icon: const Icon(Icons.refresh_outlined),
+                ),
               ),
-              trailing: IconButton(
-                onPressed: () => widget.onSearch != null
-                    ? widget.onSearch!(valueSearch)
-                    : {},
-                icon: const Icon(Icons.refresh_outlined),
-              ),
+            ]
+          ],
+        ),
+        sortColumnIndex: sortColumnIndex,
+        columns: dataColumns,
+        source: GenericTableDTS(
+          data: widget.data,
+          context: context,
+          columns: widget.columns,
+          onSelectChanged: (DataSelectChange dataChange) {
+            if (widget.showCheckboxColumn == true) {
+              if (dataChange.select == true) {
+                setState(
+                    () => widget.itemsIdsSelected.add(dataChange.item['id']));
+              } else {
+                setState(() =>
+                    widget.itemsIdsSelected.remove(dataChange.item['id']));
+              }
+              if (widget.onSelectChanged != null) {
+                widget.onSelectChanged!(dataChange);
+              }
+            }
+          },
+          itemsIdsSelected: widget.itemsIdsSelected,
+        ),
+        rowsPerPage: (widget.data.isNotEmpty)
+            ? (widget.data.length < 50)
+                ? widget.data.length
+                : 50
+            : 1,
+        /*     onRowsPerPageChanged: (value) =>
+                    setState(() => rowsPerPage = value ?? _rowsPerPage), */
+        onPageChanged: (value) => {},
+        actions: [
+          if (widget.itemsIdsSelected.isNotEmpty)
+            IconButton(
+              color: Colors.redAccent[700],
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => widget.onDeleteSelectedItems != null
+                  ? widget.onDeleteSelectedItems!(
+                      widget.data
+                          .where((e) => widget.itemsIdsSelected
+                              .contains(e['id'].toString()))
+                          .toList(),
+                    )
+                  : {},
             ),
-          ]
         ],
       ),
-      sortColumnIndex: sortColumnIndex,
-      columns: dataColumns,
-      source: GenericTableDTS(
-        data: widget.data,
-        context: context,
-        columns: widget.columns,
-        onSelectChanged: (DataSelectChange dataChange) {
-          if (widget.showCheckboxColumn == true) {
-            if (dataChange.select == true) {
-              setState(
-                  () => widget.itemsIdsSelected.add(dataChange.item['id']));
-            } else {
-              setState(
-                  () => widget.itemsIdsSelected.remove(dataChange.item['id']));
-            }
-            if (widget.onSelectChanged != null) {
-              widget.onSelectChanged!(dataChange);
-            }
-          }
-        },
-        itemsIdsSelected: widget.itemsIdsSelected,
-      ),
-      rowsPerPage: (widget.data.isNotEmpty)
-          ? (widget.data.length < 50)
-              ? widget.data.length
-              : 50
-          : 1,
-      /*     onRowsPerPageChanged: (value) =>
-                  setState(() => rowsPerPage = value ?? _rowsPerPage), */
-      onPageChanged: (value) => {},
-      actions: [
-        if (widget.itemsIdsSelected.isNotEmpty)
-          IconButton(
-            color: Colors.redAccent[700],
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () => widget.onDeleteSelectedItems != null
-                ? widget.onDeleteSelectedItems!(
-                    widget.data
-                        .where((e) => widget.itemsIdsSelected
-                            .contains(e['id'].toString()))
-                        .toList(),
-                  )
-                : {},
-          ),
-      ],
     );
     // }
   }

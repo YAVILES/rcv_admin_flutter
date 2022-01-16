@@ -19,6 +19,9 @@ class DTColumn {
   /// Ancho de la columna */
   int? width;
 
+  /// Ancho de la columna */
+  double? height;
+
   /// Atributo que se consultará al backend, por defecto attribute */
   String dataAttribute;
 
@@ -67,6 +70,7 @@ class DTColumn {
 
   DTColumn({
     this.width,
+    this.height,
     required this.dataAttribute,
     this.attribute,
     this.header,

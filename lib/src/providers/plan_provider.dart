@@ -1,44 +1,46 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
+import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
-class BranchOfficeProvider with ChangeNotifier {
-  String url = '/core/branch_office';
-  List<Map<String, dynamic>> branchOffices = [];
-  BranchOffice? branchOffice;
+class PlanProvider with ChangeNotifier {
+  String url = '/core/plan';
+  List<Map<String, dynamic>> plans = [];
+  Plan? plan;
   bool loading = false;
-  late GlobalKey<FormState> formBranchOfficeKey;
+
+  late GlobalKey<FormState> formPlanKey;
+
   String? searchValue;
 
   bool validateForm() {
-    return formBranchOfficeKey.currentState!.validate();
+    return formPlanKey.currentState!.validate();
   }
 
-  Future getBranchOffices() async {
+  Future getPlans() async {
     loading = true;
     notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        branchOffices = responseData.results;
+        plans = responseData.results;
       }
       loading = false;
       notifyListeners();
-      return branchOffices;
-    } on ErrorAPI {
+    } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      rethrow;
+      print(e);
     }
   }
 
-  Future<BranchOffice?> getBranchOffice(String uid) async {
+  Future<Plan?> getPlan(String uid) async {
     try {
       final response = await API.get('$url/$uid/');
       if (response.statusCode == 200) {
-        return BranchOffice.fromMap(response.data);
+        return Plan.fromMap(response.data);
       } else {
         return null;
       }
@@ -47,52 +49,60 @@ class BranchOfficeProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newBranchOffice(BranchOffice branchOffice) async {
+  Future<bool?> newPlan(Plan planRCV) async {
     if (validateForm()) {
-      final mapData = branchOffice.toMap();
+      final mapDAta = planRCV.toMap();
       try {
-        final response = await API.add('$url/', mapData);
+        final response = await API.add('$url/', mapDAta);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          getBranchOffices();
-          branchOffice = BranchOffice.fromMap(response.data);
+          plan = Plan.fromMap(response.data);
+          getPlans();
           return true;
         }
-      } catch (e) {
-        rethrow;
-      }
-    }
-  }
-
-  Future<bool?> editBranchOffice(String id, BranchOffice branchOffice) async {
-    if (validateForm()) {
-      final mapData = branchOffice.toMap();
-
-      try {
-        final response = await API.put('$url/$id/', mapData);
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          branchOffice = BranchOffice.fromMap(response.data);
-          getBranchOffices();
-/*           BranchOffices = BranchOffices.map((_BranchOffice) {
-            if (_BranchOffice['id'] == BranchOffice.id) {
-              _BranchOffice = BranchOffice.toMap();
-            }
-            return _BranchOffice;
-          }).toList(); */
-          // notifyListeners();
-          return true;
-        }
+        return false;
       } on ErrorAPI {
         rethrow;
       }
     }
   }
 
-  Future deleteBranchOffice(String id) async {
+  Future<bool?> editPlan(String id, Plan planRCV) async {
+    if (validateForm()) {
+      final mapDAta = planRCV.toMap();
+      try {
+        final response = await API.put('$url/$id/', mapDAta);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          plan = Plan.fromMap(response.data);
+          getPlans();
+          return true;
+        }
+        return false;
+      } on ErrorAPI {
+        rethrow;
+      }
+    }
+  }
+
+  Future deletePlan(String id) async {
     try {
       final resp = await API.delete('$url/$id/');
       if (resp.statusCode == 204) {
-        branchOffices.removeWhere(
-            (branchOffice) => branchOffice['id'].toString() == id.toString());
+        plans.removeWhere((plan) => plan['id'].toString() == id.toString());
+        notifyListeners();
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  Future deletePlans(List<String> ids) async {
+    try {
+      final resp = await API.delete('$url/remove_multiple/', ids: ids);
+      if (resp.statusCode == 200) {
+        plans.removeWhere((plan) => ids.contains(plan['id'].toString()));
         notifyListeners();
         return true;
       } else {
@@ -111,7 +121,7 @@ class BranchOfficeProvider with ChangeNotifier {
       final response = await API.list('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        branchOffices = responseData.results;
+        plans = responseData.results;
       }
       loading = false;
       notifyListeners();

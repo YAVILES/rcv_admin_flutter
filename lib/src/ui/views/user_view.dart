@@ -7,10 +7,13 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
+import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/role_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
@@ -38,13 +41,14 @@ class _UserViewState extends State<UserView> {
       return _UserViewBody(user: widget.user!);
     } else {
       return FutureBuilder(
-          future: Provider.of<UserProvider>(context, listen: false)
-              .getUser(widget.uid ?? ''),
-          builder: (_, AsyncSnapshot snapshot) {
-            return snapshot.connectionState == ConnectionState.done
-                ? _UserViewBody(user: snapshot.data)
-                : const MyProgressIndicator();
-          });
+        future: Provider.of<UserProvider>(context, listen: false)
+            .getUser(widget.uid ?? ''),
+        builder: (_, AsyncSnapshot snapshot) {
+          return snapshot.connectionState == ConnectionState.done
+              ? _UserViewBody(user: snapshot.data)
+              : const MyProgressIndicator();
+        },
+      );
     }
   }
 }
@@ -82,7 +86,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
         child: Column(
           children: [
             HeaderView(
-              title: 'Administración Web',
+              title: 'Administración de Sistema',
               subtitle: 'Usuario ${widget.user.username ?? ''}',
             ),
             Column(
@@ -301,16 +305,61 @@ class __UserViewBodyState extends State<_UserViewBody> {
                             labelText: 'Contraseña',
                           ),
                         ),
-                      CustomCheckBox(
-                        title: 'Es personal',
-                        value: _user.isStaff ?? true,
-                        onChanged: (value) => _user.isStaff = value,
+                      FutureBuilder(
+                        future: RoleService.getRoles(
+                            {'not_paginator': true, 'query': '{id, name}'}),
+                        builder: (_, AsyncSnapshot snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.done
+                              ? Row(
+                                  children: [
+                                    const Text('roles'),
+                                    const SizedBox(width: 20),
+                                    Wrap(
+                                      children: [
+                                        ...snapshot.data!.map(
+                                          (role) => Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: CustomChip(
+                                              active: userProvider.user!.roles!
+                                                  .contains(role.id!),
+                                              onTap: (active) {
+                                                if (active) {
+                                                  userProvider.user!.roles !=
+                                                          null
+                                                      ? userProvider
+                                                          .user!.roles!
+                                                          .add(role.id!)
+                                                      : userProvider.user!
+                                                          .roles = [role.id!];
+                                                } else {
+                                                  if (userProvider
+                                                          .user!.roles !=
+                                                      null) {
+                                                    userProvider.user!.roles!
+                                                        .remove(role.id!);
+                                                  }
+                                                }
+                                              },
+                                              title: role.name!,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : const MyProgressIndicator();
+                        },
                       ),
-                      CustomCheckBox(
-                        title: 'Activar',
-                        titleActive: 'Inactivar',
-                        value: _user.isActive ?? true,
-                        onChanged: (value) => _user.isActive = value,
+                      const SizedBox(width: 50),
+                      SizedBox(
+                        width: 155,
+                        child: CustomCheckBox(
+                          title: 'Activo',
+                          value: _user.isActive ?? true,
+                          onChanged: (value) => _user.isActive = value,
+                        ),
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 30),

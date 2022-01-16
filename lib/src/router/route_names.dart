@@ -27,3 +27,23 @@ const roleDetailRoute = 'details_role';
 const branchOfficesRoute = 'branch_offices';
 const branchOfficeRoute = 'branch_office';
 const branchOfficeDetailRoute = 'details_branch_office';
+
+// Uses
+const usesRoute = 'uses';
+const useRoute = 'use';
+const useDetailRoute = 'details_use';
+
+// Plans
+const plansRoute = 'plans';
+const planRoute = 'plan';
+const planDetailRoute = 'details_plan';
+
+// Coverage
+const coveragesRoute = 'coverages';
+const coverageRoute = 'coverage';
+const coverageDetailRoute = 'details_coverage';
+
+// Premium
+const premiumsRoute = 'premium';
+const premiumRoute = 'premium';
+const premiumDetailRoute = 'details_premium';

@@ -8,6 +8,7 @@ import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
@@ -96,21 +97,25 @@ class _UsersViewState extends State<UsersView> {
                           DTColumn(
                             header: "Nombre",
                             dataAttribute: 'full_name',
+                            widget: (item) => Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item['name']),
+                                Text(item['last_name'])
+                              ],
+                            ),
                           ),
                           DTColumn(
                             header: "Correo",
                             dataAttribute: 'email',
                           ),
                           DTColumn(
-                            header: "Tipo",
-                            dataAttribute: 'is_staff',
-                            widget: (item) {
-                              if (item['is_staff'] == true) {
-                                return const Text('Personal');
-                              } else {
-                                return const Text('Cliente');
-                              }
-                            },
+                            header: "Estatus",
+                            dataAttribute: 'is_active',
+                            widget: (item) => item['is_active'] == true
+                                ? const Text('Activo')
+                                : const Text('Inactivo'),
                           ),
                           DTColumn(
                             header: "Fecha de creación",
@@ -131,6 +136,10 @@ class _UsersViewState extends State<UsersView> {
                             onSort: false,
                           ),
                         ],
+                        onSearch: (value) {
+                          userProvider.search(value);
+                        },
+                        searchInitialValue: userProvider.searchValue,
                       ),
               ],
             ),

@@ -182,7 +182,7 @@ class _BannersViewState extends State<BannersView> {
                       onSearch: (value) {
                         bannerRCVProvider.search(value);
                       },
-                      searchInitialValue: bannerRCVProvider.seachValue,
+                      searchInitialValue: bannerRCVProvider.searchValue,
                     ),
             ],
           ),

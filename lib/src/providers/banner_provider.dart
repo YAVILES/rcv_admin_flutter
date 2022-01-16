@@ -13,7 +13,7 @@ class BannerRCVProvider with ChangeNotifier {
 
   late GlobalKey<FormState> formBannerKey;
 
-  String? seachValue;
+  String? searchValue;
 
   bool validateForm() {
     return formBannerKey.currentState!.validate();
@@ -139,7 +139,7 @@ class BannerRCVProvider with ChangeNotifier {
   }
 
   search(value) async {
-    seachValue = value;
+    searchValue = value;
     loading = true;
     notifyListeners();
     try {

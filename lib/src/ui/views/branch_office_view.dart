@@ -137,8 +137,7 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                         ),
                       ),
                       CustomCheckBox(
-                        title: 'Activar',
-                        titleActive: 'Inactivar',
+                        title: 'Activo',
                         value: _branchOffice.isActive ?? true,
                         onChanged: (value) => _branchOffice.isActive = value,
                       ),

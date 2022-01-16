@@ -61,52 +61,9 @@ class _RolesViewState extends State<RolesView> {
               (loading == true)
                   ? const MyProgressIndicator()
                   : GenericTable(
-                      showCheckboxColumn: true,
-                      onSelectChanged: (data) => print(data.item.toString()),
-                      onDeleteSelectedItems: (items) {
-                        final dialog = AlertDialog(
-                          title: const Text(
-                              '¿Estas seguro de eliminar los items seleccionados?'),
-                          content:
-                              const Text('Definitivamente deseas eliminar'),
-                          actions: [
-                            TextButton(
-                              child: const Text("No"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Si, eliminar"),
-                              onPressed: () async {
-                                try {
-                                  final deleted =
-                                      await Provider.of<RoleProvider>(context,
-                                              listen: false)
-                                          .deleteRoles(items
-                                              .map((e) => e['id'].toString())
-                                              .toList());
-                                  if (deleted) {
-                                    NotificationService.showSnackbarSuccess(
-                                        'Roles eliminado con exito.');
-                                  } else {
-                                    NotificationService.showSnackbarSuccess(
-                                        'No se pudieron eliminar los roles.');
-                                  }
-                                } on ErrorAPI catch (e) {
-                                  NotificationService.showSnackbarError(
-                                      e.detail.toString());
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                        showDialog(context: context, builder: (_) => dialog);
-                      },
                       data: roles,
                       columns: [
-                        DTColumn(header: "Id", dataAttribute: 'Id'),
+                        DTColumn(header: "Id", dataAttribute: 'id'),
                         DTColumn(header: "Nombre", dataAttribute: 'name'),
                         DTColumn(
                           header: "Estatus",
@@ -115,23 +72,6 @@ class _RolesViewState extends State<RolesView> {
                               ? const Text('Activo')
                               : const Text('Inactivo'),
                         ),
-                        DTColumn(
-                            header: "Workflows",
-                            dataAttribute: 'workflows',
-                            widget: (item) {
-                              return item['workflows_display'] == null
-                                  ? const Text('N/A')
-                                  : Wrap(
-                                      children: [
-                                        ...item['workflows_display'].map(
-                                          (w) => CustomChip(
-                                            withGesture: false,
-                                            title: w['title'],
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                            }),
                         DTColumn(
                           header: "Acciones",
                           dataAttribute: 'id',
@@ -144,7 +84,7 @@ class _RolesViewState extends State<RolesView> {
                       onSearch: (value) {
                         roleProvider.search(value);
                       },
-                      searchInitialValue: roleProvider.seachValue,
+                      searchInitialValue: roleProvider.searchValue,
                     ),
             ],
           ),

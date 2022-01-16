@@ -19,13 +19,20 @@ import 'package:rcv_admin_flutter/src/ui/views/banner_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banners_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/login_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/not_found_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/plans_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/premiums_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/role_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/roles_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/use_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/user_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/users_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/uses_view.dart';
 
 // Código Go RouterGoRouter
 
@@ -206,6 +213,112 @@ class RouterGoRouter {
               },
             ),
           ],
+        ),
+
+        // Usos
+        GoRoute(
+          name: usesRoute,
+          path: '/$usesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const UsesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: useRoute,
+              path: useRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: UseView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: useDetailRoute,
+              path: '$useRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: UseView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Planes
+        GoRoute(
+          name: plansRoute,
+          path: '/$plansRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const PlansView(),
+          ),
+          routes: [
+            GoRoute(
+              name: planRoute,
+              path: planRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PlanView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: planDetailRoute,
+              path: '$planRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PlanView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Coberturas
+        GoRoute(
+          name: coveragesRoute,
+          path: '/$coveragesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const CoveragesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: coverageRoute,
+              path: coverageRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: CoverageView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: coverageDetailRoute,
+              path: '$coverageRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: CoverageView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Primas
+        GoRoute(
+          name: premiumsRoute,
+          path: '/$premiumsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const PremiumsView(),
+          ),
         ),
       ],
       navigatorBuilder: (context, child) {

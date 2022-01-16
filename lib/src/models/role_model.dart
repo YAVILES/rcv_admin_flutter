@@ -35,7 +35,7 @@ class Role {
             : List<Workflow>.from(
                 json["workflows_display"].map((x) => Workflow.fromMap(x))),
         name: json["name"],
-        isActive: json["is_active"],
+        isActive: json["is_active"] ?? true,
       );
 
   Map<String, dynamic> toMap() => {
@@ -43,7 +43,8 @@ class Role {
         "workflows": workflows ?? [],
         "workflows_display": workflowsDisplay == null
             ? []
-            : List<dynamic>.from(workflowsDisplay!.map((x) => x.toMap())),
+            : List<Map<String, dynamic>>.from(
+                workflowsDisplay!.map((x) => x.toMap())),
         "name": name,
         "is_active": isActive,
       };

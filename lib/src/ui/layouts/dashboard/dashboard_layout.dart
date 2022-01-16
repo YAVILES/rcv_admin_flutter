@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/nav_drawer/navigation_drawer.dart';
 import 'package:rcv_admin_flutter/src/providers/nav_drawer_provider.dart';
+import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/navbar_avatar.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/notification_indicator.dart';
 
@@ -25,7 +26,21 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
                 key: NavDrawerProvider.scaffoldKey,
                 drawer: const NavigationDrawer(),
                 appBar: AppBar(
-                  title: const Text("RCV 871"),
+                  title: Row(
+                    children: [
+                      if (NavDrawerProvider.activeBackButton == true) ...[
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_outlined),
+                          onPressed: () {
+                            NavigationService.backTo(context);
+                          },
+                        ),
+                        const SizedBox(width: 25),
+                      ],
+                      const Text("RCV 871"),
+                    ],
+                  ),
+                  elevation: 0,
                   actions: const [
                     NotificationIndicator(),
                     SizedBox(width: 10),
