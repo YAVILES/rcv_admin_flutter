@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
 
+import 'coverage_model.dart';
+
 class Plan {
   Plan({
     this.id,
     this.uses,
     this.usesDisplay,
+    this.coverage,
     this.created,
     this.updated,
     this.code,
@@ -17,6 +20,7 @@ class Plan {
   String? id;
   List<String>? uses = [];
   List<Use>? usesDisplay = [];
+  List<Coverage>? coverage = [];
   DateTime? created;
   DateTime? updated;
   String? code;
@@ -34,7 +38,11 @@ class Plan {
             : List<String>.from(json["uses"].map((x) => x)),
         usesDisplay: json["uses_display"] == null
             ? []
-            : List<Use>.from(json["uses_display"].map((x) => Use.fromMap(x))),
+            : List<Use>.from(json["coverage"].map((x) => Use.fromMap(x))),
+        coverage: json["coverage"] == null
+            ? []
+            : List<Coverage>.from(
+                json["coverage"].map((x) => Coverage.fromMap(x))),
         created:
             json["created"] == null ? null : DateTime.parse(json["created"]),
         updated:
@@ -53,6 +61,9 @@ class Plan {
             ? []
             : List<Map<String, dynamic>>.from(
                 usesDisplay!.map((x) => x.toMap())),
+        "coverage": coverage == null
+            ? []
+            : List<Map<String, dynamic>>.from(coverage!.map((x) => x.toMap())),
         "created": created?.millisecondsSinceEpoch,
         "updated": updated?.millisecondsSinceEpoch,
         "code": code,

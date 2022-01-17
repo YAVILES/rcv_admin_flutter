@@ -15,7 +15,6 @@ import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/modals/premium_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
 
 class PremiumsView extends StatefulWidget {
   const PremiumsView({Key? key}) : super(key: key);
@@ -53,7 +52,8 @@ class _PremiumsViewState extends State<PremiumsView> {
               StreamBuilder(
                 stream: PlanService.getPlansAndUses(paramsPlans: {
                   'not_paginator': true,
-                  'query': '{id, description, uses, uses_display}'
+                  'query':
+                      '{id, description, uses, uses_display, coverage {id, description}}'
                 }, paramsUses: {
                   'not_paginator': true,
                   'query': '{id, description, premiums}'
@@ -164,47 +164,48 @@ class _TotalCoberturesState extends State<TotalCobertures> {
     double totalCost = 0;
     double totalInsuredAmount = 0;
     if (widget.plan.uses != null && widget.plan.uses!.contains(widget.use.id)) {
-      for (Premium element in widget.premiums) {
+      for (Premium element
+          in widget.premiums.where((p) => p.id == widget.use.id).toList()) {
         totalCost += element.cost ?? 0;
         totalInsuredAmount += element.insuredAmount ?? 0;
       }
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              '${totalCost.toString()} \$',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            '${totalCost.toString()} \$',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-            Text(
-              '${totalInsuredAmount.toString()} \$',
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            '${totalInsuredAmount.toString()} \$',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 5),
-            CustomButtonPrimary(
-              title: 'Modificar',
-              tooltipMessage:
-                  "\n Plan: ${widget.plan.description} \n Uso: ${widget.use.description} \n",
-              onPressed: () {
-                showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (_) => const PremiumModal(),
-                );
-              },
-            ),
-          ],
-        ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 5),
+          CustomButtonPrimary(
+            title: 'Modificar',
+            tooltipMessage:
+                "\n Plan: ${widget.plan.description} \n Uso: ${widget.use.description} \n",
+            onPressed: () {
+              showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (_) => PremiumModal(
+                  plan: widget.plan,
+                  use: widget.use,
+                ),
+              );
+            },
+          ),
+        ],
       );
     } else {
       return const Padding(

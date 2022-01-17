@@ -6,6 +6,22 @@ import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PlanService {
   static String url = '/core/plan';
+
+  static Future<Plan?> getPlanPerUse(String planId, String useId) async {
+    Plan plan;
+    try {
+      final response = await API.get('$url/$planId/?use=$useId');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = Map<String, dynamic>.from(response.data);
+        plan = Plan.fromMap(data);
+        return plan;
+      }
+      return null;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
   static Future<List<Plan>?> getPlans(Map<String, dynamic>? params) async {
     List<Plan> plans = [];
     try {
