@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
+import 'package:rcv_admin_flutter/src/services/plan_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PremiumProvider with ChangeNotifier {
@@ -131,5 +133,33 @@ class PremiumProvider with ChangeNotifier {
     if (index >= 0) {
       premiums[index].cost = cost;
     }
+  }
+
+  Stream<PlansUses> getPlansAndUses(
+      {Map<String, dynamic>? paramsPlans,
+      Map<String, dynamic>? paramsUses}) async* {
+    loading = true;
+    notifyListeners();
+    List<Map<String, dynamic>> plans = [];
+    List<Map<String, dynamic>> uses = [];
+    try {
+      final responsePlans = await API.list('/core/plan/', params: paramsPlans);
+      if (responsePlans.statusCode == 200) {
+        plans = List<Map<String, dynamic>>.from(responsePlans.data);
+      }
+      final responseUses = await API.list('/core/use/', params: paramsUses);
+      if (responseUses.statusCode == 200) {
+        uses = List<Map<String, dynamic>>.from(responseUses.data);
+      }
+      yield PlansUses.fromMap({'plans': plans, 'uses': uses});
+      loading = false;
+      notifyListeners();
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  notify() {
+    notifyListeners();
   }
 }

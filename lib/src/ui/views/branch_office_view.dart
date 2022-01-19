@@ -187,7 +187,7 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
           }
         }
         if (saved) {
-          NavigationService.backTo(context);
+          NavigationService.back(context);
         }
         return saved;
       } on ErrorAPI catch (e) {

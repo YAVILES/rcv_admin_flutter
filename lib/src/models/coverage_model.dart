@@ -8,22 +8,23 @@ import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
 
 class Coverage {
-  Coverage(
-      {this.id,
-      this.code,
-      this.description,
-      this.plans,
-      this.plansDisplay,
-      this.coverageDefault,
-      this.isActive,
-      this.premium});
+  Coverage({
+    this.id,
+    this.code,
+    this.description,
+    this.plans,
+    this.plansDisplay,
+    this.coverageDefault,
+    this.isActive,
+    this.premium,
+  });
 
   String? id;
   String? code;
   String? description;
   List<String>? plans = [];
   List<Plan>? plansDisplay = [];
-  bool? coverageDefault;
+  bool? coverageDefault = false;
   bool? isActive;
   Premium? premium;
 

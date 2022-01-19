@@ -65,13 +65,18 @@ class __CoverageViewBodyState extends State<_CoverageViewBody> {
   void initState() {
     Provider.of<CoverageProvider>(context, listen: false).formCoverageKey =
         GlobalKey<FormState>();
+    Provider.of<CoverageProvider>(context, listen: false).isDefault =
+        widget.coverage.coverageDefault!;
+    Provider.of<CoverageProvider>(context, listen: false).coverage =
+        widget.coverage;
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     CoverageProvider coverageProvider = Provider.of<CoverageProvider>(context);
-    Coverage _coverage = coverageProvider.coverage = widget.coverage;
+    Coverage _coverage = coverageProvider.coverage!;
     final bool create = widget.coverage.id == null;
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
@@ -123,11 +128,12 @@ class __CoverageViewBodyState extends State<_CoverageViewBody> {
                       SizedBox(
                         width: 155,
                         child: CustomCheckBox(
-                          title: 'Por Defecto',
-                          value: _coverage.coverageDefault ?? true,
-                          onChanged: (value) =>
-                              _coverage.coverageDefault = value,
-                        ),
+                            title: 'Por Defecto',
+                            value: _coverage.coverageDefault ?? true,
+                            onChanged: (value) {
+                              coverageProvider.isDefault = value;
+                              _coverage.coverageDefault = value;
+                            }),
                       ),
                       FutureBuilder(
                         future: PlanService.getPlans({
@@ -137,52 +143,59 @@ class __CoverageViewBodyState extends State<_CoverageViewBody> {
                         builder: (_, AsyncSnapshot snapshot) {
                           return snapshot.connectionState ==
                                   ConnectionState.done
-                              ? Row(
-                                  children: [
-                                    const Text('plans'),
-                                    const SizedBox(width: 20),
-                                    Wrap(
-                                      children: [
-                                        ...snapshot.data!.map(
-                                          (plan) => Padding(
-                                            padding: const EdgeInsets.all(5.0),
-                                            child: CustomChip(
-                                              active: coverageProvider
-                                                  .coverage!.plans!
-                                                  .contains(plan.id!),
-                                              onTap: (active) {
-                                                if (active) {
-                                                  coverageProvider.coverage!
-                                                              .plans !=
-                                                          null
-                                                      ? coverageProvider
+                              ? Visibility(
+                                  visible: _coverage.coverageDefault == false,
+                                  child: Row(
+                                    children: [
+                                      const Text('plans'),
+                                      const SizedBox(width: 20),
+                                      Wrap(
+                                        children: [
+                                          ...snapshot.data!.map(
+                                            (plan) => Padding(
+                                              padding:
+                                                  const EdgeInsets.all(5.0),
+                                              child: CustomChip(
+                                                active: coverageProvider
+                                                    .coverage!.plans!
+                                                    .contains(plan.id!),
+                                                onTap: (active) {
+                                                  if (active) {
+                                                    coverageProvider.coverage!
+                                                                .plans !=
+                                                            null
+                                                        ? coverageProvider
+                                                            .coverage!.plans!
+                                                            .add(plan.id!)
+                                                        : coverageProvider
+                                                            .coverage!
+                                                            .plans = [plan.id!];
+                                                  } else {
+                                                    if (coverageProvider
+                                                            .coverage!.plans !=
+                                                        null) {
+                                                      coverageProvider
                                                           .coverage!.plans!
-                                                          .add(plan.id!)
-                                                      : coverageProvider
-                                                          .coverage!
-                                                          .plans = [plan.id!];
-                                                } else {
-                                                  if (coverageProvider
-                                                          .coverage!.plans !=
-                                                      null) {
-                                                    coverageProvider
-                                                        .coverage!.plans!
-                                                        .remove(plan.id!);
+                                                          .remove(plan.id!);
+                                                    }
                                                   }
-                                                }
-                                              },
-                                              title: plan.description!,
+                                                },
+                                                title: plan.description!,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 )
                               : const MyProgressIndicator();
                         },
                       ),
-                      const SizedBox(width: 50),
+                      Visibility(
+                        visible: coverageProvider.isDefault == true,
+                        child: const SizedBox(width: 50),
+                      ),
                       SizedBox(
                         width: 155,
                         child: CustomCheckBox(
@@ -236,7 +249,7 @@ class __CoverageViewBodyState extends State<_CoverageViewBody> {
           }
         }
         if (saved) {
-          NavigationService.backTo(context);
+          NavigationService.back(context);
         }
         return saved;
       } on ErrorAPI catch (e) {

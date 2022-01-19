@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/nav_drawer/navigation_drawer.dart';
 import 'package:rcv_admin_flutter/src/providers/nav_drawer_provider.dart';
@@ -28,15 +29,17 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
                 appBar: AppBar(
                   title: Row(
                     children: [
+                      /*                
                       if (NavDrawerProvider.activeBackButton == true) ...[
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_outlined),
+                        BackButton(
                           onPressed: () {
-                            NavigationService.backTo(context);
+                            NavigationService.back(null);
                           },
-                        ),
+                        ), 
                         const SizedBox(width: 25),
+                        
                       ],
+                      */
                       const Text("RCV 871"),
                     ],
                   ),

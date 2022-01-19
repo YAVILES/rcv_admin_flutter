@@ -62,7 +62,7 @@ class _BannersViewState extends State<BannersView> {
                   ? const MyProgressIndicator()
                   : GenericTable(
                       showCheckboxColumn: true,
-                      onSelectChanged: (data) => print(data.item.toString()),
+                      onSelectChanged: (data) => {},
                       onDeleteSelectedItems: (items) {
                         final dialog = AlertDialog(
                           title: const Text(
@@ -139,7 +139,6 @@ class _BannersViewState extends State<BannersView> {
                           loadingBuilder: (context, __, ___) =>
                               const MyProgressIndicator(),
                           errorBuilder: (_, data, ___) {
-                            print(data);
                             return Image.asset(
                               'images/img_avatar.png',
                               width: 30,

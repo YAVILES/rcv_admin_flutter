@@ -38,7 +38,7 @@ class Plan {
             : List<String>.from(json["uses"].map((x) => x)),
         usesDisplay: json["uses_display"] == null
             ? []
-            : List<Use>.from(json["coverage"].map((x) => Use.fromMap(x))),
+            : List<Use>.from(json["uses_display"].map((x) => Use.fromMap(x))),
         coverage: json["coverage"] == null
             ? []
             : List<Coverage>.from(

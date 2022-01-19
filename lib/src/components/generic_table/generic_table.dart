@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table_datasource.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 
 class GenericTable extends StatefulWidget {
   List<String> itemsIdsSelected = [];
@@ -55,7 +54,7 @@ class _GenericTableState extends State<GenericTable> {
 
   @override
   Widget build(BuildContext context) {
-    String valueSearch = '';
+    String valueSearch = widget.searchInitialValue ?? '';
 /*     if (widget.data.isEmpty) {
       return Center(
         child: FittedBox(
@@ -109,7 +108,8 @@ class _GenericTableState extends State<GenericTable> {
                     initialValue: valueSearch.isEmpty
                         ? widget.searchInitialValue ?? ''
                         : valueSearch,
-                    onChanged: (value) => valueSearch = value,
+                    onChanged: (value) => valueSearch =
+                        value.isEmpty ? widget.searchInitialValue ?? '' : value,
                     textAlignVertical: TextAlignVertical.center,
                     onFieldSubmitted: (value) => widget.onSearch != null
                         ? widget.onSearch!(valueSearch)

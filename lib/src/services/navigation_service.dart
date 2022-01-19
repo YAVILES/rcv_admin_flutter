@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rcv_admin_flutter/src/providers/nav_drawer_provider.dart';
 
 class NavigationService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -10,7 +11,7 @@ class NavigationService {
     // return navigatorKey.currentState!.pushNamed(routeName);
   }
 
-  static backTo(BuildContext context) {
-    return Navigator.pop(context);
+  static back(BuildContext context) {
+    GoRouter.of(context).pop(context);
   }
 }

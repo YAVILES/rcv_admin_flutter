@@ -44,6 +44,7 @@ class _PlansViewState extends State<PlansView> {
         physics: const ClampingScrollPhysics(),
         child: CenteredView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HeaderView(
                 title: "Administración de Sistema",
@@ -58,7 +59,64 @@ class _PlansViewState extends State<PlansView> {
               ),
               (loading == true)
                   ? const MyProgressIndicator()
-                  : GenericTable(
+                  : Wrap(
+                      children: [
+                        ...plans.map((plan) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            margin: const EdgeInsets.all(15),
+                            elevation: 10,
+                            child: Container(
+                              width: 350,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Text(
+                                      plan['description'],
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Wrap(
+                                    spacing: 5,
+                                    children: [
+                                      ...plan['uses_display'].map(
+                                        (w) => Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 5.0),
+                                          child: CustomChip(
+                                            withGesture: false,
+                                            title: w['description'],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () {
+                                      NavigationService.navigateTo(
+                                        context,
+                                        planDetailRoute,
+                                        {'id': plan['id'].toString()},
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+              /* GenericTable(
                       data: plans,
                       columns: [
                         DTColumn(header: "Código", dataAttribute: 'code'),
@@ -110,7 +168,7 @@ class _PlansViewState extends State<PlansView> {
                         planProvider.search(value);
                       },
                       searchInitialValue: planProvider.searchValue,
-                    ),
+                    ), */
             ],
           ),
         ),

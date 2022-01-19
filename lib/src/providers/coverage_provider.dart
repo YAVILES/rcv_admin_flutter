@@ -9,6 +9,14 @@ class CoverageProvider with ChangeNotifier {
   List<Map<String, dynamic>> coverages = [];
   Coverage? coverage;
   bool loading = false;
+  bool _isDefault = false;
+
+  bool get isDefault => _isDefault;
+
+  set isDefault(bool isDefault) {
+    _isDefault = isDefault;
+    notifyListeners();
+  }
 
   late GlobalKey<FormState> formCoverageKey;
 
@@ -32,7 +40,6 @@ class CoverageProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 

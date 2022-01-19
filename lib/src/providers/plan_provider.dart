@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/services/plan_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PlanProvider with ChangeNotifier {
@@ -21,18 +22,18 @@ class PlanProvider with ChangeNotifier {
   Future getPlans() async {
     loading = true;
     notifyListeners();
+
     try {
-      final response = await API.list('$url/');
-      if (response.statusCode == 200) {
-        ResponseData responseData = ResponseData.fromMap(response.data);
-        plans = responseData.results;
-      }
+      final response = await PlanService.getPlans({
+        'not_paginator': true,
+        'query': '{id, code, description, uses_display {id, description}}'
+      });
+      plans = response.map((e) => e.toMap()).toList();
       loading = false;
       notifyListeners();
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 

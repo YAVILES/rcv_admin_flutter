@@ -8,6 +8,8 @@ import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
+import 'package:rcv_admin_flutter/src/providers/plan_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/premium_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/plan_service.dart';
@@ -32,6 +34,7 @@ class _PremiumsViewState extends State<PremiumsView> {
   @override
   Widget build(BuildContext context) {
     PlansUses plansAndUses = PlansUses();
+    PremiumProvider premiumProvider = Provider.of<PremiumProvider>(context);
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
@@ -52,9 +55,11 @@ class _PremiumsViewState extends State<PremiumsView> {
               StreamBuilder(
                 stream: PlanService.getPlansAndUses(paramsPlans: {
                   'not_paginator': true,
+                  'is_active': true,
                   'query':
-                      '{id, description, uses, uses_display, coverage {id, description}}'
+                      '{id, description, uses, uses_display {code, description}, coverage {id, description, premium}}'
                 }, paramsUses: {
+                  'is_active': true,
                   'not_paginator': true,
                   'query': '{id, description, premiums}'
                 }),
@@ -64,7 +69,8 @@ class _PremiumsViewState extends State<PremiumsView> {
                   }
                   return snapshot.connectionState == ConnectionState.done
                       ? GenericTable(
-                          dataRowHeight: 100,
+                          withSearchEngine: false,
+                          dataRowHeight: 110,
                           data: plansAndUses.plans != null
                               ? plansAndUses.plans!
                                   .map((e) => e.toMap())
@@ -85,7 +91,7 @@ class _PremiumsViewState extends State<PremiumsView> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          TotalCobertures(
+                                          TotalCoverage(
                                             plan: Plan.fromMap(plan),
                                             use: use,
                                             premiums: use.premiums
@@ -102,7 +108,6 @@ class _PremiumsViewState extends State<PremiumsView> {
                                 )
                                 .toList(),
                           ],
-                          onSearch: (value) {},
                           // searchInitialValue: premiumProvider.searchValue,
                         )
                       : const MyProgressIndicator();
@@ -142,12 +147,12 @@ class _ActionsTable extends StatelessWidget {
   }
 }
 
-class TotalCobertures extends StatefulWidget {
+class TotalCoverage extends StatefulWidget {
   List<Premium> premiums;
   Plan plan;
   Use use;
 
-  TotalCobertures({
+  TotalCoverage({
     Key? key,
     required this.premiums,
     required this.plan,
@@ -155,17 +160,16 @@ class TotalCobertures extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TotalCobertures> createState() => _TotalCoberturesState();
+  State<TotalCoverage> createState() => _TotalCoverageState();
 }
 
-class _TotalCoberturesState extends State<TotalCobertures> {
+class _TotalCoverageState extends State<TotalCoverage> {
   @override
   Widget build(BuildContext context) {
     double totalCost = 0;
     double totalInsuredAmount = 0;
     if (widget.plan.uses != null && widget.plan.uses!.contains(widget.use.id)) {
-      for (Premium element
-          in widget.premiums.where((p) => p.id == widget.use.id).toList()) {
+      for (Premium element in widget.premiums) {
         totalCost += element.cost ?? 0;
         totalInsuredAmount += element.insuredAmount ?? 0;
       }
@@ -205,6 +209,16 @@ class _TotalCoberturesState extends State<TotalCobertures> {
               );
             },
           ),
+          const SizedBox(height: 5),
+          (widget.premiums.length != widget.plan.coverage?.length)
+              ? const Icon(
+                  Icons.warning,
+                  color: Colors.red,
+                )
+              : const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
         ],
       );
     } else {

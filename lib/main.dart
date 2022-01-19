@@ -4,10 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/plan_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/premium_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/total_coverage_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/use_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 
@@ -44,6 +46,8 @@ class _AppStateState extends State<AppState> {
         ChangeNotifierProvider(create: (_) => PlanProvider()),
         ChangeNotifierProvider(create: (_) => CoverageProvider()),
         ChangeNotifierProvider(create: (_) => PremiumProvider()),
+        ChangeNotifierProvider(create: (_) => TotalCoverageProvider()),
+        ChangeNotifierProvider(create: (_) => ClientProvider()),
       ],
       child: const MyApp(),
     );

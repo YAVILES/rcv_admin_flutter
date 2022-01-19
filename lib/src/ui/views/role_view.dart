@@ -156,7 +156,7 @@ class _RoleFormState extends State<_RoleForm> {
                       '${roleProvider.role!.name} actualizado',
                     );
                   }
-                  NavigationService.backTo(context);
+                  NavigationService.back(context);
                 } catch (e) {
                   NotificationService.showSnackbarError(
                     'No se pudo guardar el role',

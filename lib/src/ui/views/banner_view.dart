@@ -195,7 +195,7 @@ class _BannerFormState extends State<_BannerForm> {
                           '${bannerProvider.banner!.title} actualizado',
                         );
                       }
-                      NavigationService.backTo(context);
+                      NavigationService.back(context);
                     } catch (e) {
                       NotificationService.showSnackbarError(
                         'No se pudo guardar el banner',

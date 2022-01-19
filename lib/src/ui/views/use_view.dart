@@ -170,7 +170,7 @@ class __UseViewBodyState extends State<_UseViewBody> {
           }
         }
         if (saved) {
-          NavigationService.backTo(context);
+          NavigationService.back(context);
         }
         return saved;
       } on ErrorAPI catch (e) {

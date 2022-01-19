@@ -33,7 +33,6 @@ class BannerRCVProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 
@@ -153,7 +152,6 @@ class BannerRCVProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 }

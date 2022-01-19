@@ -32,7 +32,6 @@ class RoleProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
-      print(e);
     }
   }
 

@@ -223,7 +223,7 @@ class __PlanViewBodyState extends State<_PlanViewBody> {
           }
         }
         if (saved) {
-          NavigationService.backTo(context);
+          NavigationService.back(context);
         }
         return saved;
       } on ErrorAPI catch (e) {

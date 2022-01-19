@@ -22,7 +22,7 @@ class PlanService {
     }
   }
 
-  static Future<List<Plan>?> getPlans(Map<String, dynamic>? params) async {
+  static Future<List<Plan>> getPlans(Map<String, dynamic>? params) async {
     List<Plan> plans = [];
     try {
       final response = await API.list('$url/', params: params);

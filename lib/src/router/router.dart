@@ -19,6 +19,7 @@ import 'package:rcv_admin_flutter/src/ui/views/banner_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banners_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/clients_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
@@ -318,6 +319,16 @@ class RouterGoRouter {
           pageBuilder: (context, state) => MaterialPage(
             key: state.pageKey,
             child: const PremiumsView(),
+          ),
+        ),
+
+        // Cleintes
+        GoRoute(
+          name: clientsRoute,
+          path: '/$clientsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const ClientsView(),
           ),
         ),
       ],

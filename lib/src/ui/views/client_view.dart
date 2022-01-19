@@ -6,46 +6,43 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
-import 'package:rcv_admin_flutter/src/models/user_model.dart';
-import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
+import 'package:rcv_admin_flutter/src/models/client_model.dart';
+import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
-import 'package:rcv_admin_flutter/src/services/role_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
-class UserView extends StatefulWidget {
-  User? user;
+class ClientView extends StatefulWidget {
+  Client? client;
   String? uid;
 
-  UserView({
+  ClientView({
     Key? key,
-    this.user,
+    this.client,
     this.uid,
   }) : super(key: key);
 
   @override
-  State<UserView> createState() => _UserViewState();
+  State<ClientView> createState() => _ClientViewState();
 }
 
-class _UserViewState extends State<UserView> {
+class _ClientViewState extends State<ClientView> {
   @override
   Widget build(BuildContext context) {
-    if (widget.user != null) {
-      return _UserViewBody(user: widget.user!);
+    if (widget.client != null) {
+      return _ClientViewBody(client: widget.client!);
     } else {
       return FutureBuilder(
-        future: Provider.of<UserProvider>(context, listen: false)
-            .getUser(widget.uid ?? ''),
+        future: Provider.of<ClientProvider>(context, listen: false)
+            .getClient(widget.uid ?? ''),
         builder: (_, AsyncSnapshot snapshot) {
           return snapshot.connectionState == ConnectionState.done
-              ? _UserViewBody(user: snapshot.data)
+              ? _ClientViewBody(client: snapshot.data)
               : const MyProgressIndicator();
         },
       );
@@ -53,33 +50,33 @@ class _UserViewState extends State<UserView> {
   }
 }
 
-class _UserViewBody extends StatefulWidget {
-  User user;
+class _ClientViewBody extends StatefulWidget {
+  Client client;
 
-  _UserViewBody({
+  _ClientViewBody({
     Key? key,
-    required this.user,
+    required this.client,
   }) : super(key: key);
 
   @override
-  __UserViewBodyState createState() => __UserViewBodyState();
+  __ClientViewBodyState createState() => __ClientViewBodyState();
 }
 
-class __UserViewBodyState extends State<_UserViewBody> {
+class __ClientViewBodyState extends State<_ClientViewBody> {
   PlatformFile? photo;
 
   @override
   void initState() {
-    Provider.of<UserProvider>(context, listen: false).formUserKey =
+    Provider.of<ClientProvider>(context, listen: false).formClientKey =
         GlobalKey<FormState>();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    User _user = userProvider.user = widget.user;
-    final bool create = widget.user.id == null;
+    ClientProvider clientProvider = Provider.of<ClientProvider>(context);
+    Client _client = clientProvider.client = widget.client;
+    final bool create = widget.client.id == null;
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: CenteredView(
@@ -87,7 +84,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
           children: [
             HeaderView(
               title: 'Administración de Sistema',
-              subtitle: 'Usuario ${widget.user.username ?? ''}',
+              subtitle: 'Usuario ${widget.client.clientname ?? ''}',
             ),
             Column(
               children: [
@@ -103,13 +100,13 @@ class __UserViewBodyState extends State<_UserViewBody> {
                           child: Stack(
                             children: [
                               Hero(
-                                tag: _user.id ?? 'newUser',
+                                tag: _client.id ?? 'newClient',
                                 child: ClipOval(
                                   child: (photo?.bytes != null)
                                       ? Image.memory(
                                           Uint8List.fromList(photo!.bytes!))
-                                      : _user.photo != null
-                                          ? Image.network(_user.photo!)
+                                      : _client.photo != null
+                                          ? Image.network(_client.photo!)
                                           : Image.asset(
                                               'assets/images/img_avatar.png'),
                                 ),
@@ -139,7 +136,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
                                         setState(
                                             () => photo = result.files.first);
                                       } else {
-                                        // User canceled the picker
+                                        // Client canceled the picker
                                       }
                                     },
                                     child:
@@ -152,7 +149,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          _user.username ?? '',
+                          _client.clientname ?? '',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
@@ -164,13 +161,13 @@ class __UserViewBodyState extends State<_UserViewBody> {
                 ),
                 const SizedBox(height: 20),
                 Form(
-                  key: userProvider.formUserKey,
+                  key: clientProvider.formClientKey,
                   child: Wrap(
                     children: [
                       TextFormField(
                         readOnly: !create,
-                        initialValue: _user.username ?? '',
-                        onChanged: (value) => _user.username = value,
+                        initialValue: _client.clientname ?? '',
+                        onChanged: (value) => _client.clientname = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'El usuario es obligatorio';
@@ -178,15 +175,15 @@ class __UserViewBodyState extends State<_UserViewBody> {
                           return null;
                         },
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el usuario.',
                           labelText: 'Usuario',
                         ),
                       ),
                       TextFormField(
-                        initialValue: _user.name ?? '',
-                        onChanged: (value) => _user.name = value,
+                        initialValue: _client.name ?? '',
+                        onChanged: (value) => _client.name = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'El nombre es obligatorio';
@@ -194,15 +191,15 @@ class __UserViewBodyState extends State<_UserViewBody> {
                           return null;
                         },
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el nombre.',
                           labelText: 'Nombre',
                         ),
                       ),
                       TextFormField(
-                        initialValue: _user.lastName ?? '',
-                        onChanged: (value) => _user.lastName = value,
+                        initialValue: _client.lastName ?? '',
+                        onChanged: (value) => _client.lastName = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'El apellido es obligatorio';
@@ -210,7 +207,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
                           return null;
                         },
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el apellido.',
                           labelText: 'Apellido',
@@ -218,10 +215,10 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       ),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        initialValue: _user.email ?? '',
-                        onChanged: (value) => _user.email = value,
+                        initialValue: _client.email ?? '',
+                        onChanged: (value) => _client.email = value,
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         validator: (value) {
                           final valid = EmailValidator.validate(value!);
                           if (!valid) {
@@ -237,10 +234,10 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       ),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        initialValue: _user.emailAlternative ?? '',
-                        onChanged: (value) => _user.emailAlternative = value,
+                        initialValue: _client.emailAlternative ?? '',
+                        onChanged: (value) => _client.emailAlternative = value,
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         validator: (value) {
                           if (value != null && value.isNotEmpty) {
                             final valid = EmailValidator.validate(value);
@@ -259,30 +256,30 @@ class __UserViewBodyState extends State<_UserViewBody> {
                         maxLines: null,
                         minLines: 2,
                         keyboardType: TextInputType.multiline,
-                        initialValue: _user.direction ?? '',
+                        initialValue: _client.direction ?? '',
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        onChanged: (value) => _user.direction = value,
+                            _saveClient(create, clientProvider, _client),
+                        onChanged: (value) => _client.direction = value,
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese la dirección.',
                           labelText: 'Dirección',
                         ),
                       ),
                       TextFormField(
-                        initialValue: _user.phone ?? '',
-                        onChanged: (value) => _user.phone = value,
+                        initialValue: _client.phone ?? '',
+                        onChanged: (value) => _client.phone = value,
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el número celular.',
                           labelText: 'Nro. celular',
                         ),
                       ),
                       TextFormField(
-                        initialValue: _user.telephone ?? '',
-                        onChanged: (value) => _user.telephone = value,
+                        initialValue: _client.telephone ?? '',
+                        onChanged: (value) => _client.telephone = value,
                         onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
+                            _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el telefono.',
                           labelText: 'Telefono',
@@ -290,8 +287,8 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       ),
                       if (create)
                         TextFormField(
-                          initialValue: _user.password ?? '',
-                          onChanged: (value) => _user.password = value,
+                          initialValue: _client.password ?? '',
+                          onChanged: (value) => _client.password = value,
                           validator: (value) {
                             if ((value == null || value.isEmpty) && create) {
                               return 'La contraseña es obligatoria';
@@ -299,66 +296,18 @@ class __UserViewBodyState extends State<_UserViewBody> {
                             return null;
                           },
                           onFieldSubmitted: (value) =>
-                              _saveUser(create, userProvider, _user),
+                              _saveClient(create, clientProvider, _client),
                           decoration: CustomInputs.buildInputDecoration(
                             hintText: 'Ingrese la contraseña.',
                             labelText: 'Contraseña',
                           ),
                         ),
-                      FutureBuilder(
-                        future: RoleService.getRoles(
-                            {'not_paginator': true, 'query': '{id, name}'}),
-                        builder: (_, AsyncSnapshot snapshot) {
-                          return snapshot.connectionState ==
-                                  ConnectionState.done
-                              ? Row(
-                                  children: [
-                                    const Text('roles'),
-                                    const SizedBox(width: 20),
-                                    Wrap(
-                                      children: [
-                                        ...snapshot.data!.map(
-                                          (role) => Padding(
-                                            padding: const EdgeInsets.all(5.0),
-                                            child: CustomChip(
-                                              active: userProvider.user!.roles!
-                                                  .contains(role.id!),
-                                              onTap: (active) {
-                                                if (active) {
-                                                  userProvider.user!.roles !=
-                                                          null
-                                                      ? userProvider
-                                                          .user!.roles!
-                                                          .add(role.id!)
-                                                      : userProvider.user!
-                                                          .roles = [role.id!];
-                                                } else {
-                                                  if (userProvider
-                                                          .user!.roles !=
-                                                      null) {
-                                                    userProvider.user!.roles!
-                                                        .remove(role.id!);
-                                                  }
-                                                }
-                                              },
-                                              title: role.name!,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              : const MyProgressIndicator();
-                        },
-                      ),
-                      const SizedBox(width: 50),
                       SizedBox(
                         width: 155,
                         child: CustomCheckBox(
                           title: 'Activo',
-                          value: _user.isActive ?? true,
-                          onChanged: (value) => _user.isActive = value,
+                          value: _client.isActive ?? true,
+                          onChanged: (value) => _client.isActive = value,
                         ),
                       ),
                       Container(
@@ -366,7 +315,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
                         alignment: Alignment.center,
                         child: CustomButtonPrimary(
                           onPressed: () =>
-                              _saveUser(create, userProvider, _user),
+                              _saveClient(create, clientProvider, _client),
                           title: 'Guardar',
                         ),
                       ),
@@ -381,24 +330,26 @@ class __UserViewBodyState extends State<_UserViewBody> {
     );
   }
 
-  Future<bool?> _saveUser(
+  Future<bool?> _saveClient(
     bool create,
-    UserProvider userProvider,
-    User _user,
+    ClientProvider clientProvider,
+    Client _client,
   ) async {
     {
       try {
         var saved = false;
         if (create) {
-          saved = await userProvider.newUser(_user, photo) ?? false;
+          saved = await clientProvider.newClient(_client, photo) ?? false;
           if (saved) {
-            NotificationService.showSnackbarSuccess('${_user.name} creado');
+            NotificationService.showSnackbarSuccess('${_client.name} creado');
           }
         } else {
-          saved = await userProvider.editUser(_user.id!, _user, photo) ?? false;
+          saved =
+              await clientProvider.editClient(_client.id!, _client, photo) ??
+                  false;
           if (saved) {
             NotificationService.showSnackbarSuccess(
-              '${_user.name} actualizado',
+              '${_client.name} actualizado',
             );
           }
         }
@@ -408,7 +359,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
         return saved;
       } on ErrorAPI catch (e) {
         NotificationService.showSnackbarError(
-          e.error?[0] ?? 'No se pudo guardar el user',
+          e.error?[0] ?? 'No se pudo guardar el client',
         );
       }
     }

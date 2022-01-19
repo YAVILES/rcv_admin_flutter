@@ -28,6 +28,11 @@ const branchOfficesRoute = 'branch_offices';
 const branchOfficeRoute = 'branch_office';
 const branchOfficeDetailRoute = 'details_branch_office';
 
+// Clients
+const clientsRoute = 'clients';
+const clientRoute = 'client';
+const clientDetailRoute = 'details_client';
+
 // Uses
 const usesRoute = 'uses';
 const useRoute = 'use';

@@ -60,7 +60,7 @@ class _CoveragesViewState extends State<CoveragesView> {
               (loading == true)
                   ? const MyProgressIndicator()
                   : GenericTable(
-                      onSelectChanged: (data) => print(data.item.toString()),
+                      onSelectChanged: (data) => {},
                       onDeleteSelectedItems: (items) {
                         final dialog = AlertDialog(
                           title: const Text(

@@ -16,7 +16,7 @@ class PremiumModal extends StatefulWidget {
   final Plan plan;
   final Use use;
 
-  const PremiumModal({
+  PremiumModal({
     Key? key,
     required this.plan,
     required this.use,
@@ -29,7 +29,6 @@ class PremiumModal extends StatefulWidget {
 class _PremiumModalState extends State<PremiumModal> {
   @override
   void initState() {
-    // TODO: implement initState
     Provider.of<PremiumProvider>(context, listen: false).premiums = [];
     super.initState();
   }
@@ -84,12 +83,13 @@ class _PremiumModalState extends State<PremiumModal> {
                 child: FutureBuilder(
                     future: PlanService.getPlanPerUse(
                         widget.plan.id!, widget.use.id!),
-                    builder: (context, snapshot) {
+                    builder: (context, AsyncSnapshot<Plan?> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
+                        Plan plan = snapshot.data!;
                         return Center(
                           child: Column(
                             children: [
-                              ...widget.plan.coverage!.map((c) {
+                              ...plan.coverage!.map((c) {
                                 if (c.premium == null) {
                                   premiumProvider.premiums.add(Premium.fromMap({
                                     "coverage": c.id,
@@ -129,8 +129,7 @@ class _PremiumModalState extends State<PremiumModal> {
                                           const TextInputType.numberWithOptions(
                                               decimal: true),
                                       initialValue:
-                                          c.premium?.insuredAmount.toString() ??
-                                              '0',
+                                          c.premium?.cost.toString() ?? '0',
                                       onChanged: (value) =>
                                           premiumProvider.defineCost(
                                               c.id!, double.parse(value)),
@@ -160,11 +159,18 @@ class _PremiumModalState extends State<PremiumModal> {
                 child: CustomButtonPrimary(
                   onPressed: () async {
                     try {
-                      PremiumService.saveMultiple(premiumProvider.premiums);
-                      NotificationService.showSnackbarSuccess(
-                          'Guardado con exito');
-
-                      // NavigationService.backTo(context);
+                      bool? saved = await PremiumService.saveMultiple(
+                          premiumProvider.premiums);
+                      if (saved == true) {
+                        NotificationService.showSnackbarSuccess(
+                            'Guardado con exito');
+                      } else {
+                        NotificationService.showSnackbarError(
+                          'No fue posible guardar guardar',
+                        );
+                      }
+                      premiumProvider.notify();
+                      Navigator.of(context).pop();
                     } catch (e) {
                       NotificationService.showSnackbarError(
                         'No fue posible guardar guardar',
@@ -177,10 +183,16 @@ class _PremiumModalState extends State<PremiumModal> {
             ],
           ),
         ),
-        const Positioned(
+        Positioned(
           top: 10,
           right: 10,
-          child: Icon(Icons.close, color: Colors.black, size: 35),
+          child: IconButton(
+            icon: const Icon(Icons.close),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         ),
       ],
     );

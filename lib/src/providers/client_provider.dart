@@ -1,45 +1,47 @@
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:rcv_admin_flutter/src/models/use_model.dart';
+import 'package:rcv_admin_flutter/src/models/client_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
-class UseProvider with ChangeNotifier {
-  String url = '/core/use';
-  List<Map<String, dynamic>> uses = [];
-  Use? use;
+class ClientProvider with ChangeNotifier {
+  String url = '/security/client';
+  List<Map<String, dynamic>> clients = [];
+  Client? client;
   bool loading = false;
 
-  late GlobalKey<FormState> formUseKey;
+  late GlobalKey<FormState> formClientKey;
 
   String? searchValue;
 
   bool validateForm() {
-    return formUseKey.currentState!.validate();
+    return formClientKey.currentState!.validate();
   }
 
-  Future getUses() async {
+  Future getClients() async {
     loading = true;
     notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        uses = responseData.results;
+        clients = responseData.results;
       }
       loading = false;
       notifyListeners();
+      return clients;
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
     }
   }
 
-  Future<Use?> getUse(String uid) async {
+  Future<Client?> getClient(String uid) async {
     try {
       final response = await API.get('$url/$uid/');
       if (response.statusCode == 200) {
-        return Use.fromMap(response.data);
+        return Client.fromMap(response.data);
       } else {
         return null;
       }
@@ -48,63 +50,72 @@ class UseProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newUse(Use useRCV) async {
+  Future<bool?> newClient(Client client, PlatformFile? photo) async {
     if (validateForm()) {
-      final mapDAta = useRCV.toMap();
-      final formData = FormData.fromMap(mapDAta);
+      final mapData = {
+        'is_staff': true,
+        if (photo?.bytes != null)
+          'photo': MultipartFile.fromBytes(
+            photo!.bytes!,
+            filename: photo.name,
+          ),
+        ...client.toMap(excludePhoto: true),
+      };
+
+      final formData = FormData.fromMap(mapData);
       try {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          use = Use.fromMap(response.data);
-          getUses();
+          getClients();
+          client = Client.fromMap(response.data);
           return true;
         }
-        return false;
-      } on ErrorAPI {
+      } catch (e) {
         rethrow;
       }
     }
   }
 
-  Future<bool?> editUse(String id, Use useRCV) async {
+  Future<bool?> editClient(
+      String id, Client client, PlatformFile? photo) async {
     if (validateForm()) {
-      final mapDAta = useRCV.toMap();
-      final formData = FormData.fromMap(mapDAta);
+      final mapData = {
+        'is_staff': true,
+        if (photo?.bytes != null)
+          'photo': MultipartFile.fromBytes(
+            photo!.bytes!,
+            filename: photo.name,
+          ),
+        ...client.toMap(excludePhoto: true),
+      };
+      final formData = FormData.fromMap(mapData);
 
       try {
         final response = await API.put('$url/$id/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          use = Use.fromMap(response.data);
-          getUses();
+          getClients();
+          client = Client.fromMap(response.data);
+/*           clients = clients.map((_client) {
+            if (_client['id'] == client.id) {
+              _client = client.toMap();
+            }
+            return _client;
+          }).toList(); */
+          notifyListeners();
           return true;
         }
-        return false;
       } on ErrorAPI {
         rethrow;
       }
     }
   }
 
-  Future deleteUse(String id) async {
+  Future deleteClient(String id) async {
     try {
       final resp = await API.delete('$url/$id/');
       if (resp.statusCode == 204) {
-        uses.removeWhere((use) => use['id'].toString() == id.toString());
-        notifyListeners();
-        return true;
-      } else {
-        return false;
-      }
-    } on ErrorAPI {
-      rethrow;
-    }
-  }
-
-  Future deleteUses(List<String> ids) async {
-    try {
-      final resp = await API.delete('$url/remove_multiple/', ids: ids);
-      if (resp.statusCode == 200) {
-        uses.removeWhere((use) => ids.contains(use['id'].toString()));
+        clients
+            .removeWhere((client) => client['id'].toString() == id.toString());
         notifyListeners();
         return true;
       } else {
@@ -123,7 +134,7 @@ class UseProvider with ChangeNotifier {
       final response = await API.list('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        uses = responseData.results;
+        clients = responseData.results;
       }
       loading = false;
       notifyListeners();

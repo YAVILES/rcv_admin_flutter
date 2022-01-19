@@ -71,7 +71,7 @@ class NavigationDrawer extends StatelessWidget {
                 isActive: navDrawerProvider.routeCurrent == plansRoute,
                 title: "Planes",
                 navigationPath: plansRoute,
-                icon: Icons.place_outlined,
+                icon: Icons.local_offer_outlined,
                 onPressed: () => navigateTo(context, plansRoute),
               ),
               NavBarItem(
@@ -87,6 +87,16 @@ class NavigationDrawer extends StatelessWidget {
                 navigationPath: premiumsRoute,
                 icon: Icons.price_change_outlined,
                 onPressed: () => navigateTo(context, premiumsRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == clientsRoute,
+                title: "Gestión de Clientes",
+                navigationPath: clientsRoute,
+                icon: Icons.supervised_user_circle_outlined,
+                onPressed: () {
+                  navDrawerProvider.setActiveBackButton(true);
+                  navigateTo(context, clientsRoute);
+                },
               ),
             ],
           ),
@@ -125,7 +135,11 @@ class NavigationDrawer extends StatelessWidget {
       accountEmail: Text(user.email ?? ''),
       currentAccountPicture: Image.asset('assets/images/rc871.jpg'),
       otherAccountsPictures: [
-        ClipOval(child: Image.asset('assets/images/img_avatar.png')),
+        ClipOval(
+          child: user.photo != null
+              ? Image.network(user.photo!)
+              : Image.asset('assets/images/img_avatar.png'),
+        ),
       ],
       onDetailsPressed: () {},
       decoration: const BoxDecoration(
