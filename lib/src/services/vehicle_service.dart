@@ -19,17 +19,20 @@ class VehicleService {
     }
   }
 
-  static Future<List<Option>> fieldOption(String field) async {
-    List<Option> options = [];
+  static Future<List<Option>> fieldOptions(String field) async {
+    List<Option> _options = [];
     try {
       final response =
-          await API.list('$url/field_option/', params: {field: field});
+          await API.list('$url/field_options/', params: {'field': field});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
-        options = data.map((w) => Option.fromMap(w)).toList();
+        return data.map((w) {
+          print(w);
+          return Option.fromMap(w);
+        }).toList();
       }
-      return options;
+      return _options;
     } on ErrorAPI {
       rethrow;
     }

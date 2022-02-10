@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class CustomInputs {
   static InputDecoration buildInputDecoration({
-    required String hintText,
     required String labelText,
+    String? hintText,
     IconData? icon,
     BoxConstraints? constraints,
   }) {

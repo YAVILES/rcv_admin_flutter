@@ -12,6 +12,7 @@ class BranchOffice {
     this.number,
     this.code,
     this.description,
+    this.linkGoogleMaps,
     this.isActive,
   }) {
     isActive = isActive ?? true;
@@ -23,6 +24,7 @@ class BranchOffice {
   int? number;
   String? code;
   String? description;
+  String? linkGoogleMaps;
   bool? isActive;
 
   factory BranchOffice.fromJson(String str) =>
@@ -41,6 +43,7 @@ class BranchOffice {
             : null,
         code: json["code"],
         description: json["description"],
+        linkGoogleMaps: json["link_google_maps"],
         isActive: json["is_active"] ?? true,
       );
 
@@ -51,6 +54,7 @@ class BranchOffice {
         "number": number,
         "code": code,
         "description": description,
+        "link_google_maps": linkGoogleMaps,
         "is_active": isActive,
       };
 }

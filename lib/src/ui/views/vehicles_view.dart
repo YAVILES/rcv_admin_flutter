@@ -114,8 +114,7 @@ class _VehiclesViewState extends State<VehiclesView> {
                               Text(item['model_display']['description']),
                         ),
                         DTColumn(
-                            header: "Descripción",
-                            dataAttribute: 'description'),
+                            header: "Placa", dataAttribute: 'license_plate'),
                         DTColumn(
                           header: "Estatus",
                           dataAttribute: 'is_active',

@@ -57,7 +57,8 @@ class _VehicleViewState extends State<VehicleView> {
 
 class _VehicleViewBody extends StatefulWidget {
   Vehicle vehicle;
-
+  List<Model> models = [];
+  String? mark;
   _VehicleViewBody({
     Key? key,
     required this.vehicle,
@@ -74,7 +75,6 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
         GlobalKey<FormState>();
     Provider.of<VehicleProvider>(context, listen: false).vehicle =
         widget.vehicle;
-
     super.initState();
   }
 
@@ -98,43 +98,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                   key: vehicleProvider.formVehicleKey,
                   child: Column(
                     children: [
-                      FutureBuilder(
-                        future: UseService.getUses({
-                          'query': '{id, description}',
-                          'not_paginator': true
-                        }),
-                        builder: (context, AsyncSnapshot<List<Use>?> snapshot) {
-                          return snapshot.connectionState !=
-                                  ConnectionState.done
-                              ? const MyProgressIndicator()
-                              : DropdownButtonFormField(
-                                  hint: const Text("Uso"),
-                                  // Initial Value
-                                  value: _vehicle.use,
-
-                                  // Down Arrow Icon
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-
-                                  // Array list of items
-                                  items: snapshot.data!.map((Use item) {
-                                    return DropdownMenuItem(
-                                      value: item.id,
-                                      child: Text(item.description!),
-                                    );
-                                  }).toList(),
-                                  // After selecting the desired option,it will
-                                  // change button value to selected value
-                                  onChanged: (String? value) =>
-                                      _vehicle.use = value,
-                                  validator: (String? value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'El uso es obligatorio';
-                                    }
-                                    return null;
-                                  },
-                                );
-                        },
-                      ),
+                      const Text('Datos del Vehiculo'),
                       TextFormField(
                         initialValue: _vehicle.licensePlate ?? '',
                         onChanged: (value) => _vehicle.licensePlate = value,
@@ -152,25 +116,113 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                         ),
                       ),
                       FutureBuilder(
-                        future: ModelService.getModels({
+                        future: MarkService.getMarks({
                           'query': '{id, description}',
                           'not_paginator': true
                         }),
                         builder:
-                            (context, AsyncSnapshot<List<Model>?> snapshot) {
+                            (context, AsyncSnapshot<List<Mark>?> snapshot) {
                           return snapshot.connectionState !=
                                   ConnectionState.done
                               ? const MyProgressIndicator()
                               : DropdownButtonFormField(
-                                  hint: const Text("Modelo"),
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    labelText: 'Marca',
+                                  ),
+                                  hint: const Text("Seleccione la marca "),
                                   // Initial Value
-                                  value: _vehicle.model,
+                                  value: _vehicle.modelDisplay?.mark ??
+                                      widget.mark,
 
                                   // Down Arrow Icon
                                   icon: const Icon(Icons.keyboard_arrow_down),
 
                                   // Array list of items
-                                  items: snapshot.data!.map((Model item) {
+                                  items: snapshot.data?.map((Mark item) {
+                                    return DropdownMenuItem(
+                                      value: item.id,
+                                      child: Text(item.description!),
+                                    );
+                                  }).toList(),
+                                  // After selecting the desired option,it will
+                                  // change button value to selected value
+                                  onChanged: (String? value) {
+                                    widget.mark = value;
+                                    ModelService.getModels({
+                                      'mark': value,
+                                      'not_paginator': true,
+                                      'query': '{id, description}'
+                                    }).then((List<Model> result) =>
+                                        setState(() => widget.models = result));
+                                  },
+
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'La marca es obligatoria';
+                                    }
+                                    return null;
+                                  },
+                                );
+                        },
+                      ),
+                      DropdownButtonFormField(
+                        decoration: CustomInputs.buildInputDecoration(
+                          labelText: 'Modelo',
+                        ),
+                        hint: const Text("Seleccione el modelo"),
+                        // Initial Value
+                        value: _vehicle.model,
+
+                        // Down Arrow Icon
+                        icon: const Icon(Icons.keyboard_arrow_down),
+
+                        // Array list of items
+                        items: (widget.models.isEmpty && _vehicle.model != null)
+                            ? [
+                                DropdownMenuItem(
+                                  value: _vehicle.modelDisplay!.id,
+                                  child:
+                                      Text(_vehicle.modelDisplay!.description!),
+                                )
+                              ]
+                            : widget.models.map((Model item) {
+                                return DropdownMenuItem(
+                                  value: item.id,
+                                  child: Text(item.description!),
+                                );
+                              }).toList(),
+                        // After selecting the desired option,it will
+                        // change button value to selected value
+                        onChanged: (String? value) => _vehicle.model = value,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El modelo es obligatorio';
+                          }
+                          return null;
+                        },
+                      ),
+                      FutureBuilder(
+                        future: UseService.getUses({
+                          'query': '{id, description}',
+                          'not_paginator': true
+                        }),
+                        builder: (context, AsyncSnapshot<List<Use>?> snapshot) {
+                          return snapshot.connectionState !=
+                                  ConnectionState.done
+                              ? const MyProgressIndicator()
+                              : DropdownButtonFormField(
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    labelText: 'Uso',
+                                  ),
+                                  hint: const Text("Seleccione el uso"),
+                                  // Initial Value
+                                  value: _vehicle.use,
+
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+
+                                  // Array list of items
+                                  items: snapshot.data?.map((Use item) {
                                     return DropdownMenuItem(
                                       value: item.id,
                                       child: Text(item.description!),
@@ -179,10 +231,10 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                                   // After selecting the desired option,it will
                                   // change button value to selected value
                                   onChanged: (String? value) =>
-                                      _vehicle.model = value,
+                                      _vehicle.use = value,
                                   validator: (String? value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'El modelo es obligatorio';
+                                      return 'El uso es obligatorio';
                                     }
                                     return null;
                                   },
@@ -255,24 +307,26 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                         ),
                       ),
                       FutureBuilder(
-                        future: VehicleService.fieldOption('transmission'),
+                        future: VehicleService.fieldOptions('transmission'),
                         builder:
                             (context, AsyncSnapshot<List<Option>?> snapshot) {
-                          return snapshot.connectionState !=
+                          return snapshot.connectionState ==
                                   ConnectionState.done
-                              ? const MyProgressIndicator()
-                              : DropdownButtonFormField(
-                                  hint: const Text("Transmision"),
+                              ? DropdownButtonFormField(
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    labelText: 'Transmision',
+                                  ),
+                                  hint: const Text("Seleccione la transmision"),
                                   // Initial Value
-                                  value: _vehicle.transmission,
+                                  value: _vehicle.transmission.toString(),
 
                                   // Down Arrow Icon
                                   icon: const Icon(Icons.keyboard_arrow_down),
 
                                   // Array list of items
-                                  items: snapshot.data!.map((Option item) {
+                                  items: snapshot.data?.map((Option item) {
                                     return DropdownMenuItem(
-                                      value: item.code,
+                                      value: item.value,
                                       child: Text(item.description!),
                                     );
                                   }).toList(),
@@ -285,8 +339,43 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                                     }
                                     return null;
                                   },
-                                );
+                                )
+                              : const MyProgressIndicator();
                         },
+                      ),
+                      const SizedBox(height: 30),
+                      const Text('Datos Dueño'),
+                      TextFormField(
+                        initialValue: _vehicle.ownerName ?? '',
+                        onChanged: (value) => _vehicle.ownerName = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El nombre del dueño es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el nombre del dueño.',
+                          labelText: 'Nombre del dueño',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _vehicle.ownerLastName ?? '',
+                        onChanged: (value) => _vehicle.ownerLastName = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El apellido del dueño es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el apellido del dueño.',
+                          labelText: 'Apellido del dueño',
+                        ),
                       ),
                       CustomCheckBox(
                         title: 'Activo',

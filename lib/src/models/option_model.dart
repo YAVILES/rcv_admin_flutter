@@ -6,11 +6,11 @@ import 'dart:convert';
 
 class Option {
   Option({
-    this.code,
+    this.value,
     this.description,
   });
 
-  String? code;
+  String? value;
   String? description;
 
   factory Option.fromJson(String str) => Option.fromMap(json.decode(str));
@@ -18,12 +18,12 @@ class Option {
   String toJson() => json.encode(toMap());
 
   factory Option.fromMap(Map<String, dynamic> json) => Option(
-        code: json["code"],
+        value: json["value"].toString(),
         description: json["description"],
       );
 
   Map<String, dynamic> toMap() => {
-        "code": code,
+        "value": value,
         "description": description,
       };
 }

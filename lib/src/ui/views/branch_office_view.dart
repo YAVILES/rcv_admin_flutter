@@ -136,6 +136,19 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                           labelText: 'Descripción',
                         ),
                       ),
+                      TextFormField(
+                        initialValue: _branchOffice.linkGoogleMaps ?? '',
+                        onSaved: (value) =>
+                            _branchOffice.linkGoogleMaps = value,
+                        onChanged: (value) =>
+                            _branchOffice.linkGoogleMaps = value,
+                        onFieldSubmitted: (value) => _saveBranchOffice(
+                            create, branchOfficeProvider, _branchOffice),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el link de google maps.',
+                          labelText: 'Link de google maps',
+                        ),
+                      ),
                       CustomCheckBox(
                         title: 'Activo',
                         value: _branchOffice.isActive ?? true,
@@ -166,35 +179,34 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
     BranchOfficeProvider branchOfficeProvider,
     BranchOffice _branchOffice,
   ) async {
-    {
-      try {
-        var saved = false;
-        if (create) {
-          saved = await branchOfficeProvider.newBranchOffice(_branchOffice) ??
-              false;
-          if (saved) {
-            NotificationService.showSnackbarSuccess(
-                '${_branchOffice.description} creado');
-          }
-        } else {
-          saved = await branchOfficeProvider.editBranchOffice(
-                  _branchOffice.id!, _branchOffice) ??
-              false;
-          if (saved) {
-            NotificationService.showSnackbarSuccess(
-              '${_branchOffice.description} actualizado',
-            );
-          }
-        }
+    try {
+      var saved = false;
+      if (create) {
+        saved =
+            await branchOfficeProvider.newBranchOffice(_branchOffice) ?? false;
         if (saved) {
-          NavigationService.back(context);
+          NotificationService.showSnackbarSuccess(
+              '${_branchOffice.description} creado');
         }
-        return saved;
-      } on ErrorAPI catch (e) {
-        NotificationService.showSnackbarError(
-          e.error?[0] ?? 'No se pudo guardar la sucursal',
-        );
+      } else {
+        saved = await branchOfficeProvider.editBranchOffice(
+                _branchOffice.id!, _branchOffice) ??
+            false;
+        if (saved) {
+          NotificationService.showSnackbarSuccess(
+            '${_branchOffice.description} actualizado',
+          );
+        }
       }
+      if (saved) {
+        NavigationService.back(context);
+      }
+      return saved;
+    } on ErrorAPI catch (e) {
+      NotificationService.showSnackbarError(
+        e.error?[0] ?? 'No se pudo guardar la sucursal',
+      );
+      return null;
     }
   }
 }
