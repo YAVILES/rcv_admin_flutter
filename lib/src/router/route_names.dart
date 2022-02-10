@@ -49,6 +49,21 @@ const coverageRoute = 'coverage';
 const coverageDetailRoute = 'details_coverage';
 
 // Premium
-const premiumsRoute = 'premium';
+const premiumsRoute = 'premiums';
 const premiumRoute = 'premium';
 const premiumDetailRoute = 'details_premium';
+
+// Premium
+const marksRoute = 'marks';
+const markRoute = 'mark';
+const markDetailRoute = 'details_mark';
+
+// Premium
+const modelsRoute = 'models';
+const modelRoute = 'model';
+const modelDetailRoute = 'details_model';
+
+// Premium
+const vehiclesRoute = 'vehicles';
+const vehicleRoute = 'vehicle';
+const vehicleDetailRoute = 'details_vehicle';

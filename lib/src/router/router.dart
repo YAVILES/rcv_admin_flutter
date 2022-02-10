@@ -24,6 +24,10 @@ import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/login_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/mark_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/marks_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/model_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/models_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/not_found_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plans_view.dart';
@@ -34,6 +38,8 @@ import 'package:rcv_admin_flutter/src/ui/views/use_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/user_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/users_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/uses_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/vehicle_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/vehicles_view.dart';
 
 // Código Go RouterGoRouter
 
@@ -322,7 +328,7 @@ class RouterGoRouter {
           ),
         ),
 
-        // Cleintes
+        // Clients
         GoRoute(
           name: clientsRoute,
           path: '/$clientsRoute',
@@ -330,6 +336,102 @@ class RouterGoRouter {
             key: state.pageKey,
             child: const ClientsView(),
           ),
+        ),
+
+        // Marks
+        GoRoute(
+          name: marksRoute,
+          path: '/$marksRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const MarksView(),
+          ),
+          routes: [
+            GoRoute(
+              name: markRoute,
+              path: markRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: MarkView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: markDetailRoute,
+              path: '$marksRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: MarkView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Models
+        GoRoute(
+          name: modelsRoute,
+          path: '/$modelsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const ModelsView(),
+          ),
+          routes: [
+            GoRoute(
+              name: modelRoute,
+              path: modelRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: ModelView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: modelDetailRoute,
+              path: '$modelsRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: ModelView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Models
+        GoRoute(
+          name: vehiclesRoute,
+          path: '/$vehiclesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const VehiclesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: vehicleRoute,
+              path: vehicleRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: VehicleView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: vehicleDetailRoute,
+              path: '$vehiclesRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: VehicleView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
         ),
       ],
       navigatorBuilder: (context, child) {

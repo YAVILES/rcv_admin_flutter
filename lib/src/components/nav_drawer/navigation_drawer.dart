@@ -114,6 +114,34 @@ class NavigationDrawer extends StatelessWidget {
               ),
             ],
           ),
+          DrawerItem(
+            title: 'Administración de Vehículos',
+            icon: Icons.car_rental_outlined,
+            navigationPath: vehiclesRoute,
+            children: [
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == marksRoute,
+                title: "Marcas",
+                navigationPath: marksRoute,
+                icon: Icons.mark_as_unread_outlined,
+                onPressed: () => navigateTo(context, marksRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == modelsRoute,
+                title: "Modelos",
+                navigationPath: modelsRoute,
+                icon: Icons.mark_as_unread_outlined,
+                onPressed: () => navigateTo(context, modelsRoute),
+              ),
+              NavBarItem(
+                isActive: navDrawerProvider.routeCurrent == vehiclesRoute,
+                title: "Vehiculos",
+                navigationPath: vehiclesRoute,
+                icon: Icons.mark_as_unread_outlined,
+                onPressed: () => navigateTo(context, vehiclesRoute),
+              ),
+            ],
+          ),
           const SizedBox(height: 15),
           ListTile(
             title: const Text('Cerrar Sesión'),
