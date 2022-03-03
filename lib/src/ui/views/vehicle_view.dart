@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rcv_admin_flutter/src/components/document_vehicle.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/model_model.dart';
 import 'package:rcv_admin_flutter/src/models/option_model.dart';
@@ -343,8 +344,13 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                               : const MyProgressIndicator();
                         },
                       ),
+                      CustomCheckBox(
+                        title: 'Activo',
+                        value: _vehicle.isActive ?? true,
+                        onChanged: (value) => _vehicle.isActive = value,
+                      ),
                       const SizedBox(height: 30),
-                      const Text('Datos Dueño'),
+                      const Text('Datos del Dueño'),
                       TextFormField(
                         initialValue: _vehicle.ownerName ?? '',
                         onChanged: (value) => _vehicle.ownerName = value,
@@ -377,11 +383,16 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                           labelText: 'Apellido del dueño',
                         ),
                       ),
-                      CustomCheckBox(
-                        title: 'Activo',
-                        value: _vehicle.isActive ?? true,
-                        onChanged: (value) => _vehicle.isActive = value,
+                      Wrap(
+                        children: const [
+                          DocumentVehicle(title: 'Cédula de Identidad'),
+                          DocumentVehicle(title: 'Licencia'),
+                          DocumentVehicle(title: 'RIF'),
+                          DocumentVehicle(title: 'Certificado Médico'),
+                        ],
                       ),
+                      const SizedBox(height: 30),
+                      const Text('Datos del Tomador/Cliente'),
                       Container(
                         margin: const EdgeInsets.only(top: 30),
                         alignment: Alignment.center,

@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
-import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
