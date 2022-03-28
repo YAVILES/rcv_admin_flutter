@@ -312,7 +312,8 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                         builder:
                             (context, AsyncSnapshot<List<Option>?> snapshot) {
                           return snapshot.connectionState ==
-                                  ConnectionState.done
+                                      ConnectionState.done &&
+                                  snapshot.hasData
                               ? DropdownButtonFormField(
                                   decoration: CustomInputs.buildInputDecoration(
                                     labelText: 'Transmision',
@@ -327,7 +328,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                                   // Array list of items
                                   items: snapshot.data!.map((Option item) {
                                     return DropdownMenuItem(
-                                      value: item.value,
+                                      value: item.value.toString(),
                                       child: Text(item.description!),
                                     );
                                   }).toList(),

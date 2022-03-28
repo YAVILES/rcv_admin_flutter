@@ -9,7 +9,7 @@ import 'package:rcv_admin_flutter/src/models/role_model.dart';
 class Client {
   String? id;
   String? identificationNumber;
-  String? clientname;
+  String? username;
   String? email;
   String? emailAlternative;
   String? name;
@@ -30,7 +30,7 @@ class Client {
   Client({
     this.id,
     this.identificationNumber,
-    this.clientname,
+    this.username,
     this.email,
     this.emailAlternative,
     this.name,
@@ -53,7 +53,7 @@ class Client {
     return {
       'id': id,
       'identification_number': identificationNumber,
-      'clientname': clientname,
+      'username': username,
       'email': email,
       'email_alternative': emailAlternative,
       'name': name,
@@ -77,7 +77,7 @@ class Client {
     return Client(
       id: map['id'],
       identificationNumber: map['identification_number'],
-      clientname: map['clientname'],
+      username: map['username'],
       email: map['email'],
       emailAlternative: map['email_alternative'],
       name: map['name'],

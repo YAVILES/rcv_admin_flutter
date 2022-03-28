@@ -84,7 +84,7 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
           children: [
             HeaderView(
               title: 'Administración de Sistema',
-              subtitle: 'Cliente ${widget.client.clientname ?? ''}',
+              subtitle: 'Cliente ${widget.client.username ?? ''}',
             ),
             Column(
               children: [
@@ -149,7 +149,7 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          _client.clientname ?? '',
+                          _client.username ?? '',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
@@ -162,171 +162,230 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
                 const SizedBox(height: 20),
                 Form(
                   key: clientProvider.formClientKey,
-                  child: Wrap(
+                  child: Column(
                     children: [
-                      TextFormField(
-                        readOnly: !create,
-                        initialValue: _client.identificationNumber ?? '',
-                        onChanged: (value) =>
-                            _client.identificationNumber = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'La cedula es obligatoria';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese la cedula.',
-                          labelText: 'Cedula',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _client.name ?? '',
-                        onChanged: (value) => _client.name = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El nombre es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el nombre.',
-                          labelText: 'Nombre',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _client.lastName ?? '',
-                        onChanged: (value) => _client.lastName = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El apellido es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el apellido.',
-                          labelText: 'Apellido',
-                        ),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        initialValue: _client.email ?? '',
-                        onChanged: (value) => _client.email = value,
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        validator: (value) {
-                          final valid = EmailValidator.validate(value!);
-                          if (!valid) {
-                            return 'ingrese un correo valido';
-                          }
-
-                          return null;
-                        },
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el correo.',
-                          labelText: 'Correo',
-                        ),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        initialValue: _client.emailAlternative ?? '',
-                        onChanged: (value) => _client.emailAlternative = value,
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final valid = EmailValidator.validate(value);
-                            if (!valid) {
-                              return 'ingrese un correo valido';
-                            }
-                          }
-                          return null;
-                        },
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el correo alternativo.',
-                          labelText: 'Correo alternativo',
-                        ),
-                      ),
-                      TextFormField(
-                        maxLines: null,
-                        minLines: 2,
-                        keyboardType: TextInputType.multiline,
-                        initialValue: _client.direction ?? '',
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        onChanged: (value) => _client.direction = value,
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese la dirección.',
-                          labelText: 'Dirección',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _client.phone ?? '',
-                        onChanged: (value) => _client.phone = value,
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el número celular.',
-                          labelText: 'Nro. celular',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _client.telephone ?? '',
-                        onChanged: (value) => _client.telephone = value,
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el telefono.',
-                          labelText: 'Telefono',
-                        ),
-                      ),
-                      TextFormField(
-                        readOnly: !create,
-                        initialValue: _client.clientname ?? '',
-                        onChanged: (value) => _client.clientname = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El usuario es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveClient(create, clientProvider, _client),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el usuario.',
-                          labelText: 'Usuario',
-                        ),
-                      ),
-                      if (create)
-                        TextFormField(
-                          initialValue: _client.password ?? '',
-                          onChanged: (value) => _client.password = value,
-                          validator: (value) {
-                            if ((value == null || value.isEmpty) && create) {
-                              return 'La contraseña es obligatoria';
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (value) =>
-                              _saveClient(create, clientProvider, _client),
-                          decoration: CustomInputs.buildInputDecoration(
-                            hintText: 'Ingrese la contraseña.',
-                            labelText: 'Contraseña',
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              readOnly: !create,
+                              initialValue: _client.username ?? '',
+                              onChanged: (value) => _client.username = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El usuario es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el usuario.',
+                                labelText: 'Usuario',
+                                constraints:
+                                    const BoxConstraints(maxWidth: 350),
+                              ),
+                            ),
                           ),
-                        ),
-                      SizedBox(
-                        width: 155,
-                        child: CustomCheckBox(
-                          title: 'Activo',
-                          value: _client.isActive ?? true,
-                          onChanged: (value) => _client.isActive = value,
-                        ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              readOnly: !create,
+                              initialValue: _client.identificationNumber ?? '',
+                              onChanged: (value) =>
+                                  _client.identificationNumber = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'La cedula o el rif es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese la cedula o el rif.',
+                                labelText: 'Cedula o Rif',
+                                constraints:
+                                    const BoxConstraints(maxWidth: 350),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _client.name ?? '',
+                              onChanged: (value) => _client.name = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El nombre es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el nombre.',
+                                labelText: 'Nombre',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _client.lastName ?? '',
+                              onChanged: (value) => _client.lastName = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El apellido es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el apellido.',
+                                labelText: 'Apellido',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              initialValue: _client.email ?? '',
+                              onChanged: (value) => _client.email = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              validator: (value) {
+                                final valid = EmailValidator.validate(value!);
+                                if (!valid) {
+                                  return 'ingrese un correo valido';
+                                }
+
+                                return null;
+                              },
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el correo.',
+                                labelText: 'Correo',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              initialValue: _client.emailAlternative ?? '',
+                              onChanged: (value) =>
+                                  _client.emailAlternative = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              validator: (value) {
+                                if (value != null && value.isNotEmpty) {
+                                  final valid = EmailValidator.validate(value);
+                                  if (!valid) {
+                                    return 'ingrese un correo valido';
+                                  }
+                                }
+                                return null;
+                              },
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el correo alternativo.',
+                                labelText: 'Correo alternativo',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _client.phone ?? '',
+                              onChanged: (value) => _client.phone = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el número celular.',
+                                labelText: 'Nro. celular',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _client.telephone ?? '',
+                              onChanged: (value) => _client.telephone = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el telefono.',
+                                labelText: 'Telefono',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              maxLines: null,
+                              minLines: 2,
+                              keyboardType: TextInputType.multiline,
+                              initialValue: _client.direction ?? '',
+                              onFieldSubmitted: (value) =>
+                                  _saveClient(create, clientProvider, _client),
+                              onChanged: (value) => _client.direction = value,
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese la dirección.',
+                                labelText: 'Dirección',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          if (create)
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: _client.password ?? '',
+                                onChanged: (value) => _client.password = value,
+                                validator: (value) {
+                                  if ((value == null || value.isEmpty) &&
+                                      create) {
+                                    return 'La contraseña es obligatoria';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (value) => _saveClient(
+                                    create, clientProvider, _client),
+                                decoration: CustomInputs.buildInputDecoration(
+                                  hintText: 'Ingrese la contraseña.',
+                                  labelText: 'Contraseña',
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 155,
+                            child: CustomCheckBox(
+                              title: 'Activo',
+                              value: _client.isActive ?? true,
+                              onChanged: (value) => _client.isActive = value,
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 30),

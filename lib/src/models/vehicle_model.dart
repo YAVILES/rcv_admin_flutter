@@ -77,7 +77,7 @@ class Vehicle {
         modelDisplay: json["model_display"] == null
             ? null
             : Model.fromMap(json["model_display"]),
-        transmission: json["transmission"],
+        transmission: json["transmission"] ?? 1,
         transmissionDisplay: json["transmission_display"],
         taker: json["taker"],
         takerDisplay: json["taker_display"] == null
