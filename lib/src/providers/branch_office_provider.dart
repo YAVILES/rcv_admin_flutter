@@ -115,7 +115,7 @@ class BranchOfficeProvider with ChangeNotifier {
       }
       loading = false;
       notifyListeners();
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }

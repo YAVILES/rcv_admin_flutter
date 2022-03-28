@@ -164,146 +164,218 @@ class __UserViewBodyState extends State<_UserViewBody> {
                 const SizedBox(height: 20),
                 Form(
                   key: userProvider.formUserKey,
-                  child: Wrap(
+                  child: Column(
                     children: [
-                      TextFormField(
-                        readOnly: !create,
-                        initialValue: _user.username ?? '',
-                        onChanged: (value) => _user.username = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El usuario es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el usuario.',
-                          labelText: 'Usuario',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _user.name ?? '',
-                        onChanged: (value) => _user.name = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El nombre es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el nombre.',
-                          labelText: 'Nombre',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _user.lastName ?? '',
-                        onChanged: (value) => _user.lastName = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El apellido es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el apellido.',
-                          labelText: 'Apellido',
-                        ),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        initialValue: _user.email ?? '',
-                        onChanged: (value) => _user.email = value,
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        validator: (value) {
-                          final valid = EmailValidator.validate(value!);
-                          if (!valid) {
-                            return 'ingrese un correo valido';
-                          }
-
-                          return null;
-                        },
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el correo.',
-                          labelText: 'Correo',
-                        ),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        initialValue: _user.emailAlternative ?? '',
-                        onChanged: (value) => _user.emailAlternative = value,
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final valid = EmailValidator.validate(value);
-                            if (!valid) {
-                              return 'ingrese un correo valido';
-                            }
-                          }
-                          return null;
-                        },
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el correo alternativo.',
-                          labelText: 'Correo alternativo',
-                        ),
-                      ),
-                      TextFormField(
-                        maxLines: null,
-                        minLines: 2,
-                        keyboardType: TextInputType.multiline,
-                        initialValue: _user.direction ?? '',
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        onChanged: (value) => _user.direction = value,
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese la dirección.',
-                          labelText: 'Dirección',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _user.phone ?? '',
-                        onChanged: (value) => _user.phone = value,
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el número celular.',
-                          labelText: 'Nro. celular',
-                        ),
-                      ),
-                      TextFormField(
-                        initialValue: _user.telephone ?? '',
-                        onChanged: (value) => _user.telephone = value,
-                        onFieldSubmitted: (value) =>
-                            _saveUser(create, userProvider, _user),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el telefono.',
-                          labelText: 'Telefono',
-                        ),
-                      ),
-                      if (create)
-                        TextFormField(
-                          initialValue: _user.password ?? '',
-                          onChanged: (value) => _user.password = value,
-                          validator: (value) {
-                            if ((value == null || value.isEmpty) && create) {
-                              return 'La contraseña es obligatoria';
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (value) =>
-                              _saveUser(create, userProvider, _user),
-                          decoration: CustomInputs.buildInputDecoration(
-                            hintText: 'Ingrese la contraseña.',
-                            labelText: 'Contraseña',
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              readOnly: !create,
+                              initialValue: _user.username ?? '',
+                              onChanged: (value) => _user.username = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El usuario es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el usuario.',
+                                labelText: 'Usuario',
+                                constraints:
+                                    const BoxConstraints(maxWidth: 350),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              readOnly: !create,
+                              initialValue: _user.identificationNumber ?? '',
+                              onChanged: (value) =>
+                                  _user.identificationNumber = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'La cedula o el rif es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese la cedula o el rif.',
+                                labelText: 'Cedula o Rif',
+                                constraints:
+                                    const BoxConstraints(maxWidth: 350),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _user.name ?? '',
+                              onChanged: (value) => _user.name = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El nombre es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el nombre.',
+                                labelText: 'Nombre',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _user.lastName ?? '',
+                              onChanged: (value) => _user.lastName = value,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'El apellido es obligatorio';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el apellido.',
+                                labelText: 'Apellido',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              initialValue: _user.email ?? '',
+                              onChanged: (value) => _user.email = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              validator: (value) {
+                                final valid = EmailValidator.validate(value!);
+                                if (!valid) {
+                                  return 'ingrese un correo valido';
+                                }
+
+                                return null;
+                              },
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el correo.',
+                                labelText: 'Correo',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              initialValue: _user.emailAlternative ?? '',
+                              onChanged: (value) =>
+                                  _user.emailAlternative = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              validator: (value) {
+                                if (value != null && value.isNotEmpty) {
+                                  final valid = EmailValidator.validate(value);
+                                  if (!valid) {
+                                    return 'ingrese un correo valido';
+                                  }
+                                }
+                                return null;
+                              },
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el correo alternativo.',
+                                labelText: 'Correo alternativo',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _user.phone ?? '',
+                              onChanged: (value) => _user.phone = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el número celular.',
+                                labelText: 'Nro. celular',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: _user.telephone ?? '',
+                              onChanged: (value) => _user.telephone = value,
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese el telefono.',
+                                labelText: 'Telefono',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              maxLines: null,
+                              minLines: 2,
+                              keyboardType: TextInputType.multiline,
+                              initialValue: _user.direction ?? '',
+                              onFieldSubmitted: (value) =>
+                                  _saveUser(create, userProvider, _user),
+                              onChanged: (value) => _user.direction = value,
+                              decoration: CustomInputs.buildInputDecoration(
+                                hintText: 'Ingrese la dirección.',
+                                labelText: 'Dirección',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          if (create)
+                            Expanded(
+                              child: TextFormField(
+                                initialValue: _user.password ?? '',
+                                onChanged: (value) => _user.password = value,
+                                validator: (value) {
+                                  if ((value == null || value.isEmpty) &&
+                                      create) {
+                                    return 'La contraseña es obligatoria';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (value) =>
+                                    _saveUser(create, userProvider, _user),
+                                decoration: CustomInputs.buildInputDecoration(
+                                  hintText: 'Ingrese la contraseña.',
+                                  labelText: 'Contraseña',
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                       FutureBuilder(
                         future: RoleService.getRoles(
                             {'not_paginator': true, 'query': '{id, name}'}),
@@ -351,14 +423,18 @@ class __UserViewBodyState extends State<_UserViewBody> {
                               : const MyProgressIndicator();
                         },
                       ),
-                      const SizedBox(width: 50),
-                      SizedBox(
-                        width: 155,
-                        child: CustomCheckBox(
-                          title: 'Activo',
-                          value: _user.isActive ?? true,
-                          onChanged: (value) => _user.isActive = value,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 155,
+                            child: CustomCheckBox(
+                              title: 'Activo',
+                              value: _user.isActive ?? true,
+                              onChanged: (value) => _user.isActive = value,
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 30),

@@ -10,6 +10,7 @@ class User {
   String? id;
   String? username;
   String? email;
+  String? identificationNumber;
   String? emailAlternative;
   String? name;
   String? lastName;
@@ -31,6 +32,7 @@ class User {
   User({
     this.id,
     this.username,
+    this.identificationNumber,
     this.email,
     this.emailAlternative,
     this.name,
@@ -55,6 +57,7 @@ class User {
     return {
       'id': id,
       'username': username,
+      'identification_number': identificationNumber,
       'email': email,
       'email_alternative': emailAlternative,
       'name': name,
@@ -80,6 +83,7 @@ class User {
     return User(
       id: map['id'],
       username: map['username'],
+      identificationNumber: map['identification_number'],
       email: map['email'],
       emailAlternative: map['email_alternative'],
       name: map['name'],

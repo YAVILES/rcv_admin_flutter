@@ -19,6 +19,7 @@ import 'package:rcv_admin_flutter/src/ui/views/banner_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banners_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/client_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/clients_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
@@ -330,13 +331,34 @@ class RouterGoRouter {
 
         // Clients
         GoRoute(
-          name: clientsRoute,
-          path: '/$clientsRoute',
-          pageBuilder: (context, state) => MaterialPage(
-            key: state.pageKey,
-            child: const ClientsView(),
-          ),
-        ),
+            name: clientsRoute,
+            path: '/$clientsRoute',
+            pageBuilder: (context, state) => MaterialPage(
+                  key: state.pageKey,
+                  child: const ClientsView(),
+                ),
+            routes: [
+              GoRoute(
+                name: clientRoute,
+                path: clientRoute,
+                pageBuilder: (context, state) {
+                  return MaterialPage(
+                    key: state.pageKey,
+                    child: ClientView(),
+                  );
+                },
+              ),
+              GoRoute(
+                name: clientDetailRoute,
+                path: '$clientsRoute/:id',
+                pageBuilder: (context, state) {
+                  return MaterialPage(
+                    key: state.pageKey,
+                    child: ClientView(uid: state.params['id'].toString()),
+                  );
+                },
+              ),
+            ]),
 
         // Marks
         GoRoute(

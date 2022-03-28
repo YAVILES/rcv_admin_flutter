@@ -31,7 +31,7 @@ class ClientProvider with ChangeNotifier {
       loading = false;
       notifyListeners();
       return clients;
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }

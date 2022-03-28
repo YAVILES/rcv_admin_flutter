@@ -84,7 +84,7 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
           children: [
             HeaderView(
               title: 'Administración de Sistema',
-              subtitle: 'Usuario ${widget.client.clientname ?? ''}',
+              subtitle: 'Cliente ${widget.client.clientname ?? ''}',
             ),
             Column(
               children: [
@@ -166,19 +166,20 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
                     children: [
                       TextFormField(
                         readOnly: !create,
-                        initialValue: _client.clientname ?? '',
-                        onChanged: (value) => _client.clientname = value,
+                        initialValue: _client.identificationNumber ?? '',
+                        onChanged: (value) =>
+                            _client.identificationNumber = value,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'El usuario es obligatorio';
+                            return 'La cedula es obligatoria';
                           }
                           return null;
                         },
                         onFieldSubmitted: (value) =>
                             _saveClient(create, clientProvider, _client),
                         decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el usuario.',
-                          labelText: 'Usuario',
+                          hintText: 'Ingrese la cedula.',
+                          labelText: 'Cedula',
                         ),
                       ),
                       TextFormField(
@@ -283,6 +284,23 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el telefono.',
                           labelText: 'Telefono',
+                        ),
+                      ),
+                      TextFormField(
+                        readOnly: !create,
+                        initialValue: _client.clientname ?? '',
+                        onChanged: (value) => _client.clientname = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El usuario es obligatorio';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveClient(create, clientProvider, _client),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el usuario.',
+                          labelText: 'Usuario',
                         ),
                       ),
                       if (create)

@@ -27,7 +27,7 @@ class VehicleService {
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
-        return data.map((w) => Option.fromMap(w)).toList();
+        _options = data.map((w) => Option.fromMap(w)).toList();
       }
       return _options;
     } on ErrorAPI {

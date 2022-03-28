@@ -22,7 +22,7 @@ import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 import 'package:rcv_admin_flutter/src/app.dart';
 
 Future<void> main() async {
-  final prefs = await Preferences.configurePrefs();
+  await Preferences.configurePrefs();
   API.configureDio();
   // Flurorouter.configureRoute();
   runApp(const AppState());

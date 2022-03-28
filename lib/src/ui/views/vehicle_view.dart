@@ -325,7 +325,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                                   icon: const Icon(Icons.keyboard_arrow_down),
 
                                   // Array list of items
-                                  items: snapshot.data?.map((Option item) {
+                                  items: snapshot.data!.map((Option item) {
                                     return DropdownMenuItem(
                                       value: item.value,
                                       child: Text(item.description!),

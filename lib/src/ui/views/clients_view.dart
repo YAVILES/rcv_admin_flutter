@@ -7,6 +7,7 @@ import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
@@ -44,7 +45,13 @@ class _ClientsViewState extends State<ClientsView> {
                 HeaderView(
                   title: "Administración de Sistema",
                   subtitle: "Gestión de Clientes",
-                  actions: const [],
+                  actions: [
+                    CustomButtonPrimary(
+                      onPressed: () => NavigationService.navigateTo(
+                          context, clientRoute, null),
+                      title: 'Nuevo',
+                    )
+                  ],
                 ),
                 (loading == true)
                     ? const MyProgressIndicator()

@@ -30,7 +30,7 @@ class BannerRCVProvider with ChangeNotifier {
       }
       loading = false;
       notifyListeners();
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }
@@ -44,7 +44,7 @@ class BannerRCVProvider with ChangeNotifier {
       } else {
         return null;
       }
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       return null;
     }
   }
@@ -149,7 +149,7 @@ class BannerRCVProvider with ChangeNotifier {
       }
       loading = false;
       notifyListeners();
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }
