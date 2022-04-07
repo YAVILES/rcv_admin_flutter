@@ -20,10 +20,10 @@ class _DocumentVehicleState extends State<DocumentVehicle> {
       margin: const EdgeInsets.all(10.0),
       child: Container(
         padding: const EdgeInsets.all(10.0),
-        width: 150,
+        width: 180,
         child: Column(
           children: [
-            Text(widget.title),
+            Center(child: Text(widget.title)),
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

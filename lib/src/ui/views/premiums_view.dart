@@ -12,6 +12,7 @@ import 'package:rcv_admin_flutter/src/providers/premium_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/plan_service.dart';
+import 'package:rcv_admin_flutter/src/services/use_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/modals/premium_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
@@ -60,7 +61,7 @@ class _PremiumsViewState extends State<PremiumsView> {
                 }, paramsUses: {
                   'is_active': true,
                   'not_paginator': true,
-                  'query': '{id, description, premiums}'
+                  'query': '{id, description}'
                 }),
                 builder: (context, AsyncSnapshot<PlansUses?> snapshot) {
                   if (snapshot.hasData) {
@@ -86,20 +87,28 @@ class _PremiumsViewState extends State<PremiumsView> {
                                     header: use.description,
                                     dataAttribute: 'id',
                                     widget: (plan) {
+                                      Plan planMap = Plan.fromMap(plan);
                                       return Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          TotalCoverage(
-                                            plan: Plan.fromMap(plan),
-                                            use: use,
-                                            premiums: use.premiums
-                                                    ?.where((Premium premium) =>
-                                                        premium.plan ==
-                                                        plan['id'])
-                                                    .toList() ??
-                                                [],
-                                          ),
+                                          FutureBuilder(
+                                              future: UseService.getUse(
+                                                  use.id!, planMap.id),
+                                              builder: (_,
+                                                  AsyncSnapshot<Use?>
+                                                      snapshot) {
+                                                return snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.done
+                                                    ? TotalCoverage(
+                                                        plan: planMap,
+                                                        use: snapshot.data!,
+                                                        premiums: snapshot
+                                                            .data!.premiums!,
+                                                      )
+                                                    : const MyProgressIndicator();
+                                              }),
                                         ],
                                       );
                                     },

@@ -28,6 +28,10 @@ class Vehicle {
     this.takerDisplay,
     this.ownerName,
     this.ownerLastName,
+    this.ownerIdentityCard,
+    this.ownerPhones,
+    this.ownerAddress,
+    this.ownerEmail,
     this.isActive,
   }) {
     isActive = isActive ?? true;
@@ -52,6 +56,10 @@ class Vehicle {
   String? transmissionDisplay;
   String? ownerName;
   String? ownerLastName;
+  String? ownerIdentityCard;
+  String? ownerPhones;
+  String? ownerAddress;
+  String? ownerEmail;
   bool? isActive;
 
   factory Vehicle.fromJson(String str) => Vehicle.fromMap(json.decode(str));
@@ -85,6 +93,10 @@ class Vehicle {
             : User.fromMap(json["taker_display"]),
         ownerName: json["owner_name"],
         ownerLastName: json["owner_last_name"],
+        ownerAddress: json["owner_address"],
+        ownerIdentityCard: json["owner_identity_card"],
+        ownerEmail: json["owner_email"],
+        ownerPhones: json["owner_phones"],
         isActive: json["is_active"] ?? true,
       );
 
@@ -107,6 +119,10 @@ class Vehicle {
         "taker_dispaly": takerDisplay?.toMap(),
         "owner_name": ownerName,
         "owner_last_name": ownerLastName,
+        "owner_address": ownerAddress,
+        "owner_identity_card": ownerIdentityCard,
+        "owner_email": ownerEmail,
+        "owner_phones": ownerPhones,
         "is_active": isActive,
       };
 }

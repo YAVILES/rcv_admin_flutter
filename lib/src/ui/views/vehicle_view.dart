@@ -384,25 +384,83 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                           labelText: 'Apellido del dueño',
                         ),
                       ),
+                      TextFormField(
+                        initialValue: _vehicle.ownerIdentityCard ?? '',
+                        onChanged: (value) =>
+                            _vehicle.ownerIdentityCard = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'La cedula o el rif del dueño es obligatorio';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese la cedula o el rif del dueño.',
+                          labelText: 'Cedula o Rif del dueño',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _vehicle.ownerEmail ?? '',
+                        onChanged: (value) => _vehicle.ownerEmail = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El correo del dueño es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el correo del dueño.',
+                          labelText: 'Correo del dueño',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _vehicle.ownerPhones ?? '',
+                        onChanged: (value) => _vehicle.ownerPhones = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El telefono del dueño es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el telefono correo del dueño.',
+                          labelText: 'Telefono del dueño',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _vehicle.ownerAddress ?? '',
+                        onChanged: (value) => _vehicle.ownerAddress = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Dirección del dueño es obligatoria';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText:
+                              'Ingrese la dirección telefono correo del dueño.',
+                          labelText: 'Dirección del dueño',
+                        ),
+                      ),
                       Wrap(
                         children: const [
-                          DocumentVehicle(title: 'Cédula de Identidad'),
+                          DocumentVehicle(title: 'Cédula de Identidad o Rif'),
                           DocumentVehicle(title: 'Licencia'),
-                          DocumentVehicle(title: 'RIF'),
-                          DocumentVehicle(title: 'Certificado Médico'),
+                          DocumentVehicle(
+                            title: 'Carnet de Circulación o Titulo',
+                          ),
+                          // DocumentVehicle(title: 'Certificado Médico'),
                         ],
                       ),
                       const SizedBox(height: 30),
-                      const Text('Datos del Tomador/Cliente'),
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        alignment: Alignment.center,
-                        child: CustomButtonPrimary(
-                          onPressed: () =>
-                              _saveVehicle(create, vehicleProvider, _vehicle),
-                          title: 'Guardar',
-                        ),
-                      ),
                     ],
                   ),
                 ),
