@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:rcv_admin_flutter/src/models/coverage_model.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/models/use_model.dart';
 import 'package:rcv_admin_flutter/src/services/plan_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
@@ -10,7 +12,8 @@ class PlanProvider with ChangeNotifier {
   List<Map<String, dynamic>> plans = [];
   Plan? plan;
   bool loading = false;
-
+  Use? use;
+  List<Coverage>? coverage;
   late GlobalKey<FormState> formPlanKey;
 
   String? searchValue;
@@ -130,5 +133,10 @@ class PlanProvider with ChangeNotifier {
       loading = false;
       notifyListeners();
     }
+  }
+
+  notifyUse(Use? _use) {
+    use = _use;
+    notifyListeners();
   }
 }

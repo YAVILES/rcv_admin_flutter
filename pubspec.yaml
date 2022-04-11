@@ -27,16 +27,20 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  collection: ^1.15.0
   cupertino_icons: ^1.0.2
   dio: ^4.0.4
+  dropdown_search: ^2.0.1
   email_validator: ^2.0.1
   file_picker: ^4.3.0
+  file_saver: ^0.1.0
   fluro: ^2.0.3
   flutter:
     sdk: flutter
   go_router: ^2.5.7
   infinite_scroll_pagination: ^3.1.0
   intl: ^0.17.0
+  modal_bottom_sheet: ^2.0.1
   provider: ^6.0.1
   responsive_builder: ^0.4.1
   shared_preferences: ^2.0.11

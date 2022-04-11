@@ -1,13 +1,16 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/nav_drawer/drawer_module.dart';
 import 'package:rcv_admin_flutter/src/components/nav_drawer/drawer_item.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
+import 'package:rcv_admin_flutter/src/models/workflow_model.dart';
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/nav_drawer_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/services/workflow_service.dart';
 
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({Key? key}) : super(key: key);
@@ -16,7 +19,29 @@ class NavigationDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final navDrawerProvider = Provider.of<NavDrawerProvider>(context);
-
+    List<Widget> menus = [];
+    var wf = groupBy(authProvider.user!.rolesDisplay![0].workflowsDisplay!,
+        (Workflow oj) => oj.moduleDisplay!.title);
+    for (var key in wf.keys) {
+      menus.add(DrawerItem(
+        title: key.toString(),
+        icon: WorkFlowService.iconDataMenuWorkflow(wf[key]![0].icon!),
+        navigationPath: bannersRoute,
+        children: [
+          ...wf[key]!
+              .map(
+                (e) => NavBarItem(
+                  isActive: navDrawerProvider.routeCurrent == e.url.toString(),
+                  title: e.title.toString(),
+                  navigationPath: e.url.toString(),
+                  icon: WorkFlowService.iconDataMenuWorkflow(e.icon!),
+                  onPressed: () => navigateTo(context, e.url.toString()),
+                ),
+              )
+              .toList()
+        ],
+      ));
+    }
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -31,7 +56,8 @@ class NavigationDrawer extends StatelessWidget {
             },
           ),
           const SizedBox(height: 15),
-          DrawerItem(
+          ...menus,
+          /*   DrawerItem(
             title: 'Administración de Sistema',
             icon: Icons.system_update_outlined,
             navigationPath: dashBoardRoute,
@@ -142,6 +168,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
             ],
           ),
+           */
           const SizedBox(height: 15),
           ListTile(
             title: const Text('Cerrar Sesión'),

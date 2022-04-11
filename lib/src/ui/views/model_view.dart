@@ -91,22 +91,6 @@ class __ModelViewBodyState extends State<_ModelViewBody> {
                   key: modelProvider.formModelKey,
                   child: Wrap(
                     children: [
-                      TextFormField(
-                        initialValue: _model.code ?? '',
-                        onChanged: (value) => _model.code = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El código es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveModel(create, modelProvider, _model),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el código.',
-                          labelText: 'Código',
-                        ),
-                      ),
                       FutureBuilder(
                           future: MarkService.getMarks({
                             'query': '{id, description}',

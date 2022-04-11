@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/nav_drawer/navigation_drawer.dart';
 import 'package:rcv_admin_flutter/src/providers/nav_drawer_provider.dart';
-import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/navbar_avatar.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/notification_indicator.dart';
 
@@ -25,7 +23,7 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
             builder: (context) {
               return Scaffold(
                 key: NavDrawerProvider.scaffoldKey,
-                drawer: const NavigationDrawer(),
+                drawer: NavigationDrawer(),
                 appBar: AppBar(
                   title: Row(
                     children: [
@@ -45,7 +43,7 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
                   ),
                   elevation: 0,
                   actions: const [
-                    NotificationIndicator(),
+                    // NotificationIndicator(),
                     SizedBox(width: 10),
                     NavbarAvatar(),
                     SizedBox(width: 10),

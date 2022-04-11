@@ -1,44 +1,46 @@
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:rcv_admin_flutter/src/models/use_model.dart';
-import 'package:rcv_admin_flutter/src/models/vehicle_model.dart';
+import 'package:rcv_admin_flutter/src/models/client_model.dart';
+import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/models/vehicle_model.dart';
+import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
-class VehicleProvider with ChangeNotifier {
-  String url = '/core/vehicle';
-  List<Map<String, dynamic>> vehicles = [];
-  Vehicle? vehicle;
-  Use? use;
+class PolicyProvider with ChangeNotifier {
+  String url = '/core/policy';
+  List<Map<String, dynamic>> policies = [];
+  Policy? policy;
   bool loading = false;
   bool _isDefault = false;
 
   bool get isDefault => _isDefault;
+
+  Client? taker;
+  Vehicle? vehicle;
 
   set isDefault(bool isDefault) {
     _isDefault = isDefault;
     notifyListeners();
   }
 
-  late GlobalKey<FormState> formVehicleKey;
+  late GlobalKey<FormState> formPolicyKey;
 
   String? searchValue;
 
   bool validateForm() {
-    return formVehicleKey.currentState!.validate();
+    return formPolicyKey.currentState!.validate();
   }
 
-  Future getVehicles() async {
+  Future getPolicies() async {
     loading = true;
     notifyListeners();
     try {
       final response = await API.list('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        vehicles = responseData.results;
+        policies = responseData.results;
       }
       loading = false;
       notifyListeners();
@@ -48,11 +50,11 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  Future<Vehicle?> getVehicle(String uid) async {
+  Future<Policy?> getPolicy(String uid) async {
     try {
       final response = await API.get('$url/$uid/');
       if (response.statusCode == 200) {
-        return Vehicle.fromMap(response.data);
+        return Policy.fromMap(response.data);
       } else {
         return null;
       }
@@ -61,33 +63,17 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newVehicle(Vehicle vehicleRCV) async {
+  Future<bool?> newPolicy(Policy policyRCV) async {
     if (validateForm()) {
-      final mapData = {
-        if (vehicleRCV.ownerIdentityCardImageFile?.bytes != null)
-          'owner_identity_card_image': MultipartFile.fromBytes(
-            vehicleRCV.ownerIdentityCardImageFile!.bytes!,
-            filename: vehicleRCV.ownerIdentityCardImageFile!.name,
-          ),
-        if (vehicleRCV.ownerCirculationCardFile?.bytes != null)
-          'owner_circulation_card': MultipartFile.fromBytes(
-            vehicleRCV.ownerCirculationCardFile!.bytes!,
-            filename: vehicleRCV.ownerCirculationCardFile!.name,
-          ),
-        if (vehicleRCV.ownerLicenseFile?.bytes != null)
-          'owner_license': MultipartFile.fromBytes(
-            vehicleRCV.ownerLicenseFile!.bytes!,
-            filename: vehicleRCV.ownerLicenseFile!.name,
-          ),
-        ...vehicleRCV.toMapSave(),
-      };
+      String? adviser = Preferences.getIdUser();
+      final mapData = policyRCV.toMapSave(adviser);
 
       final formData = FormData.fromMap(mapData);
       try {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          vehicle = Vehicle.fromMap(response.data);
-          getVehicles();
+          policy = Policy.fromMap(response.data);
+          getPolicies();
           return true;
         }
         return false;
@@ -97,34 +83,18 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> editVehicle(String id, Vehicle vehicleRCV) async {
+  Future<bool?> editPolicy(String id, Policy policyRCV) async {
     if (validateForm()) {
-      final mapData = {
-        if (vehicleRCV.ownerIdentityCardImageFile?.bytes != null)
-          'owner_identity_card_image': MultipartFile.fromBytes(
-            vehicleRCV.ownerIdentityCardImageFile!.bytes!,
-            filename: vehicleRCV.ownerIdentityCardImageFile!.name,
-          ),
-        if (vehicleRCV.ownerCirculationCardFile?.bytes != null)
-          'owner_circulation_card': MultipartFile.fromBytes(
-            vehicleRCV.ownerCirculationCardFile!.bytes!,
-            filename: vehicleRCV.ownerCirculationCardFile!.name,
-          ),
-        if (vehicleRCV.ownerLicenseFile?.bytes != null)
-          'owner_license': MultipartFile.fromBytes(
-            vehicleRCV.ownerLicenseFile!.bytes!,
-            filename: vehicleRCV.ownerLicenseFile!.name,
-          ),
-        ...vehicleRCV.toMapSave(),
-      };
+      String? adviser = Preferences.getIdUser();
+      final mapData = policyRCV.toMapSave(adviser);
 
       final formData = FormData.fromMap(mapData);
 
       try {
         final response = await API.put('$url/$id/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          vehicle = Vehicle.fromMap(response.data);
-          getVehicles();
+          policy = Policy.fromMap(response.data);
+          getPolicies();
           return true;
         }
         return false;
@@ -134,12 +104,12 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  Future deleteVehicle(String id) async {
+  Future deletePolicy(String id) async {
     try {
       final resp = await API.delete('$url/$id/');
       if (resp.statusCode == 204) {
-        vehicles.removeWhere(
-            (vehicle) => vehicle['id'].toString() == id.toString());
+        policies
+            .removeWhere((Policy) => Policy['id'].toString() == id.toString());
         notifyListeners();
         return true;
       } else {
@@ -150,12 +120,11 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  Future deleteVehicles(List<String> ids) async {
+  Future deletePolicies(List<String> ids) async {
     try {
       final resp = await API.delete('$url/remove_multiple/', ids: ids);
       if (resp.statusCode == 200) {
-        vehicles
-            .removeWhere((vehicle) => ids.contains(vehicle['id'].toString()));
+        policies.removeWhere((Policy) => ids.contains(Policy['id'].toString()));
         notifyListeners();
         return true;
       } else {
@@ -174,7 +143,7 @@ class VehicleProvider with ChangeNotifier {
       final response = await API.list('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
-        vehicles = responseData.results;
+        policies = responseData.results;
       }
       loading = false;
       notifyListeners();
@@ -198,8 +167,13 @@ class VehicleProvider with ChangeNotifier {
     }
   }
 
-  notifyUse(Use? _use) {
-    use = _use;
+  setTaker(Client? _taker) {
+    taker = _taker;
+    notifyListeners();
+  }
+
+  setVehicle(Vehicle? _vehicle) {
+    vehicle = _vehicle;
     notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
@@ -207,8 +208,8 @@ class _TotalCoverageState extends State<TotalCoverage> {
             tooltipMessage:
                 "\n Plan: ${widget.plan.description} \n Uso: ${widget.use.description} \n",
             onPressed: () {
-              showModalBottomSheet(
-                backgroundColor: Colors.transparent,
+              showMaterialModalBottomSheet(
+                expand: true,
                 context: context,
                 builder: (_) => PremiumModal(
                   plan: widget.plan,

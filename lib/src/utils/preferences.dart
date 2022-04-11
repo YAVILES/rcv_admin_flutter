@@ -15,6 +15,14 @@ class Preferences {
     prefs.setString("refresh", refresh ?? "");
   }
 
+  static Future<void> setWorkflows(String workflows) async {
+    prefs.setString("workflows", workflows);
+  }
+
+  static String? getWorkflows() {
+    return prefs.getString("workflows");
+  }
+
   static void removetoken() async {
     prefs.remove("token");
     prefs.remove("refresh");
@@ -26,5 +34,13 @@ class Preferences {
 
   static String? getRefreshToken() {
     return prefs.getString("refresh");
+  }
+
+  static Future<void> setIdUser(String id) async {
+    prefs.setString("id_user", id);
+  }
+
+  static String? getIdUser() {
+    return prefs.getString("id_user");
   }
 }

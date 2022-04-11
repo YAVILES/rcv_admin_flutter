@@ -17,10 +17,12 @@ import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
 class RoleView extends StatefulWidget {
   Role? role;
+  String? uid;
 
   RoleView({
     Key? key,
     this.role,
+    this.uid,
   }) : super(key: key);
 
   @override
@@ -37,6 +39,32 @@ class _RoleViewState extends State<RoleView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.role != null) {
+      return RoleViewBody(role: widget.role!);
+    } else {
+      return FutureBuilder(
+        future: Provider.of<RoleProvider>(context, listen: false)
+            .getRole(widget.uid ?? ''),
+        builder: (_, AsyncSnapshot snapshot) {
+          return snapshot.connectionState == ConnectionState.done
+              ? RoleViewBody(role: snapshot.data)
+              : const MyProgressIndicator();
+        },
+      );
+    }
+  }
+}
+
+class RoleViewBody extends StatelessWidget {
+  const RoleViewBody({
+    Key? key,
+    required this.role,
+  }) : super(key: key);
+
+  final Role role;
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: CenteredView(
@@ -44,9 +72,9 @@ class _RoleViewState extends State<RoleView> {
           children: [
             HeaderView(
               title: 'Administración de Sistema',
-              subtitle: 'Rol ${widget.role?.name ?? ''}',
+              subtitle: 'Rol ${role.name ?? ''}',
             ),
-            const _RoleForm(),
+            _RoleForm(role: role),
           ],
         ),
       ),
@@ -55,8 +83,8 @@ class _RoleViewState extends State<RoleView> {
 }
 
 class _RoleForm extends StatefulWidget {
-  const _RoleForm({Key? key}) : super(key: key);
-
+  const _RoleForm({Key? key, required this.role}) : super(key: key);
+  final Role role;
   @override
   State<_RoleForm> createState() => _RoleFormState();
 }
@@ -72,6 +100,7 @@ class _RoleFormState extends State<_RoleForm> {
   @override
   Widget build(BuildContext context) {
     RoleProvider roleProvider = Provider.of<RoleProvider>(context);
+    roleProvider.role = widget.role;
     return Form(
       key: roleProvider.formRoleKey,
       child: Column(
@@ -90,10 +119,10 @@ class _RoleFormState extends State<_RoleForm> {
             future: WorkFlowService.getWorkFlows({'not_paginator': true}),
             builder: (_, AsyncSnapshot<List<Workflow>> snapshot) {
               return snapshot.connectionState == ConnectionState.done
-                  ? Row(
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('WorkFlows'),
-                        const SizedBox(width: 20),
+                        const Text('WorkFlows: '),
                         Wrap(
                           children: [
                             ...snapshot.data!.map(
@@ -118,7 +147,8 @@ class _RoleFormState extends State<_RoleForm> {
                                       }
                                     }
                                   },
-                                  title: w.title!,
+                                  title:
+                                      '${w.moduleDisplay!.title} - ${w.title!}',
                                 ),
                               ),
                             ),

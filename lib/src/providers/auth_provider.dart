@@ -26,6 +26,8 @@ class AuthProvider with ChangeNotifier {
 
   User? user;
 
+  getUser() => user;
+
   AuthProvider() {
     isAuthenticated();
   }
@@ -70,6 +72,7 @@ class AuthProvider with ChangeNotifier {
         var data = Auth.fromMap(resp.data);
         if (data.user != null) user = data.user;
         Preferences.setToken(data.token, data.refresh);
+        Preferences.setIdUser(data.user?.id ?? '');
         API.configureDio();
         _loggedInStatus = Status.loggedIn;
         notifyListeners();

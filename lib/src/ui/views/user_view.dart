@@ -5,14 +5,16 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
+import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
+import 'package:rcv_admin_flutter/src/models/role_model.dart';
 
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/role_service.dart';
+import 'package:rcv_admin_flutter/src/services/branch_office_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
@@ -192,7 +194,7 @@ class __UserViewBodyState extends State<_UserViewBody> {
                           const SizedBox(width: 20),
                           Expanded(
                             child: TextFormField(
-                              readOnly: !create,
+                              // readOnly: !create,
                               initialValue: _user.identificationNumber ?? '',
                               onChanged: (value) =>
                                   _user.identificationNumber = value,
@@ -379,46 +381,92 @@ class __UserViewBodyState extends State<_UserViewBody> {
                       FutureBuilder(
                         future: RoleService.getRoles(
                             {'not_paginator': true, 'query': '{id, name}'}),
-                        builder: (_, AsyncSnapshot snapshot) {
+                        builder: (_, AsyncSnapshot<List<Role>> snapshot) {
                           return snapshot.connectionState ==
                                   ConnectionState.done
-                              ? Row(
-                                  children: [
-                                    const Text('roles'),
-                                    const SizedBox(width: 20),
-                                    Wrap(
-                                      children: [
-                                        ...snapshot.data!.map(
-                                          (role) => Padding(
-                                            padding: const EdgeInsets.all(5.0),
-                                            child: CustomChip(
-                                              active: userProvider.user!.roles!
-                                                  .contains(role.id!),
-                                              onTap: (active) {
-                                                if (active) {
-                                                  userProvider.user!.roles !=
-                                                          null
-                                                      ? userProvider
-                                                          .user!.roles!
-                                                          .add(role.id!)
-                                                      : userProvider.user!
-                                                          .roles = [role.id!];
-                                                } else {
-                                                  if (userProvider
-                                                          .user!.roles !=
-                                                      null) {
-                                                    userProvider.user!.roles!
-                                                        .remove(role.id!);
-                                                  }
-                                                }
-                                              },
-                                              title: role.name!,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              ? DropdownButtonFormField(
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    labelText: 'Rol',
+                                  ),
+                                  hint: const Text("Seleccione el rol"),
+                                  // Initial Value
+                                  value: userProvider.user!.roles!.isNotEmpty
+                                      ? userProvider.user!.roles![0].toString()
+                                      : '1',
+
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+
+                                  // Array list of items
+                                  items: snapshot.data?.map((Role item) {
+                                    return DropdownMenuItem(
+                                      value: item.id!.toString(),
+                                      child: Text(item.name!.toString()),
+                                    );
+                                  }).toList(),
+                                  // After selecting the desired option,it will
+                                  // change button value to selected value
+                                  onChanged: (String? value) {
+                                    if (value!.isNotEmpty) {
+                                      userProvider.user!.roles = [
+                                        int.parse(value)
+                                      ];
+                                    }
+                                  },
+
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El rol es obligatorio';
+                                    }
+                                    return null;
+                                  },
+                                )
+                              : const MyProgressIndicator();
+                        },
+                      ),
+                      FutureBuilder(
+                        future: BranchOfficeService.getAll({
+                          'not_paginator': true,
+                          'query': '{id, description}',
+                          'is_active': true
+                        }),
+                        builder:
+                            (_, AsyncSnapshot<List<BranchOffice>> snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.done
+                              ? DropdownButtonFormField(
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    labelText: 'Sucursal',
+                                  ),
+                                  hint: const Text("Seleccione la sucursal"),
+                                  // Initial Value
+                                  value: userProvider.user?.branchOffice,
+
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+
+                                  // Array list of items
+                                  items:
+                                      snapshot.data?.map((BranchOffice item) {
+                                    return DropdownMenuItem(
+                                      value: item.id!.toString(),
+                                      child: Text(item.description!.toString()),
+                                    );
+                                  }).toList(),
+                                  // After selecting the desired option,it will
+                                  // change button value to selected value
+                                  onChanged: (String? value) {
+                                    if (value!.isNotEmpty) {
+                                      userProvider.user!.branchOffice = value;
+                                    }
+                                  },
+
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'La sucursal es obligatoria';
+                                    }
+                                    return null;
+                                  },
                                 )
                               : const MyProgressIndicator();
                         },

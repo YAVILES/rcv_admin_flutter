@@ -5,6 +5,7 @@ import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/configuration_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/mark_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/model_provider.dart';
@@ -14,6 +15,7 @@ import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/total_coverage_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/use_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/vehicle_provider.dart';
 
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -54,6 +56,8 @@ class _AppStateState extends State<AppState> {
         ChangeNotifierProvider(create: (_) => MarkProvider()),
         ChangeNotifierProvider(create: (_) => ModelProvider()),
         ChangeNotifierProvider(create: (_) => VehicleProvider()),
+        ChangeNotifierProvider(create: (_) => PolicyProvider()),
+        ChangeNotifierProvider(create: (_) => ConfigurationProvider()),
       ],
       child: const MyApp(),
     );

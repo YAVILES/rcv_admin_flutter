@@ -63,7 +63,15 @@ const modelsRoute = 'models';
 const modelRoute = 'model';
 const modelDetailRoute = 'details_model';
 
-// Premium
+// Vehicle
 const vehiclesRoute = 'vehicles';
 const vehicleRoute = 'vehicle';
 const vehicleDetailRoute = 'details_vehicle';
+
+// Policy
+const policiesRoute = 'policies';
+const policyRoute = 'policy';
+const policyDetailRoute = 'details_policy';
+
+// Settings
+const settingsRoute = 'settings';

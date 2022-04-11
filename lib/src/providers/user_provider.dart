@@ -87,6 +87,7 @@ class UserProvider with ChangeNotifier {
           ),
         ...user.toMap(excludePhoto: true),
       };
+      print(mapData['identification_number']);
       final formData = FormData.fromMap(mapData);
 
       try {

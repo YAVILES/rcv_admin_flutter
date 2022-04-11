@@ -37,6 +37,21 @@ class ClientProvider with ChangeNotifier {
     }
   }
 
+  Future<List<Client>> getAllClients(Map<String, dynamic>? params) async {
+    List<Client> clients = [];
+    try {
+      final response = await API.list('$url/', params: params);
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(response.data);
+        clients = data.map((w) => Client.fromMap(w)).toList();
+      }
+      return clients;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
   Future<Client?> getClient(String uid) async {
     try {
       final response = await API.get('$url/$uid/');

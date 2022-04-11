@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 
 class DocumentVehicle extends StatefulWidget {
   final String title;
-  const DocumentVehicle({
+  final String? imageUrl;
+  Function? onUpload;
+  Function? onDownload;
+  DocumentVehicle({
     Key? key,
     required this.title,
+    this.imageUrl,
+    this.onUpload,
+    this.onDownload,
   }) : super(key: key);
 
   @override
@@ -20,21 +26,42 @@ class _DocumentVehicleState extends State<DocumentVehicle> {
       margin: const EdgeInsets.all(10.0),
       child: Container(
         padding: const EdgeInsets.all(10.0),
-        width: 180,
+        width: 220,
         child: Column(
           children: [
             Center(child: Text(widget.title)),
+            // if (widget.imageUrl != null) Image.network(widget.imageUrl!),
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.upload_file_outlined),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: IconButton(
+                    onPressed: () =>
+                        widget.onUpload != null ? widget.onUpload!() : {},
+                    icon: const Icon(Icons.upload_file_outlined),
+                  ),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.download_for_offline_outlined),
+                (widget.imageUrl == null)
+                    ? const Icon(
+                        Icons.warning,
+                        color: Colors.red,
+                      )
+                    : const Icon(
+                        Icons.check_circle,
+                      ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: IconButton(
+                    onPressed: () {
+                      if (widget.imageUrl != null &&
+                          widget.onDownload != null) {
+                        widget.onDownload!();
+                      }
+                    },
+                    icon: const Icon(Icons.download_for_offline_outlined),
+                  ),
                 ),
               ],
             )

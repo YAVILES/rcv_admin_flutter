@@ -102,14 +102,15 @@ class _GenericTableState extends State<GenericTable> {
         header: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (widget.title != null && widget.title!.isNotEmpty)
+              Text(widget.title!),
             if (widget.withSearchEngine == true) ...[
               ListTile(
                 title: TextFormField(
                     initialValue: valueSearch.isEmpty
                         ? widget.searchInitialValue ?? ''
                         : valueSearch,
-                    onChanged: (value) => valueSearch =
-                        value.isEmpty ? widget.searchInitialValue ?? '' : value,
+                    onChanged: (value) => valueSearch = value,
                     textAlignVertical: TextAlignVertical.center,
                     onFieldSubmitted: (value) => widget.onSearch != null
                         ? widget.onSearch!(valueSearch)

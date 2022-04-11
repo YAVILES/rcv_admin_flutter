@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/coverage_model.dart';
+import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/models/use_model.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class CoverageProvider with ChangeNotifier {
@@ -10,7 +12,8 @@ class CoverageProvider with ChangeNotifier {
   Coverage? coverage;
   bool loading = false;
   bool _isDefault = false;
-
+  Use? use;
+  Plan? plan;
   bool get isDefault => _isDefault;
 
   set isDefault(bool isDefault) {
@@ -141,5 +144,11 @@ class CoverageProvider with ChangeNotifier {
       loading = false;
       notifyListeners();
     }
+  }
+
+  notifyCoverage(Plan? _plan, Use? _use) {
+    use = _use;
+    plan = _plan;
+    notifyListeners();
   }
 }

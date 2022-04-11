@@ -89,22 +89,6 @@ class __MarkViewBodyState extends State<_MarkViewBody> {
                   child: Wrap(
                     children: [
                       TextFormField(
-                        initialValue: _mark.code ?? '',
-                        onChanged: (value) => _mark.code = value,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'El código es obligatorio';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) =>
-                            _saveMark(create, markProvider, _mark),
-                        decoration: CustomInputs.buildInputDecoration(
-                          hintText: 'Ingrese el código.',
-                          labelText: 'Código',
-                        ),
-                      ),
-                      TextFormField(
                         initialValue: _mark.description ?? '',
                         onChanged: (value) => _mark.description = value,
                         validator: (value) {

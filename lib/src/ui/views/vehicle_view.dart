@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/document_vehicle.dart';
@@ -26,11 +27,13 @@ import '../../models/mark_model.dart';
 class VehicleView extends StatefulWidget {
   Vehicle? vehicle;
   String? uid;
+  bool? modal;
 
   VehicleView({
     Key? key,
     this.vehicle,
     this.uid,
+    this.modal = false,
   }) : super(key: key);
 
   @override
@@ -41,14 +44,14 @@ class _VehicleViewState extends State<VehicleView> {
   @override
   Widget build(BuildContext context) {
     if (widget.vehicle != null) {
-      return _VehicleViewBody(vehicle: widget.vehicle!);
+      return _VehicleViewBody(vehicle: widget.vehicle!, modal: widget.modal);
     } else {
       return FutureBuilder(
         future: Provider.of<VehicleProvider>(context, listen: false)
             .getVehicle(widget.uid ?? ''),
         builder: (_, AsyncSnapshot snapshot) {
           return snapshot.connectionState == ConnectionState.done
-              ? _VehicleViewBody(vehicle: snapshot.data)
+              ? _VehicleViewBody(vehicle: snapshot.data, modal: widget.modal)
               : const MyProgressIndicator();
         },
       );
@@ -60,9 +63,13 @@ class _VehicleViewBody extends StatefulWidget {
   Vehicle vehicle;
   List<Model> models = [];
   String? mark;
+  PlatformFile? identityCardImage;
+  bool? modal;
+
   _VehicleViewBody({
     Key? key,
     required this.vehicle,
+    this.modal = false,
   }) : super(key: key);
 
   @override
@@ -92,6 +99,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
             HeaderView(
               title: 'Administración de Vehículos',
               subtitle: 'Vehículo ${widget.vehicle.licensePlate ?? ''}',
+              modal: widget.modal,
             ),
             Column(
               children: [
@@ -307,6 +315,22 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                           labelText: 'Color',
                         ),
                       ),
+                      TextFormField(
+                        initialValue: _vehicle.year,
+                        onChanged: (value) => _vehicle.year = value,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El año es obligatorio';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) =>
+                            _saveVehicle(create, vehicleProvider, _vehicle),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el año.',
+                          labelText: 'Año',
+                        ),
+                      ),
                       FutureBuilder(
                         future: VehicleService.fieldOptions('transmission'),
                         builder:
@@ -451,16 +475,88 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                         ),
                       ),
                       Wrap(
-                        children: const [
-                          DocumentVehicle(title: 'Cédula de Identidad o Rif'),
-                          DocumentVehicle(title: 'Licencia'),
+                        children: [
+                          DocumentVehicle(
+                            title: 'Cédula de Identidad o Rif',
+                            imageUrl: _vehicle.ownerIdentityCardImage,
+                            onUpload: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                // allowedExtensions: ['jpg'],
+                                allowMultiple: false,
+                              );
+
+                              if (result != null) {
+                                setState(() =>
+                                    _vehicle.ownerIdentityCardImageFile =
+                                        result.files.first);
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
+                          ),
+                          DocumentVehicle(
+                            title: 'Licencia',
+                            imageUrl: _vehicle.ownerLicense,
+                            onUpload: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                // allowedExtensions: ['jpg'],
+                                allowMultiple: false,
+                              );
+
+                              if (result != null) {
+                                setState(() => _vehicle.ownerLicenseFile =
+                                    result.files.first);
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
+                          ),
                           DocumentVehicle(
                             title: 'Carnet de Circulación o Titulo',
+                            imageUrl: _vehicle.ownerCirculationCard,
+                            onUpload: () async {
+                              FilePickerResult? result =
+                                  await FilePicker.platform.pickFiles(
+                                // allowedExtensions: ['jpg'],
+                                allowMultiple: false,
+                              );
+
+                              if (result != null) {
+                                setState(() =>
+                                    _vehicle.ownerCirculationCardFile =
+                                        result.files.first);
+                              } else {
+                                // User canceled the picker
+                              }
+                            },
+                            onDownload: () async {
+                              final Map<String, String> headers = {
+                                'Accept': '*/*',
+                              };
+                              var image = await vehicleProvider.dowmloadArchive(
+                                  _vehicle.id!, "owner_circulation_card");
+
+                              print(image
+                                  .runtimeType); /* 
+                              await FileSaver.instance.saveFile(
+                                  'owner_circulation_card', image!, 'jpg'); */
+                            },
                           ),
                           // DocumentVehicle(title: 'Certificado Médico'),
                         ],
                       ),
                       const SizedBox(height: 30),
+                      Container(
+                        margin: const EdgeInsets.only(top: 30),
+                        alignment: Alignment.center,
+                        child: CustomButtonPrimary(
+                          onPressed: () =>
+                              _saveVehicle(create, vehicleProvider, _vehicle),
+                          title: 'Guardar',
+                        ),
+                      ),
                     ],
                   ),
                 ),

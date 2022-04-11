@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/vehicle_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
@@ -15,25 +14,25 @@ import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
-class VehiclesView extends StatefulWidget {
-  const VehiclesView({Key? key}) : super(key: key);
+class PoliciesView extends StatefulWidget {
+  const PoliciesView({Key? key}) : super(key: key);
 
   @override
-  State<VehiclesView> createState() => _VehiclesViewState();
+  State<PoliciesView> createState() => _PoliciesViewState();
 }
 
-class _VehiclesViewState extends State<VehiclesView> {
+class _PoliciesViewState extends State<PoliciesView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<VehicleProvider>(context, listen: false).getVehicles();
+    Provider.of<PolicyProvider>(context, listen: false).getPolicies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final vehicleProvider = Provider.of<VehicleProvider>(context);
-    final loading = vehicleProvider.loading;
-    final vehicles = vehicleProvider.vehicles;
+    final policyProvider = Provider.of<PolicyProvider>(context);
+    final loading = policyProvider.loading;
+    final policies = policyProvider.policies;
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
@@ -48,13 +47,13 @@ class _VehiclesViewState extends State<VehiclesView> {
           child: Column(
             children: [
               HeaderView(
-                title: "Administración de Vehículos",
-                subtitle: "Vehículos",
+                title: "Administración de Sistema",
+                subtitle: "Pólizas",
                 actions: [
                   CustomButtonPrimary(
                     onPressed: () => NavigationService.navigateTo(
-                        context, vehicleRoute, null),
-                    title: 'Nuevo',
+                        context, policyRoute, null),
+                    title: 'Nueva',
                   )
                 ],
               ),
@@ -80,18 +79,17 @@ class _VehiclesViewState extends State<VehiclesView> {
                               onPressed: () async {
                                 try {
                                   final deleted =
-                                      await Provider.of<VehicleProvider>(
-                                              context,
+                                      await Provider.of<PolicyProvider>(context,
                                               listen: false)
-                                          .deleteVehicles(items
+                                          .deletePolicies(items
                                               .map((e) => e['id'].toString())
                                               .toList());
                                   if (deleted) {
                                     NotificationService.showSnackbarSuccess(
-                                        'Vehicle eliminado con exito.');
+                                        'Policy eliminado con exito.');
                                   } else {
                                     NotificationService.showSnackbarSuccess(
-                                        'No se pudo eliminar el Vehicle.');
+                                        'No se pudo eliminar el Policy.');
                                   }
                                 } on ErrorAPI catch (e) {
                                   NotificationService.showSnackbarError(
@@ -104,24 +102,64 @@ class _VehiclesViewState extends State<VehiclesView> {
                         );
                         showDialog(context: context, builder: (_) => dialog);
                       },
-                      data: vehicles,
+                      data: policies,
                       columns: [
                         DTColumn(
-                            header: "Placa", dataAttribute: 'license_plate'),
-                        DTColumn(
-                          header: "Modelo",
-                          dataAttribute: 'model',
-                          widget: (item) =>
-                              Text(item['model_display']['description']),
+                          header: "Nro.",
+                          dataAttribute: 'number',
                         ),
                         DTColumn(
-                            header: "Placa", dataAttribute: 'license_plate'),
+                          header: "Tipo",
+                          dataAttribute: 'type_display',
+                        ),
+                        DTColumn(
+                          header: "Tomador",
+                          dataAttribute: 'taker',
+                          widget: (item) {
+                            return Text(
+                                '${item["taker_display"]["name"]} ${item["taker_display"]["last_name"]}');
+                          },
+                        ),
+                        DTColumn(
+                          header: "Asegurado",
+                          dataAttribute: 'updated',
+                          widget: (item) {
+                            return Text(
+                                '${item["vehicle_display"]["owner_name"]} ${item["vehicle_display"]["owner_last_name"]}');
+                          },
+                        ),
+                        DTColumn(
+                          header: "Asesor",
+                          dataAttribute: 'adviser',
+                          widget: (item) {
+                            return Text(
+                                '${item["adviser_display"]["name"]} ${item["adviser_display"]["last_name"]}');
+                          },
+                        ),
+                        DTColumn(
+                          header: "Vehículo",
+                          dataAttribute: 'vehicle',
+                          widget: (item) {
+                            return Text(
+                                '${item["vehicle_display"]["model_display"]["mark_display"]["description"]} ${item["vehicle_display"]["model_display"]["description"]} ${item["vehicle_display"]["color"]}');
+                          },
+                        ),
+                        DTColumn(
+                          header: "Plan",
+                          dataAttribute: 'plan',
+                          widget: (item) {
+                            return Text(
+                                '${item["plan_display"]["description"]}');
+                          },
+                        ),
+                        DTColumn(
+                          header: "Fecha de vencimiento",
+                          dataAttribute: 'due_date',
+                          type: TypeColumn.dateTime,
+                        ),
                         DTColumn(
                           header: "Estatus",
-                          dataAttribute: 'is_active',
-                          widget: (item) => item['is_active'] == true
-                              ? const Text('Activo')
-                              : const Text('Inactivo'),
+                          dataAttribute: 'status_display',
                         ),
                         DTColumn(
                           header: "Acciones",
@@ -133,9 +171,9 @@ class _VehiclesViewState extends State<VehiclesView> {
                         ),
                       ],
                       onSearch: (value) {
-                        vehicleProvider.search(value);
+                        policyProvider.search(value);
                       },
-                      searchInitialValue: vehicleProvider.searchValue,
+                      searchInitialValue: policyProvider.searchValue,
                     ),
             ],
           ),
@@ -161,7 +199,7 @@ class _ActionsTable extends StatelessWidget {
           onPressed: () {
             NavigationService.navigateTo(
               context,
-              vehicleDetailRoute,
+              policyDetailRoute,
               {'id': item['id'].toString()},
             );
           },

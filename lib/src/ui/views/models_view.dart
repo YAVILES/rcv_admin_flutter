@@ -104,7 +104,6 @@ class _ModelsViewState extends State<ModelsView> {
                       },
                       data: models,
                       columns: [
-                        DTColumn(header: "Código", dataAttribute: 'code'),
                         DTColumn(
                           header: "Marca",
                           dataAttribute: 'mark',

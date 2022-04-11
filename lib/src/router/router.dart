@@ -21,6 +21,7 @@ import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/client_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/clients_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/configuration_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
@@ -32,6 +33,8 @@ import 'package:rcv_admin_flutter/src/ui/views/models_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/not_found_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plans_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/policies_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/policy_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/premiums_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/role_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/roles_view.dart';
@@ -135,14 +138,14 @@ class RouterGoRouter {
               name: userDetailRoute,
               path: '$userRoute/:id',
               pageBuilder: (context, state) {
-                User user = _getUser(
+                /*  User user = _getUser(
                   context,
                   state.params['id'].toString(),
-                );
+                ); */
                 return MaterialPage(
                   key: state.pageKey,
-                  child: UserView(user: user),
-                  //child: UserView(uid: state.params['id'].toString()),
+                  // child: UserView(user: user),
+                  child: UserView(uid: state.params['id'].toString()),
                 );
               },
             ),
@@ -209,14 +212,9 @@ class RouterGoRouter {
               name: roleDetailRoute,
               path: '$roleRoute/:id',
               pageBuilder: (context, state) {
-                Role role = _getRole(
-                  context,
-                  state.params['id'].toString(),
-                );
                 return MaterialPage(
                   key: state.pageKey,
-                  child: RoleView(role: role),
-                  // child: BranchOfficeView(uid: state.params['id'].toString()),
+                  child: RoleView(uid: state.params['id'].toString()),
                 );
               },
             ),
@@ -455,6 +453,44 @@ class RouterGoRouter {
             ),
           ],
         ),
+        GoRoute(
+          name: policiesRoute,
+          path: '/$policiesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const PoliciesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: policyRoute,
+              path: policyRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PolicyView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: policyDetailRoute,
+              path: '$policiesRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PolicyView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+        GoRoute(
+          name: settingsRoute,
+          path: '/$settingsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: ConfigurationView(),
+          ),
+        )
       ],
       navigatorBuilder: (context, child) {
         if (auth.loggedInStatus == Status.loggedIn) {

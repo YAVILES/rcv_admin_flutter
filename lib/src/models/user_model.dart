@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
 import 'package:rcv_admin_flutter/src/models/role_model.dart';
 
 // To parse this JSON data, do
@@ -23,6 +24,8 @@ class User {
   List<Role>? rolesDisplay = [];
   String? photo;
   String? password;
+  String? branchOffice;
+  BranchOffice? branchOfficeDisplay;
   bool? isActive;
   bool? isStaff;
   bool? isSuperuser;
@@ -51,6 +54,8 @@ class User {
     this.password,
     this.roles,
     this.rolesDisplay,
+    this.branchOffice,
+    this.branchOfficeDisplay,
   });
 
   Map<String, dynamic> toMap({bool? excludePhoto = false}) {
@@ -71,6 +76,8 @@ class User {
       'is_superuser': isSuperuser,
       'roles': roles,
       'roles_display': rolesDisplay?.map((x) => x.toMap()).toList(),
+      'branch_office': branchOffice,
+      'branch_office_display': branchOfficeDisplay?.toMap(),
       'created': created?.millisecondsSinceEpoch,
       'updated': updated?.millisecondsSinceEpoch,
       'is_active': isActive,
@@ -96,6 +103,10 @@ class User {
       roles: map["roles"] == null ? [] : List<int>.from(map["roles"]),
       rolesDisplay: map['roles_display'] != null
           ? List<Role>.from(map['roles_display']?.map((x) => Role.fromMap(x)))
+          : null,
+      branchOffice: map["branch_office"],
+      branchOfficeDisplay: map['branch_office_display'] != null
+          ? BranchOffice.fromMap(map['branch_office_display'])
           : null,
       photo: map['photo'],
       password: map['password'],

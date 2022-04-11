@@ -14,6 +14,10 @@ class Plan {
     this.updated,
     this.code,
     this.description,
+    this.costTotal,
+    this.costTotalDisplay,
+    this.insuredAmountTotal,
+    this.insuredAmountTotalDisplay,
     this.isActive = true,
   });
 
@@ -25,6 +29,10 @@ class Plan {
   DateTime? updated;
   String? code;
   String? description;
+  String? costTotalDisplay;
+  double? costTotal;
+  String? insuredAmountTotalDisplay;
+  double? insuredAmountTotal;
   bool? isActive;
 
   factory Plan.fromJson(String str) => Plan.fromMap(json.decode(str));
@@ -49,6 +57,14 @@ class Plan {
             json["updated"] == null ? null : DateTime.parse(json["updated"]),
         code: json["code"],
         description: json["description"],
+        costTotal: json["cost_total"] == null
+            ? null
+            : double.parse(json["cost_total"]),
+        costTotalDisplay: json["cost_total_display"],
+        insuredAmountTotal: json["insured_amount_total"] == null
+            ? null
+            : double.parse(json["insured_amount_total"]),
+        insuredAmountTotalDisplay: json["insured_amount_total_display"],
         isActive: json["is_active"] ?? true,
       );
 
@@ -68,6 +84,10 @@ class Plan {
         "updated": updated?.millisecondsSinceEpoch,
         "code": code,
         "description": description,
+        "cost_total_display": costTotalDisplay,
+        "cost_total": costTotal,
+        "insured_amount_total": insuredAmountTotal,
+        "insured_amount_total_display": insuredAmountTotalDisplay,
         "is_active": isActive,
       };
 }

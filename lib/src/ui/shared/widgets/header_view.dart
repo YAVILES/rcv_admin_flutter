@@ -8,11 +8,14 @@ class HeaderView extends StatelessWidget {
     this.title,
     this.subtitle,
     this.actions,
+    this.modal = false,
   }) : super(key: key);
 
   final String? title;
   final String? subtitle;
+  final bool? modal;
   List<dynamic>? actions;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,30 +27,46 @@ class HeaderView extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(right: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      title ?? '',
-                      style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          title ?? '',
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          subtitle ?? '',
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (modal == true)
+                    Positioned(
+                      top: 5,
+                      right: 5,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        color: Colors.black,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
                     ),
-                  ),
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      subtitle ?? '',
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

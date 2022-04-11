@@ -104,7 +104,6 @@ class _MarksViewState extends State<MarksView> {
                       },
                       data: marks,
                       columns: [
-                        DTColumn(header: "Código", dataAttribute: 'code'),
                         DTColumn(
                             header: "Descripción",
                             dataAttribute: 'description'),

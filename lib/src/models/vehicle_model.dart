@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:rcv_admin_flutter/src/models/model_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
@@ -19,6 +20,7 @@ class Vehicle {
     this.stalls,
     this.color,
     this.use,
+    this.year,
     this.useDisplay,
     this.model,
     this.modelDisplay,
@@ -32,6 +34,9 @@ class Vehicle {
     this.ownerPhones,
     this.ownerAddress,
     this.ownerEmail,
+    this.ownerIdentityCardImage,
+    this.ownerLicense,
+    this.ownerCirculationCard,
     this.isActive,
   }) {
     isActive = isActive ?? true;
@@ -47,6 +52,7 @@ class Vehicle {
   int? stalls;
   String? color;
   String? use;
+  String? year;
   Use? useDisplay;
   String? model;
   Model? modelDisplay;
@@ -60,6 +66,14 @@ class Vehicle {
   String? ownerPhones;
   String? ownerAddress;
   String? ownerEmail;
+
+  String? ownerIdentityCardImage;
+  String? ownerLicense;
+  String? ownerCirculationCard;
+
+  PlatformFile? ownerIdentityCardImageFile;
+  PlatformFile? ownerLicenseFile;
+  PlatformFile? ownerCirculationCardFile;
   bool? isActive;
 
   factory Vehicle.fromJson(String str) => Vehicle.fromMap(json.decode(str));
@@ -78,6 +92,7 @@ class Vehicle {
         stalls: json["stalls"],
         color: json["color"],
         use: json["use"],
+        year: json["year"],
         useDisplay: json["use_display"] == null
             ? null
             : Use.fromMap(json["use_display"]),
@@ -97,6 +112,9 @@ class Vehicle {
         ownerIdentityCard: json["owner_identity_card"],
         ownerEmail: json["owner_email"],
         ownerPhones: json["owner_phones"],
+        ownerIdentityCardImage: json["owner_identity_card_image"],
+        ownerLicense: json["owner_license"],
+        ownerCirculationCard: json["owner_circulation_card"],
         isActive: json["is_active"] ?? true,
       );
 
@@ -110,17 +128,40 @@ class Vehicle {
         "stalls": stalls,
         "color": color,
         "use": use,
+        "year": year,
         "use_display": useDisplay?.toMap(),
         "model": model,
         "model_display": modelDisplay?.toMap(),
         "transmission": transmission,
         "transmission_display": transmissionDisplay,
         "taker": taker,
-        "taker_dispaly": takerDisplay?.toMap(),
+        "taker_display": takerDisplay?.toMap(),
         "owner_name": ownerName,
         "owner_last_name": ownerLastName,
         "owner_address": ownerAddress,
         "owner_identity_card": ownerIdentityCard,
+        "owner_email": ownerEmail,
+        "owner_phones": ownerPhones,
+        "owner_identity_card_image": ownerIdentityCardImage,
+        "owner_license": ownerLicense,
+        "owner_circulation_card": ownerCirculationCard,
+        "is_active": isActive,
+      };
+
+  Map<String, dynamic> toMapSave() => {
+        "serial_bodywork": serialBodywork,
+        "serial_engine": serialEngine,
+        "license_plate": licensePlate,
+        "stalls": stalls,
+        "color": color,
+        "use": use,
+        "model": model,
+        "transmission": transmission,
+        "taker": taker,
+        "year": year,
+        "owner_name": ownerName,
+        "owner_last_name": ownerLastName,
+        "owner_address": ownerAddress,
         "owner_email": ownerEmail,
         "owner_phones": ownerPhones,
         "is_active": isActive,

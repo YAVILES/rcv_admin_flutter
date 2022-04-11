@@ -20,12 +20,9 @@ import 'package:rcv_admin_flutter/src/utils/api.dart';
 class ClientView extends StatefulWidget {
   Client? client;
   String? uid;
-
-  ClientView({
-    Key? key,
-    this.client,
-    this.uid,
-  }) : super(key: key);
+  bool? modal;
+  ClientView({Key? key, this.client, this.uid, this.modal = false})
+      : super(key: key);
 
   @override
   State<ClientView> createState() => _ClientViewState();
@@ -35,14 +32,14 @@ class _ClientViewState extends State<ClientView> {
   @override
   Widget build(BuildContext context) {
     if (widget.client != null) {
-      return _ClientViewBody(client: widget.client!);
+      return _ClientViewBody(client: widget.client!, modal: widget.modal);
     } else {
       return FutureBuilder(
         future: Provider.of<ClientProvider>(context, listen: false)
             .getClient(widget.uid ?? ''),
         builder: (_, AsyncSnapshot snapshot) {
           return snapshot.connectionState == ConnectionState.done
-              ? _ClientViewBody(client: snapshot.data)
+              ? _ClientViewBody(client: snapshot.data, modal: widget.modal)
               : const MyProgressIndicator();
         },
       );
@@ -52,10 +49,11 @@ class _ClientViewState extends State<ClientView> {
 
 class _ClientViewBody extends StatefulWidget {
   Client client;
-
+  bool? modal;
   _ClientViewBody({
     Key? key,
     required this.client,
+    this.modal = false,
   }) : super(key: key);
 
   @override
@@ -85,6 +83,7 @@ class __ClientViewBodyState extends State<_ClientViewBody> {
             HeaderView(
               title: 'Administración de Sistema',
               subtitle: 'Cliente ${widget.client.username ?? ''}',
+              modal: widget.modal,
             ),
             Column(
               children: [
