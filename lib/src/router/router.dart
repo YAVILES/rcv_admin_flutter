@@ -15,6 +15,8 @@ import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/splash/splash_layout.dart';
+import 'package:rcv_admin_flutter/src/ui/views/adviser_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/advisers_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banner_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banners_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
@@ -35,6 +37,7 @@ import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plans_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/policies_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/policy_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/policy_view_edit.dart';
 import 'package:rcv_admin_flutter/src/ui/views/premiums_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/role_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/roles_view.dart';
@@ -146,6 +149,43 @@ class RouterGoRouter {
                   key: state.pageKey,
                   // child: UserView(user: user),
                   child: UserView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Advisers
+        GoRoute(
+          name: advisersRoute,
+          path: '/$advisersRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const AdvisersView(),
+          ),
+          routes: [
+            GoRoute(
+              name: adviserRoute,
+              path: adviserRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: AdviserView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: adviserDetailRoute,
+              path: '$adviserRoute/:id',
+              pageBuilder: (context, state) {
+                /*  User user = _getUser(
+                  context,
+                  state.params['id'].toString(),
+                ); */
+                return MaterialPage(
+                  key: state.pageKey,
+                  // child: UserView(user: user),
+                  child: AdviserView(uid: state.params['id'].toString()),
                 );
               },
             ),
@@ -477,7 +517,7 @@ class RouterGoRouter {
               pageBuilder: (context, state) {
                 return MaterialPage(
                   key: state.pageKey,
-                  child: PolicyView(uid: state.params['id'].toString()),
+                  child: PolicyViewEdit(uid: state.params['id'].toString()),
                 );
               },
             ),

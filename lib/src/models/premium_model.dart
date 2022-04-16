@@ -20,7 +20,9 @@ class Premium {
     this.created,
     this.updated,
     this.insuredAmount,
+    this.insuredAmountDisplay,
     this.cost,
+    this.costDisplay,
   });
 
   String? id;
@@ -29,6 +31,8 @@ class Premium {
   String? plan;
   double? insuredAmount;
   double? cost;
+  String? insuredAmountDisplay;
+  String? costDisplay;
   Coverage? coverageDisplay;
   Use? useDisplay;
   Plan? planDisplay;
@@ -40,22 +44,25 @@ class Premium {
   String toJson() => json.encode(toMap());
 
   factory Premium.fromMap(Map<String, dynamic> json) => Premium(
-        id: json["id"],
-        coverage: json["coverage"],
-        use: json["use"],
-        plan: json["plan"],
-        coverageDisplay: json["coverage_display"] == null
-            ? null
-            : Coverage.fromMap(json["coverage_display"]),
-        useDisplay: json["use_display"] == null
-            ? null
-            : Use.fromMap(json["use_display"]),
-        planDisplay: json["plan_display"] == null
-            ? null
-            : Plan.fromMap(json["plan_display"]),
-        insuredAmount: double.parse(json["insured_amount"].toString()),
-        cost: double.parse(json["cost"].toString()),
-        /* created:
+      id: json["id"],
+      coverage: json["coverage"],
+      use: json["use"],
+      plan: json["plan"],
+      coverageDisplay: json["coverage_display"] == null
+          ? null
+          : Coverage.fromMap(json["coverage_display"]),
+      useDisplay:
+          json["use_display"] == null ? null : Use.fromMap(json["use_display"]),
+      planDisplay: json["plan_display"] == null
+          ? null
+          : Plan.fromMap(json["plan_display"]),
+      insuredAmount: json["insured_amount"] == null
+          ? null
+          : double.parse(json["insured_amount"].toString()),
+      cost: json["cost"] == null ? null : double.parse(json["cost"].toString()),
+      costDisplay: json['cost_display'],
+      insuredAmountDisplay: json['insured_amount_display']
+      /* created:
             json["created"] != null ? DateTime.parse(json["created"]) : null,
         updated:
             json["updated"] != null ? DateTime.parse(json["updated"]) : null, */
@@ -72,6 +79,8 @@ class Premium {
         "created": created?.millisecondsSinceEpoch,
         "updated": updated?.millisecondsSinceEpoch,
         "insured_amount": insuredAmount,
+        "insured_amount_display": insuredAmountDisplay,
         "cost": cost,
+        "cost_display": costDisplay,
       };
 }

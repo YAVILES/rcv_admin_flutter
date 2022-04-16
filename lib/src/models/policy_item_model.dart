@@ -11,8 +11,14 @@ class PolicyItem {
   PolicyItem({
     this.id,
     this.number,
-    this.cost,
     this.insuredAmount,
+    this.insuredAmountDisplay,
+    this.insuredAmountChange,
+    this.insuredAmountChangeDisplay,
+    this.cost,
+    this.costDisplay,
+    this.costChange,
+    this.costChangeDisplay,
     this.coverage,
     this.coverageDisplay,
     this.policy,
@@ -26,7 +32,13 @@ class PolicyItem {
   String? policy;
   Policy? policyDisplay;
   double? insuredAmount;
+  String? insuredAmountDisplay;
+  double? insuredAmountChange;
+  String? insuredAmountChangeDisplay;
   double? cost;
+  String? costDisplay;
+  double? costChange;
+  String? costChangeDisplay;
 
   factory PolicyItem.fromJson(String str) =>
       PolicyItem.fromMap(json.decode(str));
@@ -48,6 +60,16 @@ class PolicyItem {
         insuredAmount: json["insured_amount"] == null
             ? null
             : double.parse(json["insured_amount"]),
+        costChange: json["cost_change"] == null
+            ? null
+            : double.parse(json["cost_change"]),
+        insuredAmountChange: json["insured_amount_change"] == null
+            ? null
+            : double.parse(json["insured_amount_change"]),
+        costDisplay: json["cost_display"],
+        insuredAmountDisplay: json["insured_amount_display"],
+        costChangeDisplay: json["cost_change_display"],
+        insuredAmountChangeDisplay: json["insured_amount_change_display"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -59,6 +81,12 @@ class PolicyItem {
         "policy_display": policyDisplay?.toMap(),
         "cost": cost,
         "insured_amount": insuredAmount,
+        "cost_change": costChange,
+        "insured_amount_change": insuredAmountChange,
+        "cost_display": costDisplay,
+        "insured_amount_display": insuredAmountDisplay,
+        "cost_change_display": costChangeDisplay,
+        "insured_amount_change_display": insuredAmountChangeDisplay,
       };
 
   Map<String, dynamic> toMapSave() => {

@@ -19,11 +19,12 @@ class UserProvider with ChangeNotifier {
     return formUserKey.currentState!.validate();
   }
 
-  Future getUsers() async {
+  Future getUsers({bool? isAdviser = false}) async {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/');
+      final response =
+          await API.list('$url/', params: {'is_adviser': isAdviser});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;
@@ -50,23 +51,25 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newUser(User user, PlatformFile? photo) async {
+  Future<bool?> newUser(User user, PlatformFile? photo,
+      {bool isAdviser = false}) async {
     if (validateForm()) {
       final mapData = {
         'is_staff': true,
+        'is_adviser': isAdviser,
         if (photo?.bytes != null)
           'photo': MultipartFile.fromBytes(
             photo!.bytes!,
             filename: photo.name,
           ),
-        ...user.toMap(excludePhoto: true),
+        ...user.toMapSave(excludePhoto: true),
       };
 
       final formData = FormData.fromMap(mapData);
       try {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          getUsers();
+          getUsers(isAdviser: isAdviser);
           user = User.fromMap(response.data);
           return true;
         }
@@ -76,28 +79,29 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> editUser(String id, User user, PlatformFile? photo) async {
+  Future<bool?> editUser(String id, User user, PlatformFile? photo,
+      {bool isAdviser = false}) async {
     if (validateForm()) {
       final mapData = {
         'is_staff': true,
+        'is_adviser': isAdviser,
         if (photo?.bytes != null)
           'photo': MultipartFile.fromBytes(
             photo!.bytes!,
             filename: photo.name,
           ),
-        ...user.toMap(excludePhoto: true),
+        ...user.toMapSave(excludePhoto: true),
       };
-      print(mapData['identification_number']);
       final formData = FormData.fromMap(mapData);
 
       try {
         final response = await API.put('$url/$id/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          getUsers();
+          getUsers(isAdviser: isAdviser);
           user = User.fromMap(response.data);
 /*           users = users.map((_user) {
             if (_user['id'] == user.id) {
-              _user = user.toMap();
+              _user = user.toMapSave();
             }
             return _user;
           }).toList(); */
@@ -125,12 +129,13 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  search(value) async {
+  search(value, {bool? isAdviser = false}) async {
     searchValue = value;
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/', params: {"search": value});
+      final response = await API
+          .list('$url/', params: {"search": value, "is_adviser": isAdviser});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;

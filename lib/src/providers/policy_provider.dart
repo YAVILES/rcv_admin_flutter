@@ -4,9 +4,7 @@ import 'package:rcv_admin_flutter/src/models/client_model.dart';
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/models/vehicle_model.dart';
-import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
-import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
 class PolicyProvider with ChangeNotifier {
   String url = '/core/policy';
@@ -65,8 +63,7 @@ class PolicyProvider with ChangeNotifier {
 
   Future<bool?> newPolicy(Policy policyRCV) async {
     if (validateForm()) {
-      String? adviser = Preferences.getIdUser();
-      final mapData = policyRCV.toMapSave(adviser);
+      final mapData = policyRCV.toMapSave();
 
       final formData = FormData.fromMap(mapData);
       try {
@@ -85,8 +82,7 @@ class PolicyProvider with ChangeNotifier {
 
   Future<bool?> editPolicy(String id, Policy policyRCV) async {
     if (validateForm()) {
-      String? adviser = Preferences.getIdUser();
-      final mapData = policyRCV.toMapSave(adviser);
+      final mapData = policyRCV.toMapSave();
 
       final formData = FormData.fromMap(mapData);
 

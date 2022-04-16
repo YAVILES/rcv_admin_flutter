@@ -1,9 +1,12 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/configuration_model.dart';
+import 'package:rcv_admin_flutter/src/models/user_model.dart';
 import 'package:rcv_admin_flutter/src/providers/configuration_provider.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/user_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
@@ -74,31 +77,34 @@ class ConfigurationBody extends StatelessWidget {
                         ...obj.configurations.map((conf) {
                           if (conf.key == 'CHANGE_FACTOR') {
                             return SizedBox(
-                              width: 300,
+                              width: 320,
                               child: Row(
                                 children: [
                                   Text(conf.helpText!),
                                   const SizedBox(width: 15),
-                                  TextFormField(
-                                    initialValue: conf.value.toString(),
-                                    onChanged: (value) =>
-                                        conf.value = double.parse(value),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'El factor de cambio es obligatorio';
-                                      }
-                                      return null;
-                                    },
-                                    onFieldSubmitted: (value) => {
-                                      _saveConfig(configurationProvider, conf)
-                                    },
-                                    // _saveConfiguration(conf),
-                                    decoration:
-                                        CustomInputs.buildInputDecoration(
-                                      hintText: 'Ingrese el factor de cambio.',
-                                      labelText: conf.helpText!,
-                                      constraints:
-                                          const BoxConstraints(maxWidth: 150),
+                                  Expanded(
+                                    child: TextFormField(
+                                      initialValue: conf.value.toString(),
+                                      onChanged: (value) =>
+                                          conf.value = double.parse(value),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'El factor de cambio es obligatorio';
+                                        }
+                                        return null;
+                                      },
+                                      onFieldSubmitted: (value) => {
+                                        _saveConfig(configurationProvider, conf)
+                                      },
+                                      // _saveConfiguration(conf),
+                                      decoration:
+                                          CustomInputs.buildInputDecoration(
+                                        hintText:
+                                            'Ingrese el factor de cambio.',
+                                        labelText: conf.helpText!,
+                                        constraints:
+                                            const BoxConstraints(maxWidth: 140),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 20),
@@ -106,21 +112,72 @@ class ConfigurationBody extends StatelessWidget {
                               ),
                             );
                           }
+                          if (conf.key == 'ADVISER_DEFAULT_ID') {
+                            return FutureBuilder(
+                              future: UserService.getUsers({
+                                'not_paginator': true,
+                                'is_staff': true,
+                                'is_adviser': true,
+                                'query':
+                                    '{id, full_name, identification_number}'
+                              }),
+                              builder:
+                                  (_, AsyncSnapshot<List<User>?> snapshot) {
+                                return snapshot.connectionState ==
+                                        ConnectionState.done
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: DropdownSearch<User>(
+                                          mode: Mode.MENU,
+                                          items: snapshot.data,
+                                          showSearchBox: true,
+                                          selectedItem: snapshot.data
+                                              ?.where((user) =>
+                                                  user.id == conf.value)
+                                              .first,
+                                          dropdownSearchDecoration:
+                                              const InputDecoration(
+                                            hintText:
+                                                "Seleccione el asesor por defecto",
+                                            labelText: "Asesor por defecto",
+                                            contentPadding: EdgeInsets.fromLTRB(
+                                                12, 12, 0, 0),
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          itemAsString: (User? user) =>
+                                              '${user!.fullName!} ${user.identificationNumber ?? ''}',
+                                          onChanged: (User? data) {
+                                            conf.value = data?.id;
+                                            _saveConfig(
+                                                configurationProvider, conf);
+                                          },
+                                          validator: (User? item) {
+                                            if (item == null) {
+                                              return "El asesor por defecto es requerido";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                        ),
+                                      )
+                                    : const MyProgressIndicator();
+                              },
+                            );
+                          }
                           return Container();
                         }).toList()
                       ],
                     ),
                     const SizedBox(height: 30),
-                    Container(
+                    /*         Container(
                       margin: const EdgeInsets.only(top: 30),
                       alignment: Alignment.center,
                       child: CustomButtonPrimary(
-                        onPressed: () => configurationProvider
-                            .formConfigurationKey.currentState!
-                            .save(),
+                        onPressed: () => {}, //saveMultiple(),
                         title: 'Guardar',
                       ),
-                    ),
+                    ), */
                   ],
                 ),
               );

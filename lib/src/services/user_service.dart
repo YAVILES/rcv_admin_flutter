@@ -7,7 +7,24 @@ class UserService {
   static Future<List<User>?> getUsers(Map<String, dynamic>? params) async {
     List<User> uses = [];
     try {
-      final response = await API.list('$url/', params: params);
+      final response =
+          await API.list('$url/', params: {'is_adviser': false, ...?params});
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(response.data);
+        uses = data.map((w) => User.fromMap(w)).toList();
+      }
+      return uses;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  static Future<List<User>?> getAdvisers(Map<String, dynamic>? params) async {
+    List<User> uses = [];
+    try {
+      final response =
+          await API.list('$url/', params: {'is_adviser': true, ...?params});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);

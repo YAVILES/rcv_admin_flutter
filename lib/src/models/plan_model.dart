@@ -14,9 +14,9 @@ class Plan {
     this.updated,
     this.code,
     this.description,
-    this.costTotal,
+    this.costTotal = 0,
     this.costTotalDisplay,
-    this.insuredAmountTotal,
+    this.insuredAmountTotal = 0,
     this.insuredAmountTotalDisplay,
     this.isActive = true,
   });
@@ -59,11 +59,11 @@ class Plan {
         description: json["description"],
         costTotal: json["cost_total"] == null
             ? null
-            : double.parse(json["cost_total"]),
+            : double.parse(json["cost_total"].toString()),
         costTotalDisplay: json["cost_total_display"],
         insuredAmountTotal: json["insured_amount_total"] == null
             ? null
-            : double.parse(json["insured_amount_total"]),
+            : double.parse(json["insured_amount_total"].toString()),
         insuredAmountTotalDisplay: json["insured_amount_total_display"],
         isActive: json["is_active"] ?? true,
       );

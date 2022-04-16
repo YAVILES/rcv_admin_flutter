@@ -73,6 +73,9 @@ class WorkFlowService {
       case "security_update_good_outlined":
         icon = Icons.security_update_good_outlined;
         break;
+      case "supervisor_account":
+        icon = Icons.supervisor_account;
+        break;
       default:
         icon = Icons.nature;
     }

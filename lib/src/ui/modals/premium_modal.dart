@@ -84,7 +84,8 @@ class _PremiumModalState extends State<PremiumModal> {
                     future: PlanService.getPlanPerUse(
                         widget.plan.id!, widget.use.id!),
                     builder: (context, AsyncSnapshot<Plan?> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData) {
                         Plan plan = snapshot.data!;
                         return Center(
                           child: Column(

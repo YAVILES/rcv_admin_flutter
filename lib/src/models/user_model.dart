@@ -28,6 +28,7 @@ class User {
   BranchOffice? branchOfficeDisplay;
   bool? isActive;
   bool? isStaff;
+  bool? isAdviser;
   bool? isSuperuser;
   DateTime? created;
   DateTime? updated;
@@ -46,6 +47,7 @@ class User {
     this.phone,
     this.point,
     this.isStaff = true,
+    this.isAdviser = false,
     this.isSuperuser = false,
     this.created,
     this.updated,
@@ -64,7 +66,7 @@ class User {
       'username': username,
       'identification_number': identificationNumber,
       'email': email,
-      'email_alternative': emailAlternative,
+      'email_alternative': emailAlternative ?? '',
       'name': name,
       'last_name': lastName,
       'full_name': fullName,
@@ -73,6 +75,7 @@ class User {
       'phone': phone,
       'point': point,
       'is_staff': isStaff,
+      'is_adviser': isAdviser,
       'is_superuser': isSuperuser,
       'roles': roles,
       'roles_display': rolesDisplay?.map((x) => x.toMap()).toList(),
@@ -86,13 +89,37 @@ class User {
     };
   }
 
+  Map<String, dynamic> toMapSave({bool? excludePhoto = false}) {
+    return {
+      'id': id,
+      'username': username,
+      'identification_number': identificationNumber,
+      'email': email,
+      'email_alternative': emailAlternative ?? '',
+      'name': name,
+      'last_name': lastName,
+      'full_name': fullName,
+      'direction': direction,
+      'telephone': telephone,
+      'phone': phone,
+      'point': point,
+      'is_staff': isStaff,
+      'is_superuser': isSuperuser,
+      'roles': roles,
+      'branch_office': branchOffice,
+      'is_active': isActive,
+      if (excludePhoto != true) 'photo': photo,
+      'password': password,
+    };
+  }
+
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       id: map['id'],
       username: map['username'],
       identificationNumber: map['identification_number'],
       email: map['email'],
-      emailAlternative: map['email_alternative'],
+      emailAlternative: map['email_alternative'] ?? '',
       name: map['name'],
       lastName: map['last_name'],
       fullName: map['full_name'],
@@ -112,6 +139,7 @@ class User {
       password: map['password'],
       isActive: map["is_active"] ?? true,
       isStaff: map['is_staff'],
+      isAdviser: map['is_adviser'],
       isSuperuser: map['is_superuser'],
       created: map['created'] != null ? DateTime.parse(map["created"]) : null,
       updated: map['updated'] != null ? DateTime.parse(map["updated"]) : null,

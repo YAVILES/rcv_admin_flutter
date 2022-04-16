@@ -48,7 +48,7 @@ class NavigationDrawer extends StatelessWidget {
         children: [
           _getDrawerHeader(user: authProvider.user),
           ListTile(
-            title: const Text('Home'),
+            title: const Text('Inicio'),
             leading: const Icon(Icons.home),
             onTap: () {
               navDrawerProvider.setActiveBackButton(false);

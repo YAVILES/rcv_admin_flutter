@@ -18,6 +18,11 @@ const usersRoute = 'users';
 const userRoute = 'user';
 const userDetailRoute = 'details_user';
 
+// Adviser
+const advisersRoute = 'advisers';
+const adviserRoute = 'adviser';
+const adviserDetailRoute = 'details_adviser';
+
 // Roles
 const rolesRoute = 'roles';
 const roleRoute = 'role';

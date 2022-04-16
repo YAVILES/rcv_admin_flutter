@@ -99,9 +99,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
         Provider.of<CoverageProvider>(context, listen: false);
 
     Policy _policy = policyProvider.policy = widget.policy;
-    Client? taker;
 
-    final bool create = widget.policy.id == null;
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: CenteredView(
@@ -118,21 +116,6 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                   key: policyProvider.formPolicyKey,
                   child: Column(
                     children: [
-                      if (!create)
-                        Row(
-                          children: [
-                            TextFormField(
-                              readOnly: true,
-                              initialValue: _policy.number.toString(),
-                              decoration: CustomInputs.buildInputDecoration(
-                                hintText: 'Nro. de la poliza',
-                                labelText: 'Nro.',
-                                constraints:
-                                    const BoxConstraints(maxWidth: 150),
-                              ),
-                            ),
-                          ],
-                        ),
                       Row(
                         children: [
                           Consumer<ClientProvider>(
@@ -141,7 +124,6 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                               future: ClientService.getClients({
                                 'not_paginator': true,
                                 'is_staff': false,
-                                // if (create) 'is_active': true,
                               }),
                               builder:
                                   (_, AsyncSnapshot<List<Client>?> snapshot) {
@@ -232,7 +214,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                             future: UseService.getUses({
                               'not_paginator': true,
                               'query': '{id, description}',
-                              if (create) 'is_active': true,
+                              'is_active': true,
                             }),
                             builder: (_, AsyncSnapshot<List<Use>?> snapshot) {
                               return snapshot.connectionState ==
@@ -309,7 +291,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                                               border: OutlineInputBorder(),
                                             ),
                                             itemAsString: (Vehicle? item) =>
-                                                '${item?.modelDisplay!.markDisplay!.description} ${item?.modelDisplay!.description} ',
+                                                '${item?.modelDisplay!.markDisplay!.description} ${item?.modelDisplay!.description} ${item?.color} ${item?.licensePlate} \n${item?.ownerName} ${item?.ownerLastName} ${item?.ownerIdentityCard}',
                                             onChanged: (Vehicle? item) {
                                               policyProvider.setVehicle(item);
                                             },
@@ -377,7 +359,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                               future: PlanService.getPlans({
                                 'not_paginator': true,
                                 'use': obj.use?.id,
-                                if (create) 'is_active': true,
+                                'is_active': true,
                               }),
                               builder: (_, AsyncSnapshot<List<Plan>> snapshot) {
                                 return snapshot.connectionState ==
@@ -423,94 +405,75 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                           }),
                         ],
                       ),
-                      if (create)
-                        Consumer<CoverageProvider>(
-                            builder: (context, obj, child) {
-                          _policy.coverage =
-                              obj.plan?.coverage!.map((e) => e.id!).toList();
-                          return GenericTable(
-                            title: "Coberturas: ",
-                            withSearchEngine: false,
-                            data: obj.plan?.coverage
-                                    ?.map((e) => e.toMap())
-                                    .toList() ??
-                                [],
-                            columns: [
-                              DTColumn(
-                                header: "Cobertura",
-                                dataAttribute: 'description',
-                                onSort: false,
-                              ),
-                              DTColumn(
-                                header: "Monto \nAsegurado",
-                                dataAttribute: 'id',
-                                widget: (item) => Text(
-                                    '${item["premium"]?["insured_amount"]}'),
-                                onSort: false,
-                              ),
-                              DTColumn(
-                                header: "Costo",
-                                dataAttribute: 'premium',
-                                widget: (item) =>
-                                    Text('${item["premium"]?["cost"]}'),
-                                onSort: false,
-                              ),
-                            ],
-                          );
-                        }),
-                      if (!create) ...[
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        GenericTable(
-                          title: "Coberturas: ",
-                          withSearchEngine: false,
-                          data: policyProvider.policy!.items!
-                              .map((e) => e.toMap())
-                              .toList(),
-                          columns: [
-                            DTColumn(
-                              header: "Nro.",
-                              dataAttribute: 'number',
-                              onSort: false,
-                            ),
-                            DTColumn(
-                              header: "Monto",
-                              dataAttribute: 'insured_amount',
-                              onSort: false,
-                            ),
-                            DTColumn(
-                              header: "costo",
-                              dataAttribute: 'cost',
-                              onSort: false,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                      Consumer<CoverageProvider>(
+                          builder: (context, obj, child) {
+                        _policy.coverage =
+                            obj.plan?.coverage!.map((e) => e.id!).toList();
+                        return Column(
                           children: [
-                            const Text('Total asegurado: '),
-                            Text(_policy.totalInsuredAmount.toString()),
+                            if (_policy.coverage != null)
+                              GenericTable(
+                                paginated: false,
+                                withSearchEngine: false,
+                                data: obj.plan?.coverage
+                                        ?.map((e) => e.toMap())
+                                        .toList() ??
+                                    [],
+                                columns: [
+                                  DTColumn(
+                                    header: "Cobertura",
+                                    dataAttribute: 'description',
+                                    onSort: false,
+                                  ),
+                                  DTColumn(
+                                    header: "Monto \nAsegurado",
+                                    dataAttribute: 'id',
+                                    widget: (item) => Text(
+                                        '${item["premium"]?["insured_amount_display"]}'),
+                                    onSort: false,
+                                  ),
+                                  DTColumn(
+                                    header: "Costo",
+                                    dataAttribute: 'premium',
+                                    widget: (item) => Text(
+                                        '${item["premium"]?["cost_display"]}'),
+                                    onSort: false,
+                                  ),
+                                ],
+                              ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'Monto asegurado total: ${obj.plan?.insuredAmountTotalDisplay ?? ''}',
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Costo total: ${obj.plan?.costTotalDisplay ?? ''}',
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ],
+                        );
+                      }),
+                      Container(
+                        margin: const EdgeInsets.only(top: 30),
+                        alignment: Alignment.center,
+                        child: CustomButtonPrimary(
+                          onPressed: () => _savePolicy(policyProvider, _policy),
+                          title: 'Guardar',
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text('Total costo: '),
-                            Text(_policy.totalAmount.toString()),
-                          ],
-                        ),
-                      ],
-                      if (create)
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          alignment: Alignment.center,
-                          child: CustomButtonPrimary(
-                            onPressed: () =>
-                                _savePolicy(create, policyProvider, _policy),
-                            title: 'Guardar',
-                          ),
-                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -523,27 +486,17 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
   }
 
   Future<bool?> _savePolicy(
-    bool create,
     PolicyProvider policyProvider,
     Policy _policy,
   ) async {
     {
       try {
         var saved = false;
-        if (create) {
-          saved = await policyProvider.newPolicy(_policy) ?? false;
-          if (saved) {
-            NotificationService.showSnackbarSuccess('Poliza ceada con exito');
-          }
-        } else {
-          saved =
-              await policyProvider.editPolicy(_policy.id!, _policy) ?? false;
-          if (saved) {
-            NotificationService.showSnackbarSuccess(
-              'Actualización exitosa',
-            );
-          }
+        saved = await policyProvider.newPolicy(_policy) ?? false;
+        if (saved) {
+          NotificationService.showSnackbarSuccess('Poliza creada con exito');
         }
+
         if (saved) {
           NavigationService.back(context);
         }
