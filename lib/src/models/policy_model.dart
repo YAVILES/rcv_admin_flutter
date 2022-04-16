@@ -19,6 +19,8 @@ class Policy {
     this.takerDisplay,
     this.adviser,
     this.adviserDisplay,
+    this.createdBy,
+    this.createdByDisplay,
     this.vehicle,
     this.vehicleDisplay,
     this.plan,
@@ -47,6 +49,8 @@ class Policy {
   User? takerDisplay;
   String? adviser;
   User? adviserDisplay;
+  String? createdBy;
+  User? createdByDisplay;
   String? vehicle;
   Vehicle? vehicleDisplay;
   String? plan;
@@ -85,6 +89,10 @@ class Policy {
         adviserDisplay: json["adviser_display"] == null
             ? null
             : User.fromMap(json["adviser_display"]),
+        createdBy: json["created_by"],
+        createdByDisplay: json["created_by_display"] == null
+            ? null
+            : User.fromMap(json["created_by_display"]),
         vehicle: json["vehicle"],
         vehicleDisplay: json["vehicle_display"] == null
             ? null
@@ -132,6 +140,8 @@ class Policy {
         "adviser_display": adviserDisplay?.toMap(),
         "vehicle": vehicle,
         "vehicle_display": vehicleDisplay?.toMap(),
+        "created_by": createdBy,
+        "created_by_display": createdByDisplay?.toMap(),
         "plan": plan,
         "plan_display": planDisplay?.toMap(),
         "coverage": coverage == null

@@ -168,6 +168,31 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                         children: [
                           Expanded(
                             child: TextFormField(
+                              initialValue:
+                                  '${_policy.adviserDisplay?.name} ${_policy.adviserDisplay?.lastName} ${_policy.adviserDisplay?.identificationNumber ?? ''}',
+                              enabled: false,
+                              decoration: CustomInputs.buildInputDecoration(
+                                labelText: 'Asesor',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue:
+                                  '${_policy.createdByDisplay?.name ?? ''} ${_policy.createdByDisplay?.lastName ?? ''}',
+                              enabled: false,
+                              decoration: CustomInputs.buildInputDecoration(
+                                labelText: 'Creada por',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
                               initialValue: _policy.vehicleDisplay?.modelDisplay
                                   ?.markDisplay?.description,
                               enabled: true,

@@ -153,6 +153,14 @@ class _PoliciesViewState extends State<PoliciesView> {
                           },
                         ),
                         DTColumn(
+                          header: "Creada por",
+                          dataAttribute: 'created_by',
+                          widget: (item) {
+                            return Text(
+                                '${item["created_by_display"]?["name"] ?? ''} ${item["created_by_display"]?["last_name"] ?? ''}');
+                          },
+                        ),
+                        DTColumn(
                           header: "Fecha de vencimiento",
                           dataAttribute: 'due_date',
                           type: TypeColumn.dateTime,
