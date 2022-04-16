@@ -125,42 +125,47 @@ class ConfigurationBody extends StatelessWidget {
                                   (_, AsyncSnapshot<List<User>?> snapshot) {
                                 return snapshot.connectionState ==
                                         ConnectionState.done
-                                    ? Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: DropdownSearch<User>(
-                                          mode: Mode.MENU,
-                                          items: snapshot.data,
-                                          showSearchBox: true,
-                                          selectedItem: snapshot.data
-                                              ?.where((user) =>
-                                                  user.id == conf.value)
-                                              .first,
-                                          dropdownSearchDecoration:
-                                              const InputDecoration(
-                                            hintText:
-                                                "Seleccione el asesor por defecto",
-                                            labelText: "Asesor por defecto",
-                                            contentPadding: EdgeInsets.fromLTRB(
-                                                12, 12, 0, 0),
-                                            border: OutlineInputBorder(),
-                                          ),
-                                          itemAsString: (User? user) =>
-                                              '${user!.fullName!} ${user.identificationNumber ?? ''}',
-                                          onChanged: (User? data) {
-                                            conf.value = data?.id;
-                                            _saveConfig(
-                                                configurationProvider, conf);
-                                          },
-                                          validator: (User? item) {
-                                            if (item == null) {
-                                              return "El asesor por defecto es requerido";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                        ),
-                                      )
+                                    ? (snapshot.data!.isNotEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: DropdownSearch<User>(
+                                              mode: Mode.MENU,
+                                              items: snapshot.data,
+                                              showSearchBox: true,
+                                              selectedItem: snapshot.data
+                                                  ?.where((user) =>
+                                                      user.id == conf.value)
+                                                  .first,
+                                              dropdownSearchDecoration:
+                                                  const InputDecoration(
+                                                hintText:
+                                                    "Seleccione el asesor por defecto",
+                                                labelText: "Asesor por defecto",
+                                                contentPadding:
+                                                    EdgeInsets.fromLTRB(
+                                                        12, 12, 0, 0),
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              itemAsString: (User? user) =>
+                                                  '${user!.fullName!} ${user.identificationNumber ?? ''}',
+                                              onChanged: (User? data) {
+                                                conf.value = data?.id;
+                                                _saveConfig(
+                                                    configurationProvider,
+                                                    conf);
+                                              },
+                                              validator: (User? item) {
+                                                if (item == null) {
+                                                  return "El asesor por defecto es requerido";
+                                                } else {
+                                                  return null;
+                                                }
+                                              },
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Nota: Debe crear al menos un asesor'))
                                     : const MyProgressIndicator();
                               },
                             );
