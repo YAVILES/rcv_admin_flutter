@@ -30,7 +30,7 @@ dependencies:
   collection: ^1.15.0
   cupertino_icons: ^1.0.2
   dio: ^4.0.4
-  dropdown_search: ^2.0.1
+  dropdown_search: ^4.0.1
   email_validator: ^2.0.1
   file_picker: ^4.3.0
   file_saver: ^0.1.0

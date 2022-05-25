@@ -134,9 +134,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8.0),
                                           child: DropdownSearch<Client>(
-                                            mode: Mode.MENU,
-                                            items: snapshot.data,
-                                            showSearchBox: true,
+                                            items: snapshot.data!,
                                             dropdownSearchDecoration:
                                                 const InputDecoration(
                                               hintText: "Seleccione el tomador",
@@ -224,9 +222,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 8.0),
                                         child: DropdownSearch<Use>(
-                                          mode: Mode.MENU,
-                                          items: snapshot.data,
-                                          showSearchBox: true,
+                                          items: snapshot.data!,
                                           dropdownSearchDecoration:
                                               const InputDecoration(
                                             hintText: "Seleccione el uso",
@@ -277,9 +273,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8.0),
                                           child: DropdownSearch<Vehicle>(
-                                            mode: Mode.MENU,
-                                            items: snapshot.data,
-                                            showSearchBox: true,
+                                            items: snapshot.data!,
                                             dropdownSearchDecoration:
                                                 const InputDecoration(
                                               hintText:
@@ -369,9 +363,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 8.0),
                                           child: DropdownSearch<Plan>(
-                                            mode: Mode.MENU,
-                                            items: snapshot.data,
-                                            showSearchBox: true,
+                                            items: snapshot.data!,
                                             dropdownSearchDecoration:
                                                 const InputDecoration(
                                               hintText: "Seleccione el plan",

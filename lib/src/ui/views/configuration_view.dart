@@ -130,9 +130,7 @@ class ConfigurationBody extends StatelessWidget {
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 8.0),
                                             child: DropdownSearch<User>(
-                                              mode: Mode.MENU,
-                                              items: snapshot.data,
-                                              showSearchBox: true,
+                                              items: snapshot.data!,
                                               selectedItem: snapshot.data
                                                   ?.where((user) =>
                                                       user.id == conf.value)
