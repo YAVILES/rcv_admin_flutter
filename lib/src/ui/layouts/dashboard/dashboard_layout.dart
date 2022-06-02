@@ -23,14 +23,14 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
             builder: (context) {
               return Scaffold(
                 key: NavDrawerProvider.scaffoldKey,
-                drawer: NavigationDrawer(),
+                drawer: const NavigationDrawer(),
                 appBar: AppBar(
                   title: Row(
-                    children: [
+                    children: const [
                       /*                
                       if (NavDrawerProvider.activeBackButton == true) ...[
                         BackButton(
-                          onPressed: () {
+                          onPressed: ()  {
                             NavigationService.back(null);
                           },
                         ), 
@@ -38,7 +38,7 @@ class _DashBoardLayoutState extends State<DashBoardLayout> {
                         
                       ],
                       */
-                      const Text("RCV 871"),
+                      Text("RCV 871"),
                     ],
                   ),
                   elevation: 0,

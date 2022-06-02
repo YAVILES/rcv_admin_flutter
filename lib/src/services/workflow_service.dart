@@ -76,6 +76,15 @@ class WorkFlowService {
       case "supervisor_account":
         icon = Icons.supervisor_account;
         break;
+      case "payment_outlined":
+        icon = Icons.payment_outlined;
+        break;
+      case "payment_rounded":
+        icon = Icons.payment_rounded;
+        break;
+      case "food_bank_outlined":
+        icon = Icons.food_bank_outlined;
+        break;
       default:
         icon = Icons.nature;
     }

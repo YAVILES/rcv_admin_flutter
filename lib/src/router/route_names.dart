@@ -78,5 +78,15 @@ const policiesRoute = 'policies';
 const policyRoute = 'policy';
 const policyDetailRoute = 'details_policy';
 
+// Bank
+const banksRoute = 'banks';
+const bankRoute = 'bank';
+const bankDetailRoute = 'details_bank';
+
+// Bank
+const paymentsRoute = 'payments';
+const paymentRoute = 'payment';
+const paymentDetailRoute = 'details_payment';
+
 // Settings
 const settingsRoute = 'settings';

@@ -17,6 +17,8 @@ import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart
 import 'package:rcv_admin_flutter/src/ui/layouts/splash/splash_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/views/adviser_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/advisers_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/bank_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/banks_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banner_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/banners_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/branch_office_view.dart';
@@ -33,6 +35,8 @@ import 'package:rcv_admin_flutter/src/ui/views/marks_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/model_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/models_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/not_found_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/payment_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/payments_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plan_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/plans_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/policies_view.dart';
@@ -493,6 +497,72 @@ class RouterGoRouter {
             ),
           ],
         ),
+
+        //Bancos
+        GoRoute(
+          name: banksRoute,
+          path: '/$banksRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const BanksView(),
+          ),
+          routes: [
+            GoRoute(
+              name: bankRoute,
+              path: bankRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: BankView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: bankDetailRoute,
+              path: '$banksRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: BankView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        //Pagos
+        GoRoute(
+          name: paymentsRoute,
+          path: '/$paymentsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const PaymentsView(),
+          ),
+          routes: [
+            GoRoute(
+              name: paymentRoute,
+              path: paymentRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PaymentView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: paymentDetailRoute,
+              path: '$paymentsRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PaymentView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Polizas
         GoRoute(
           name: policiesRoute,
           path: '/$policiesRoute',
