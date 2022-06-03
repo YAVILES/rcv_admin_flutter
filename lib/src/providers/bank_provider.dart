@@ -18,14 +18,13 @@ class BankProvider with ChangeNotifier {
     return formBankKey.currentState!.validate();
   }
 
-  Future getBanks() async {
+  Future<List<Map<String, dynamic>>> getBanks() async {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/');
+      final response = await API.list('$url/', params: {"not_paginator": true});
       if (response.statusCode == 200) {
-        ResponseData responseData = ResponseData.fromMap(response.data);
-        banks = responseData.results;
+        banks = response.data!;
       }
       loading = false;
       notifyListeners();
@@ -33,6 +32,7 @@ class BankProvider with ChangeNotifier {
       loading = false;
       notifyListeners();
     }
+    return banks;
   }
 
   Future<Bank?> getBank(String uid) async {
@@ -83,6 +83,7 @@ class BankProvider with ChangeNotifier {
         rethrow;
       }
     }
+    return null;
   }
 
   Future deleteBank(String id) async {
@@ -122,8 +123,7 @@ class BankProvider with ChangeNotifier {
     try {
       final response = await API.list('$url/', params: {"search": value});
       if (response.statusCode == 200) {
-        ResponseData responseData = ResponseData.fromMap(response.data);
-        banks = responseData.results;
+        banks = response.data!;
       }
       loading = false;
       notifyListeners();

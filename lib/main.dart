@@ -26,6 +26,7 @@ import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 import 'package:rcv_admin_flutter/src/app.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Preferences.configurePrefs();
   API.configureDio();
   // Flurorouter.configureRoute();

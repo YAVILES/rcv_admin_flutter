@@ -509,7 +509,7 @@ class RouterGoRouter {
           routes: [
             GoRoute(
               name: bankRoute,
-              path: bankRoute,
+              path: bankDetailRoute,
               pageBuilder: (context, state) {
                 return MaterialPage(
                   key: state.pageKey,
@@ -519,7 +519,7 @@ class RouterGoRouter {
             ),
             GoRoute(
               name: bankDetailRoute,
-              path: '$banksRoute/:id',
+              path: '$bankDetailRoute/:id',
               pageBuilder: (context, state) {
                 return MaterialPage(
                   key: state.pageKey,

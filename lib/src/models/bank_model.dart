@@ -48,8 +48,8 @@ class Bank {
         email: json["email"],
         accountName: json["account_name"],
         accountNumber: json["account_number"],
-        methods: json["methods"],
-        coins: json["coins"],
+        methods: json["methods"] == null ? [] : List<int>.from(json["methods"]),
+        coins: json["coins"] == null ? [] : List<String>.from(json["coins"]),
         status: json["status"] ?? 1,
         statusDisplay: json["status_display"],
       );
@@ -61,11 +61,11 @@ class Bank {
         "code": code,
         "description": description,
         "email": email,
-        "accountName": accountName,
-        "accountNumber": accountNumber,
+        "account_name": accountName,
+        "account_number": accountNumber,
         "methods": methods,
         "coins": coins,
         "status": status,
-        "statusDisplay": statusDisplay,
+        "status_display": statusDisplay,
       };
 }

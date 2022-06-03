@@ -47,13 +47,7 @@ class _PaymentsViewState extends State<PaymentsView> {
               HeaderView(
                 title: "Administración de Pagos",
                 subtitle: "Gestión de Pagos",
-                actions: [
-                  CustomButtonPrimary(
-                    onPressed: () => NavigationService.navigateTo(
-                        context, paymentRoute, null),
-                    title: 'Nuevo',
-                  )
-                ],
+                actions: const [],
               ),
               (loading == true)
                   ? const MyProgressIndicator()

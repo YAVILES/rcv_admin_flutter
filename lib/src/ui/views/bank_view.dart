@@ -76,7 +76,14 @@ class __BankViewBodyState extends State<_BankViewBody> {
     BankProvider bankProvider = Provider.of<BankProvider>(context);
     Bank _bank = bankProvider.bank!;
     final bool create = widget.bank.id == null;
-    GroupController controllerGroup = GroupController();
+    GroupController controllerGroup = GroupController(
+      initSelectedItem: _bank.methods,
+      isMultipleSelection: true,
+    );
+    GroupController controllerGroupCoins = GroupController(
+      initSelectedItem: _bank.coins,
+      isMultipleSelection: true,
+    );
 
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
@@ -136,6 +143,26 @@ class __BankViewBodyState extends State<_BankViewBody> {
                           labelText: 'Email',
                         ),
                       ),
+                      TextFormField(
+                        initialValue: _bank.accountNumber ?? '',
+                        onChanged: (value) => _bank.accountNumber = value,
+                        onFieldSubmitted: (value) =>
+                            _saveBank(create, bankProvider, _bank),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el número de cuenta.',
+                          labelText: 'Número de cuenta',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _bank.accountName ?? '',
+                        onChanged: (value) => _bank.accountName = value,
+                        onFieldSubmitted: (value) =>
+                            _saveBank(create, bankProvider, _bank),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el nombre de la cuenta.',
+                          labelText: 'Nombre de la cuenta',
+                        ),
+                      ),
                       FutureBuilder(
                         future: PaymentService.getMethods(),
                         builder:
@@ -158,6 +185,9 @@ class __BankViewBodyState extends State<_BankViewBody> {
                                         const TextStyle(fontSize: 13),
                                   ),
                                   checkFirstElement: false,
+                                  onItemSelected: (items) {
+                                    _bank.methods = items;
+                                  },
                                 )
                               : const MyProgressIndicator();
                         },
@@ -170,7 +200,7 @@ class __BankViewBodyState extends State<_BankViewBody> {
                                   ConnectionState.done
                               ? SimpleGroupedCheckbox<String>(
                                   groupTitle: "Monedas",
-                                  controller: controllerGroup,
+                                  controller: controllerGroupCoins,
                                   itemsTitle: snapshot.data!
                                       .map((e) => e.description!)
                                       .toList(),
@@ -184,6 +214,9 @@ class __BankViewBodyState extends State<_BankViewBody> {
                                         const TextStyle(fontSize: 13),
                                   ),
                                   checkFirstElement: false,
+                                  onItemSelected: (items) {
+                                    _bank.coins = items;
+                                  },
                                 )
                               : const MyProgressIndicator();
                         },

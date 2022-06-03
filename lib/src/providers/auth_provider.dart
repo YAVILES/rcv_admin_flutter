@@ -42,7 +42,7 @@ class AuthProvider with ChangeNotifier {
     try {
       final resp = await API.list('/security/user/current/');
       if (resp.statusCode == 200) {
-        user = User.fromMap(resp.data);
+        user = User.fromMap(resp.data!);
         _loggedInStatus = Status.loggedIn;
         notifyListeners();
         return true;
