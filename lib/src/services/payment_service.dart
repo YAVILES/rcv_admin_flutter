@@ -1,10 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PaymentService {
   static String url = '/payment/payment';
+
+  // Métodos de pago
+  static int get transfer => 0;
+  static int get mobilePayment => 1;
+  static int get cash => 2;
+  static int get zelle => 3;
+  static int get other => 4;
+
+  // Estatus
+  static int get pending => 0;
+  static int get rejected => 1;
+  static int get accepted => 2;
 
   static Future<List<Map<String, dynamic>>> getPaymentsMap(
       Map<String, dynamic>? params) async {
@@ -16,6 +29,19 @@ class PaymentService {
         List<Map<String, dynamic>>.from(response.data);
       }
       return data;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  static Future<ResponseData?> getPaymentsPaginated(
+      Map<String, dynamic>? params, String? _url) async {
+    try {
+      final response = await API.list('${_url ?? url}/', params: params);
+      if (response.statusCode == 200) {
+        return ResponseData.fromMap(response.data);
+      }
+      return null;
     } on ErrorAPI {
       rethrow;
     }
@@ -36,7 +62,7 @@ class PaymentService {
 
   static Future rejectedPayments(List<String> ids) async {
     try {
-      final resp = await API.add('$url/approve_payments/', {"payments": ids});
+      final resp = await API.add('$url/rejected_payments/', {"payments": ids});
       if (resp.statusCode == 200) {
         return true;
       } else {
@@ -47,9 +73,7 @@ class PaymentService {
     }
   }
 
-  static Future<Payment?> newPayment(Payment payemnt) async {
-    final mapDAta = payemnt.toJson();
-    final formData = FormData.fromMap(mapDAta);
+  static Future<Payment?> newPayment(FormData formData) async {
     try {
       final response = await API.add('$url/', formData);
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -70,7 +94,7 @@ class PaymentService {
             List<Map<String, dynamic>>.from(response.data);
         return data.map((w) => Option.fromMap(w)).toList();
       } else {
-        return null;
+        return [];
       }
     } on ErrorAPI {
       return null;

@@ -1,15 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
+import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/policy_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/modals/payment_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -212,6 +216,20 @@ class _ActionsTable extends StatelessWidget {
             );
           },
         ),
+        if (item["status"] == PolicyService.outstanding ||
+            item["status"] == PolicyService.pendingApproval)
+          IconButton(
+            icon: const Icon(Icons.payment_outlined),
+            onPressed: () {
+              showMaterialModalBottomSheet(
+                expand: true,
+                context: context,
+                builder: (_) => PaymentModal(
+                  policy: Policy.fromMap(item),
+                ),
+              );
+            },
+          ),
       ],
     );
   }

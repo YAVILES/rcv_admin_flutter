@@ -4,14 +4,11 @@ import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
 import 'package:rcv_admin_flutter/src/providers/payment_provider.dart';
-import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
-import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PaymentView extends StatefulWidget {
   Payment? payment;
@@ -94,8 +91,7 @@ class __PaymentViewBodyState extends State<_PaymentViewBody> {
                         TextFormField(
                           readOnly: true,
                           initialValue: _payment.number.toString(),
-                          onFieldSubmitted: (value) =>
-                              _savePayment(create, paymentProvider, _payment),
+                          onFieldSubmitted: (value) {},
                           decoration: CustomInputs.buildInputDecoration(
                             // hintText: 'Ingrese la descripción.',
                             labelText: 'Número',
@@ -114,8 +110,7 @@ class __PaymentViewBodyState extends State<_PaymentViewBody> {
                         margin: const EdgeInsets.only(top: 30),
                         alignment: Alignment.center,
                         child: CustomButtonPrimary(
-                          onPressed: () =>
-                              _savePayment(create, paymentProvider, _payment),
+                          onPressed: () {},
                           title: 'Guardar',
                         ),
                       ),
@@ -128,30 +123,5 @@ class __PaymentViewBodyState extends State<_PaymentViewBody> {
         ),
       ),
     );
-  }
-
-  Future<bool?> _savePayment(
-    bool create,
-    PaymentProvider paymentProvider,
-    Payment _payment,
-  ) async {
-    {
-      try {
-        var saved = false;
-        saved = await paymentProvider.newPayment(_payment) ?? false;
-        if (saved) {
-          NotificationService.showSnackbarSuccess(
-              '${_payment.number.toString()} creado');
-        }
-        if (saved) {
-          NavigationService.back(context);
-        }
-        return saved;
-      } on ErrorAPI catch (e) {
-        NotificationService.showSnackbarError(
-          e.error?[0] ?? 'No se pudo guardar el payment',
-        );
-      }
-    }
   }
 }

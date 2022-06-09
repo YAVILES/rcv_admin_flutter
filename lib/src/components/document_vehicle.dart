@@ -44,25 +44,32 @@ class _DocumentVehicleState extends State<DocumentVehicle> {
                   ),
                 ),
                 (widget.imageUrl == null)
-                    ? const Icon(
-                        Icons.warning,
-                        color: Colors.red,
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.warning,
+                          color: Colors.red,
+                        ),
                       )
-                    : const Icon(
-                        Icons.check_circle,
+                    : const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(
+                          Icons.check_circle,
+                        ),
                       ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: IconButton(
-                    onPressed: () {
-                      if (widget.imageUrl != null &&
-                          widget.onDownload != null) {
-                        widget.onDownload!();
-                      }
-                    },
-                    icon: const Icon(Icons.download_for_offline_outlined),
+                if (widget.onDownload != null)
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: IconButton(
+                      onPressed: () {
+                        if (widget.imageUrl != null &&
+                            widget.onDownload != null) {
+                          widget.onDownload!();
+                        }
+                      },
+                      icon: const Icon(Icons.download_for_offline_outlined),
+                    ),
                   ),
-                ),
               ],
             )
           ],

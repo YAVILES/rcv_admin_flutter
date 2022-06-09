@@ -74,13 +74,15 @@ class Payment {
     created = json['created'];
     updated = json['updated'];
     number = json['number'];
-    amount = json['amount'];
+    amount = json['amount'] != null ? double.parse(json['amount']) : null;
     commentary = json['commentary'];
     method = json['method'];
     reference = json['reference'];
     coin = json['coin'];
     archive = json['archive'];
-    changeFactor = json['change_factor'];
+    changeFactor = json['change_factor'] != null
+        ? double.parse(json['change_factor'])
+        : null;
     status = json['status'];
     bank = json['bank'];
     policy = json['policy'];

@@ -19,4 +19,17 @@ class BankService {
     }
     return [];
   }
+
+  static Future<ResponseData?> getBanksPaginated(
+      Map<String, dynamic>? params, String? _url) async {
+    try {
+      final response = await API.list('${_url ?? url}/', params: params);
+      if (response.statusCode == 200) {
+        return ResponseData.fromMap(response.data);
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+    return null;
+  }
 }

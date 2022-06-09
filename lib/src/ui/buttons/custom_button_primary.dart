@@ -41,13 +41,16 @@ class MyButtomPrimary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ButtonStyle(
-        backgroundColor:
-            color != null ? MaterialStateProperty.all(color) : null,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+              color != null ? MaterialStateProperty.all(color) : null,
+        ),
+        onPressed: () => onPressed(),
+        child: Text(title ?? "Custom Button Primary"),
       ),
-      onPressed: () => onPressed(),
-      child: Text(title ?? "Custom Button Primary"),
     );
   }
 }

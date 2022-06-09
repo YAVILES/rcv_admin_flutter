@@ -23,7 +23,6 @@ import 'package:rcv_admin_flutter/src/services/plan_service.dart';
 import 'package:rcv_admin_flutter/src/services/use_service.dart';
 import 'package:rcv_admin_flutter/src/services/vehicle_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/client_view.dart';
@@ -463,7 +462,7 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
                         alignment: Alignment.center,
                         child: CustomButtonPrimary(
                           onPressed: () => _savePolicy(policyProvider, _policy),
-                          title: 'Guardar',
+                          title: 'Procesar',
                         ),
                       ),
                     ],

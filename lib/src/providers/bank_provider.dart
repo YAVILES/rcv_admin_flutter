@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/bank_model.dart';
-import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class BankProvider with ChangeNotifier {
@@ -56,7 +55,6 @@ class BankProvider with ChangeNotifier {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
           bank = Bank.fromMap(response.data);
-          getBanks();
           return true;
         }
         return false;
@@ -75,7 +73,6 @@ class BankProvider with ChangeNotifier {
         final response = await API.put('$url/$id/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
           bank = Bank.fromMap(response.data);
-          getBanks();
           return true;
         }
         return false;

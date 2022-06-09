@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/bank_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
@@ -18,35 +18,6 @@ class BanksView extends StatefulWidget {
 
 class _BanksViewState extends State<BanksView> {
   late List<DatatableHeader> _headers;
-
-  List<int> _perPages = [10, 20, 50];
-  int _total = 100;
-  String? _next;
-  String? _previos;
-  int? _currentPerPage = 50;
-  List<bool>? _expanded;
-  int _currentPage = 1;
-  bool _isSearch = false;
-  String searchCurrent = "";
-  List<Map<String, dynamic>> _source = [];
-  bool _isLoading = true;
-
-  _initializeData() async {
-    refreshData();
-  }
-
-  refreshData() async {
-    setState(() => _isLoading = true);
-    ResponseData data = await BankService.getBanks(
-      {"limit": _currentPerPage, "search": searchCurrent},
-    );
-    _source = data.results;
-    _next = data.next;
-    _previos = data.previous;
-    _total = _source.length;
-    _expanded = List.generate(_total, (index) => false);
-    setState(() => _isLoading = false);
-  }
 
   @override
   void initState() {
@@ -68,8 +39,6 @@ class _BanksViewState extends State<BanksView> {
         },
       )
     ];
-
-    _initializeData();
   }
 
   @override
@@ -93,152 +62,21 @@ class _BanksViewState extends State<BanksView> {
             mainAxisSize: MainAxisSize.max,
             children: [
               HeaderView(
-                title: "Administración Web",
-                subtitle: "Banners",
+                title: "Administración de Pagos",
+                subtitle: "Bancos",
                 actions: [
                   CustomButtonPrimary(
-                    onPressed: () => NavigationService.navigateTo(
-                        context, bannerRoute, null),
+                    onPressed: () =>
+                        NavigationService.navigateTo(context, bankRoute, null),
                     title: 'Nuevo',
                   )
                 ],
               ),
-              Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(0),
-                child: Card(
-                  elevation: 1,
-                  shadowColor: Colors.black,
-                  clipBehavior: Clip.none,
-                  child: ResponsiveDatatable(
-                    reponseScreenSizes: const [ScreenSize.xs],
-                    actions: [
-                      if (_isSearch)
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Buscar',
-                              prefixIcon: IconButton(
-                                icon: const Icon(Icons.cancel),
-                                onPressed: () {
-                                  setState(
-                                    () {
-                                      _isSearch = false;
-                                    },
-                                  );
-                                },
-                              ),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.search),
-                                onPressed: () {
-                                  refreshData();
-                                },
-                              ),
-                            ),
-                            onSubmitted: (value) {
-                              searchCurrent = value;
-                              refreshData();
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                searchCurrent = value;
-                              });
-                            },
-                          ),
-                        ),
-                      if (!_isSearch)
-                        IconButton(
-                            icon: const Icon(Icons.search),
-                            onPressed: () {
-                              setState(() {
-                                _isSearch = true;
-                              });
-                            })
-                    ],
-                    headers: _headers,
-                    source: _source,
-                    selecteds: const [],
-                    autoHeight: true,
-                    onChangedRow: (value, header) {
-                      /// print(value);
-                      /// print(header);
-                    },
-                    onSubmittedRow: (value, header) {
-                      /// print(value);
-                      /// print(header);
-                    },
-                    onTabRow: (data) {
-                      //   print(data);
-                    },
-                    expanded: _expanded,
-                    isLoading: _isLoading,
-                    footers: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: const Text("Filas por página:"),
-                      ),
-                      if (_perPages.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: DropdownButton<int>(
-                            value: _currentPerPage,
-                            items: _perPages
-                                .map((e) => DropdownMenuItem<int>(
-                                      child: Text("$e"),
-                                      value: e,
-                                    ))
-                                .toList(),
-                            onChanged: (dynamic value) {
-                              setState(() {
-                                _currentPerPage = value;
-                                _currentPage = 1;
-                                refreshData();
-                                // _resetData();
-                              });
-                            },
-                            isExpanded: false,
-                          ),
-                        ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child:
-                            Text("$_currentPage - $_currentPerPage of $_total"),
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          size: 16,
-                        ),
-                        onPressed: _currentPage == 1
-                            ? null
-                            : () {
-                                var _nextSet = _currentPage - _currentPerPage!;
-                                setState(() {
-                                  _currentPage = _nextSet > 1 ? _nextSet : 1;
-                                  // _resetData(start: _currentPage - 1);
-                                });
-                              },
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onPressed: _currentPage + _currentPerPage! - 1 > _total
-                            ? null
-                            : () {
-                                var _nextSet = _currentPage + _currentPerPage!;
-
-                                setState(() {
-                                  _currentPage = _nextSet < _total
-                                      ? _nextSet
-                                      : _total - _currentPerPage!;
-                                  // _resetData(start: _nextSet - 1);
-                                });
-                              },
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                      )
-                    ],
-                  ),
-                ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return BankService.getBanksPaginated(params, url);
+                },
               ),
             ],
           ),

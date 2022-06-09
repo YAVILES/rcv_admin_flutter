@@ -1,13 +1,45 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:rcv_admin_flutter/src/models/bank_model.dart';
+import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
+import 'package:rcv_admin_flutter/src/models/policy_model.dart';
+import 'package:rcv_admin_flutter/src/services/bank_service.dart';
 import 'package:rcv_admin_flutter/src/services/payment_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PaymentProvider with ChangeNotifier {
   List<Map<String, dynamic>> payments = [];
-  Payment? payment;
-  bool loading = false;
+  List<Option> methods = [];
+  Option? _method;
+  Option? coin;
+  Policy? policy;
+  PlatformFile? archive;
+  String? archiveImage;
+  Option? get method => _method;
+  List<Map<String, dynamic>> _selecteds = [];
 
+  List<Map<String, dynamic>> get selecteds => _selecteds;
+
+  set selecteds(List<Map<String, dynamic>> selecteds) {
+    _selecteds = selecteds;
+    notifyListeners();
+  }
+
+  set method(Option? method) {
+    _method = method;
+    notifyListeners();
+  }
+
+  List<Option> availableMethods = [];
+  Payment? payment;
+  List<Bank> banks = [];
+  Bank? bank;
+  bool loading = false;
+  bool loadingBanks = false;
+  String reference = "";
+  double amount = 0.00;
   late GlobalKey<FormState> formPaymentKey;
 
   String? searchValue;
@@ -29,6 +61,41 @@ class PaymentProvider with ChangeNotifier {
     }
   }
 
+  Future getBanksForCoin(Option c) async {
+    coin = c;
+    loadingBanks = true;
+    notifyListeners();
+    try {
+      List<Map<String, dynamic>> data = await BankService.getBanks({
+        "not_paginator": true,
+        "coin": c.value,
+        "status": 1,
+      });
+      banks = data.map((e) => Bank.fromMap(e)).toList();
+      loadingBanks = false;
+      notifyListeners();
+    } on ErrorAPI catch (e) {
+      loadingBanks = false;
+      notifyListeners();
+    }
+  }
+
+  Future getMethods() async {
+    methods = await PaymentService.getMethods() ?? [];
+  }
+
+  setAvailableMethods() {
+    if (bank != null) {
+      availableMethods = bank!.methods!
+          .map((e) =>
+              methods.firstWhere((element) => element.value == e.toString()))
+          .toList();
+    } else {
+      availableMethods = [];
+    }
+    notifyListeners();
+  }
+
   Future<Payment?> getPayment(String uid) async {
     try {
       final response = await PaymentService.getPayment(uid);
@@ -42,12 +109,24 @@ class PaymentProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newPayment(Payment payment) async {
-    if (validateForm()) {
-      final response = await PaymentService.newPayment(payment);
+  Future<bool?> savePayment() async {
+    if (validateForm() && archive != null) {
+      final mapData = {
+        "bank": bank?.id,
+        "policy": policy?.id,
+        "reference": reference,
+        "amount": amount,
+        "method": method?.value,
+        "coin": coin?.value,
+        'archive': MultipartFile.fromBytes(
+          archive!.bytes!,
+          filename: archive!.name,
+        ),
+      };
+      final formData = FormData.fromMap(mapData);
+      final response = await PaymentService.newPayment(formData);
       if (response != null) {
         payment = response;
-        getPayments();
         return true;
       }
       return false;
