@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
@@ -26,8 +27,10 @@ class API {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, errorHandler) async {
-          print(
-              'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
+          if (kDebugMode) {
+            print(
+                'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
+          }
           if ((error.response?.statusCode == 403 ||
                   error.response?.statusCode == 401) &&
               error.requestOptions.path != '/token/' &&
@@ -53,11 +56,15 @@ class API {
           }
         },
         onRequest: (RequestOptions request, requestHandler) {
-          print("onRequest: ${request.method} ${request.uri}");
+          if (kDebugMode) {
+            print("onRequest: ${request.method} ${request.uri}");
+          }
           return requestHandler.next(request);
         },
         onResponse: (response, responseHandler) {
-          print('onResponse: ${response.statusCode}');
+          if (kDebugMode) {
+            print('onResponse: ${response.statusCode}');
+          }
           return responseHandler.next(response);
         },
       ),
@@ -74,18 +81,6 @@ class API {
       throw ErrorAPI.fromJson(e.response.toString());
     }
     return response;
-  }
-
-  static Future<Response> _retry(RequestOptions requestOptions) async {
-    final options = Options(
-      method: requestOptions.method,
-      headers: requestOptions.headers,
-    );
-
-    return await _dio.post(requestOptions.path,
-        data: requestOptions.data,
-        queryParameters: requestOptions.queryParameters,
-        options: options);
   }
 
   static Future<Response> get(String path) async {

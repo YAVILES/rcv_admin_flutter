@@ -1,13 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
+import 'package:rcv_admin_flutter/src/models/payment_model.dart';
+import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/providers/payment_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/payment_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/modals/payment_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -41,13 +46,13 @@ class _PaymentsViewState extends State<PaymentsView> {
         },
       ),
       DatatableHeader(text: "Monto", value: "amount"),
-      DatatableHeader(text: "Factor de Cambio", value: "change_factor"),
+      DatatableHeader(text: "Factor de Cambio", value: "change_factor_display"),
       DatatableHeader(text: "Estatus", value: "status_display"),
       DatatableHeader(
         text: "Acciones",
         value: "id",
         sourceBuilder: (value, row) {
-          return _ActionsTable(item: row);
+          return _ActionsTable(item: Map<String, dynamic>.from(row));
         },
       )
     ];
@@ -93,11 +98,77 @@ class _PaymentsViewState extends State<PaymentsView> {
                         CustomButtonPrimary(
                           color: Colors.red,
                           onPressed: () {
+                            if (obj.loading == false) {
+                              final dialog = AlertDialog(
+                                title: const Text(
+                                    '¿Estas seguro de rechazar los pagos seleccionados?'),
+                                content: Consumer<PaymentProvider>(
+                                    builder: (context, objP, child) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Text(
+                                          'Definitivamente deseas rechazar'),
+                                      if (objP.loading == true)
+                                        const MyProgressIndicator()
+                                    ],
+                                  );
+                                }),
+                                actions: [
+                                  TextButton(
+                                    child: const Text("No"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text("Si, rechazar"),
+                                    onPressed: () async {
+                                      try {
+                                        final rejected = await paymentProvider
+                                            .rejectedPayments(obj.selecteds
+                                                .map((e) => e["id"].toString())
+                                                .toList());
+                                        if (rejected) {
+                                          NotificationService
+                                              .showSnackbarSuccess(
+                                                  'Pagos rechazados con exito.');
+                                        } else {
+                                          NotificationService.showSnackbarSuccess(
+                                              'No se pudieron rechazar los pagos.');
+                                        }
+                                      } on ErrorAPI catch (e) {
+                                        NotificationService.showSnackbarError(
+                                            e.detail.toString());
+                                      }
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ],
+                              );
+                              showDialog(
+                                  context: context, builder: (_) => dialog);
+                            }
+                          },
+                          title: 'Rechazar',
+                        ),
+                        CustomButtonPrimary(
+                          onPressed: () {
                             final dialog = AlertDialog(
                               title: const Text(
-                                  '¿Estas seguro de rechazar los pagos seleccionados?'),
-                              content:
-                                  const Text('Definitivamente deseas rechazar'),
+                                  '¿Estas seguro de aprobar los pagos seleccionados?'),
+                              content: Consumer<PaymentProvider>(
+                                  builder: (context, objP, child) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                        'Definitivamente deseas aprobar'),
+                                    if (objP.loading == true)
+                                      const MyProgressIndicator()
+                                  ],
+                                );
+                              }),
                               actions: [
                                 TextButton(
                                   child: const Text("No"),
@@ -106,25 +177,28 @@ class _PaymentsViewState extends State<PaymentsView> {
                                   },
                                 ),
                                 TextButton(
-                                  child: const Text("Si, rechazar"),
+                                  child: const Text("Si, aprobar"),
                                   onPressed: () async {
-                                    try {
-                                      final rejected = await paymentProvider
-                                          .rejectedPayments(obj.selecteds
-                                              .map((e) => e["id"].toString())
-                                              .toList());
-                                      if (rejected) {
-                                        NotificationService.showSnackbarSuccess(
-                                            'Pagos rechazados con exito.');
-                                      } else {
-                                        NotificationService.showSnackbarSuccess(
-                                            'No se pudieron rechazar los pagos.');
+                                    if (obj.loading == false) {
+                                      try {
+                                        final approved = await paymentProvider
+                                            .approvePayments(obj.selecteds
+                                                .map((e) => e["id"].toString())
+                                                .toList());
+                                        if (approved) {
+                                          NotificationService
+                                              .showSnackbarSuccess(
+                                                  'Pagos aprobados con exito.');
+                                        } else {
+                                          NotificationService.showSnackbarSuccess(
+                                              'No se pudieron aprobar los pagos.');
+                                        }
+                                      } on ErrorAPI catch (e) {
+                                        NotificationService.showSnackbarError(
+                                            e.detail.toString());
                                       }
-                                    } on ErrorAPI catch (e) {
-                                      NotificationService.showSnackbarError(
-                                          e.detail.toString());
+                                      Navigator.of(context).pop();
                                     }
-                                    Navigator.of(context).pop();
                                   },
                                 )
                               ],
@@ -132,10 +206,6 @@ class _PaymentsViewState extends State<PaymentsView> {
                             showDialog(
                                 context: context, builder: (_) => dialog);
                           },
-                          title: 'Rechazar',
-                        ),
-                        CustomButtonPrimary(
-                          onPressed: () {},
                           title: 'Aprobar',
                         ),
                       ]
@@ -147,6 +217,13 @@ class _PaymentsViewState extends State<PaymentsView> {
                 headers: _headers,
                 onSource: (Map<String, dynamic> params, String? url) {
                   return PaymentService.getPaymentsPaginated(params, url);
+                },
+                params: {
+                  "query":
+                      """{id, number, bank_display, coin_display, method_display, 
+                  amount, amount_display, policy_display {id, number}, status, 
+                  status_display, change_factor, change_factor_display,
+                  reference}"""
                 },
                 showSelect: true,
                 onSelect: (_selecteds) {
@@ -162,7 +239,7 @@ class _PaymentsViewState extends State<PaymentsView> {
 }
 
 class _ActionsTable extends StatelessWidget {
-  Map<String?, dynamic> item;
+  Map<String, dynamic> item;
   _ActionsTable({
     Key? key,
     required this.item,
@@ -175,10 +252,15 @@ class _ActionsTable extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.edit_outlined),
           onPressed: () {
-            NavigationService.navigateTo(
-              context,
-              paymentDetailRoute,
-              {'id': item['id'].toString()},
+            showMaterialModalBottomSheet(
+              expand: true,
+              context: context,
+              builder: (_) {
+                return PaymentModal(
+                  policy: Policy.fromMap(item["policy_display"]),
+                  payment: Payment.fromJson(item),
+                );
+              },
             );
           },
         ),

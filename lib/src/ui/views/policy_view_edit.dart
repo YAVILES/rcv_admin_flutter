@@ -1,36 +1,21 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/models/client_model.dart';
-import 'package:rcv_admin_flutter/src/models/plan_model.dart';
-
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
-import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/plan_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/vehicle_provider.dart';
-import 'package:rcv_admin_flutter/src/services/client_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
-import 'package:rcv_admin_flutter/src/services/plan_service.dart';
-import 'package:rcv_admin_flutter/src/services/use_service.dart';
-import 'package:rcv_admin_flutter/src/services/vehicle_service.dart';
-import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/ui/views/client_view.dart';
-import 'package:rcv_admin_flutter/src/ui/views/vehicle_view.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
-
-import '../../models/vehicle_model.dart';
 
 class PolicyViewEdit extends StatefulWidget {
   Policy? policy;
@@ -91,13 +76,6 @@ class __PolicyViewBodyState extends State<_PolicyViewBody> {
   Widget build(BuildContext context) {
     PolicyProvider policyProvider =
         Provider.of<PolicyProvider>(context, listen: false);
-    VehicleProvider vehicleProvider =
-        Provider.of<VehicleProvider>(context, listen: false);
-    PlanProvider planProvider =
-        Provider.of<PlanProvider>(context, listen: false);
-    CoverageProvider coverageProvider =
-        Provider.of<CoverageProvider>(context, listen: false);
-
     Policy _policy = policyProvider.policy = widget.policy;
 
     return SingleChildScrollView(

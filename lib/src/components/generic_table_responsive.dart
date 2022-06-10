@@ -38,19 +38,20 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
   String? next;
   String? previos;
   int? currentPerPage = 50;
+  int? currentPerPageFinal = 50;
 
   int currentPage = 1;
   String? searchCurrent;
 
-  refreshData() async {
+  refreshData({String? url}) async {
     setState(() => isLoading = true);
 
-    final data = await widget.onSource(widget.params ?? {}, null);
+    final data = await widget.onSource(widget.params ?? {}, url);
     setState(() {
       widget.source = data?.results ?? [];
       next = data?.next;
       previos = data?.previous;
-      total = widget.source.length;
+      total = data?.count ?? 0; // widget.source.length;
       expanded = List.generate(total, (index) => false);
     });
 
@@ -88,7 +89,9 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                       onPressed: () {
                         setState(
                           () {
+                            widget.params?.remove("search");
                             isSearch = false;
+                            refreshData();
                           },
                         );
                       },
@@ -195,6 +198,7 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                   onChanged: (dynamic value) {
                     setState(() {
                       currentPerPage = value;
+                      currentPerPageFinal = value;
                       currentPage = 1;
                       widget.params?["limit"] = value;
                       refreshData();
@@ -206,19 +210,23 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
               ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Text("$currentPage - $currentPerPage of $total"),
+              child: Text("$currentPage - $currentPerPageFinal de $total"),
             ),
             IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios,
                 size: 16,
               ),
-              onPressed: currentPage == 1
+              onPressed: previos == null
                   ? null
                   : () {
                       var nextSet = currentPage - currentPerPage!;
                       setState(() {
                         currentPage = nextSet > 1 ? nextSet : 1;
+                        currentPerPageFinal = nextSet > 1
+                            ? (currentPerPageFinal! - currentPerPage!)
+                            : currentPerPage;
+                        refreshData(url: previos);
                         // _resetData(start: _currentPage - 1);
                       });
                     },
@@ -226,7 +234,7 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios, size: 16),
-              onPressed: currentPage + currentPerPage! - 1 > total
+              onPressed: next == null
                   ? null
                   : () {
                       var nextSet = currentPage + currentPerPage!;
@@ -234,6 +242,10 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                       setState(() {
                         currentPage =
                             nextSet < total ? nextSet : total - currentPerPage!;
+                        currentPerPageFinal = nextSet < total
+                            ? (currentPerPageFinal! + currentPerPage!)
+                            : total - currentPerPageFinal!;
+                        refreshData(url: next);
                         // _resetData(start: _nextSet - 1);
                       });
                     },

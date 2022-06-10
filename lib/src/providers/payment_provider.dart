@@ -135,10 +135,58 @@ class PaymentProvider with ChangeNotifier {
   }
 
   Future rejectedPayments(List<String> ids) async {
+    loading = true;
+    notifyListeners();
     try {
       final rejected = await PaymentService.rejectedPayments(ids);
       if (rejected) {
         payments = await PaymentService.getPaymentsMap({});
+        notifyListeners();
+      }
+      loading = false;
+      notifyListeners();
+      return rejected;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  Future approvePayments(List<String> ids) async {
+    loading = true;
+    notifyListeners();
+    try {
+      final rejected = await PaymentService.approvePayments(ids);
+      if (rejected) {
+        payments = await PaymentService.getPaymentsMap({});
+      }
+      loading = false;
+      notifyListeners();
+      return rejected;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  Future rejectedPayment() async {
+    try {
+      final rejected =
+          await PaymentService.rejectedPayment(payment!.id.toString());
+      if (rejected) {
+        payment!.status = PaymentService.rejected;
+        notifyListeners();
+      }
+      return rejected;
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  Future approvePayment() async {
+    try {
+      final rejected =
+          await PaymentService.approvePayment(payment!.id.toString());
+      if (rejected) {
+        payment!.status = PaymentService.accepted;
         notifyListeners();
       }
       return rejected;

@@ -27,7 +27,7 @@ class BankProvider with ChangeNotifier {
       }
       loading = false;
       notifyListeners();
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }
@@ -62,6 +62,7 @@ class BankProvider with ChangeNotifier {
         rethrow;
       }
     }
+    return null;
   }
 
   Future<bool?> editBank(String id, Bank bankRCV) async {
@@ -124,7 +125,7 @@ class BankProvider with ChangeNotifier {
       }
       loading = false;
       notifyListeners();
-    } on ErrorAPI catch (e) {
+    } on ErrorAPI {
       loading = false;
       notifyListeners();
     }

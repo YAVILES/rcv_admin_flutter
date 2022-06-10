@@ -73,6 +73,45 @@ class PaymentService {
     }
   }
 
+  static Future approvePayments(List<String> ids) async {
+    try {
+      final resp = await API.add('$url/approve_payments/', {"payments": ids});
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  static Future rejectedPayment(String id) async {
+    try {
+      final resp = await API.add('$url/$id/reject/', {});
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
+  static Future approvePayment(String id) async {
+    try {
+      final resp = await API.add('$url/$id/approve/', {});
+      if (resp.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } on ErrorAPI {
+      rethrow;
+    }
+  }
+
   static Future<Payment?> newPayment(FormData formData) async {
     try {
       final response = await API.add('$url/', formData);

@@ -61,6 +61,7 @@ class BranchOfficeProvider with ChangeNotifier {
         rethrow;
       }
     }
+    return null;
   }
 
   Future<bool?> editBranchOffice(String id, BranchOffice branchOffice) async {

@@ -12,6 +12,6 @@ class NavigationService {
   }
 
   static back(BuildContext context) {
-    GoRouter.of(context).pop(context);
+    GoRouter.of(context).pop();
   }
 }

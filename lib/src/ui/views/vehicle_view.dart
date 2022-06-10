@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/document_vehicle.dart';
@@ -24,6 +25,7 @@ import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 import '../../models/mark_model.dart';
 
+// ignore: must_be_immutable
 class VehicleView extends StatefulWidget {
   Vehicle? vehicle;
   String? uid;
@@ -59,6 +61,7 @@ class _VehicleViewState extends State<VehicleView> {
   }
 }
 
+// ignore: must_be_immutable
 class _VehicleViewBody extends StatefulWidget {
   Vehicle vehicle;
   List<Model> models = [];
@@ -532,14 +535,12 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                               }
                             },
                             onDownload: () async {
-                              final Map<String, String> headers = {
-                                'Accept': '*/*',
-                              };
                               var image = await vehicleProvider.dowmloadArchive(
                                   _vehicle.id!, "owner_circulation_card");
 
-                              print(image
-                                  .runtimeType); /* 
+                              if (kDebugMode) {
+                                print(image.runtimeType);
+                              } /* 
                               await FileSaver.instance.saveFile(
                                   'owner_circulation_card', image!, 'jpg'); */
                             },
@@ -601,5 +602,6 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
         );
       }
     }
+    return null;
   }
 }

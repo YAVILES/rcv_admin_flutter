@@ -3,14 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
-import 'package:rcv_admin_flutter/src/models/role_model.dart';
-import 'package:rcv_admin_flutter/src/models/user_model.dart';
-
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart';
@@ -602,10 +597,10 @@ class RouterGoRouter {
           ),
         )
       ],
-      navigatorBuilder: (context, child) {
+      navigatorBuilder: (context, GoRouterState state, Widget child) {
         if (auth.loggedInStatus == Status.loggedIn) {
           return Builder(builder: (context) {
-            return DashBoardLayout(child: child!);
+            return DashBoardLayout(child: child);
           });
         }
 
@@ -613,7 +608,7 @@ class RouterGoRouter {
           return const SplashLayout();
         }
 
-        return AuthLayout(child: child!);
+        return AuthLayout(child: child);
       },
       redirect: (state) {
         final loggingIn = state.location == '/$loginRoute';
@@ -661,24 +656,4 @@ BranchOffice _getBranchOffice(BuildContext context, String uid) {
           )
           .first;
   return BranchOffice.fromMap(branchOfficeMap);
-}
-
-Role _getRole(BuildContext context, String uid) {
-  final roleMap = Provider.of<RoleProvider>(context, listen: false)
-      .roles
-      .where(
-        (b) => b['id'].toString() == uid,
-      )
-      .first;
-  return Role.fromMap(roleMap);
-}
-
-User _getUser(BuildContext context, String uid) {
-  final userMap = Provider.of<UserProvider>(context, listen: false)
-      .users
-      .where(
-        (b) => b['id'] == uid.toString(),
-      )
-      .first;
-  return User.fromMap(userMap);
 }

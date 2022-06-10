@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
@@ -9,7 +8,6 @@ import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
-import 'package:rcv_admin_flutter/src/providers/premium_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/plan_service.dart';
@@ -35,7 +33,6 @@ class _PremiumsViewState extends State<PremiumsView> {
   @override
   Widget build(BuildContext context) {
     PlansUses plansAndUses = PlansUses();
-    PremiumProvider premiumProvider = Provider.of<PremiumProvider>(context);
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
@@ -71,7 +68,7 @@ class _PremiumsViewState extends State<PremiumsView> {
                   return snapshot.connectionState == ConnectionState.done
                       ? GenericTable(
                           withSearchEngine: false,
-                          dataRowHeight: 110,
+                          dataRowHeight: 120,
                           data: plansAndUses.plans != null
                               ? plansAndUses.plans!
                                   .map((e) => e.toMap())
@@ -218,7 +215,6 @@ class _TotalCoverageState extends State<TotalCoverage> {
               );
             },
           ),
-          const SizedBox(height: 5),
           (widget.premiums.length != widget.plan.coverage?.length)
               ? const Icon(
                   Icons.warning,

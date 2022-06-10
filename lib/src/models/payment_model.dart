@@ -1,4 +1,5 @@
 import 'package:rcv_admin_flutter/src/models/bank_model.dart';
+import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
 
@@ -21,6 +22,7 @@ class Payment {
   int? method;
   String? reference;
   String? coin;
+  Option? coinDisplay;
   String? archive;
   double? changeFactor;
   int? status;
@@ -47,6 +49,7 @@ class Payment {
       this.method,
       this.reference,
       this.coin,
+      this.coinDisplay,
       this.archive,
       this.changeFactor,
       this.status,
@@ -63,10 +66,10 @@ class Payment {
         ? User.fromJson(json['user_display'])
         : null;
     bankDisplay = json['bank_display'] != null
-        ? Bank.fromJson(json['bank_display'])
+        ? Bank.fromMap(json['bank_display'])
         : null;
     policyDisplay = json['policy_display'] != null
-        ? Policy.fromJson(json['policy_display'])
+        ? Policy.fromMap(json['policy_display'])
         : null;
     amountDisplay = json['amount_display'];
     amountFullDisplay = json['amount_full_display'];
@@ -79,6 +82,9 @@ class Payment {
     method = json['method'];
     reference = json['reference'];
     coin = json['coin'];
+    coinDisplay = json['coin_display'] != null
+        ? Option.fromMap(json['coin_display'])
+        : null;
     archive = json['archive'];
     changeFactor = json['change_factor'] != null
         ? double.parse(json['change_factor'])
@@ -115,6 +121,7 @@ class Payment {
     data['method'] = method;
     data['reference'] = reference;
     data['coin'] = coin;
+    data['coin_display'] = coinDisplay?.toJson();
     data['archive'] = archive;
     data['change_factor'] = changeFactor;
     data['status'] = status;
