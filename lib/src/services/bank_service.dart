@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
 import 'package:rcv_admin_flutter/src/models/bank_model.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
@@ -31,5 +34,24 @@ class BankService {
       rethrow;
     }
     return null;
+  }
+
+  static Future<Uint8List?> export() async {
+    try {
+      final response = await API.list(
+        '$url/export/',
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
   }
 }

@@ -77,6 +77,16 @@ class _BanksViewState extends State<BanksView> {
                 onSource: (Map<String, dynamic> params, String? url) {
                   return BankService.getBanksPaginated(params, url);
                 },
+                onExport: (params) {
+                  return BankService.export();
+                },
+                filenameExport: "bancos",
+                // ignore: prefer_const_literals_to_create_immutables
+                params: {
+                  "query": """{id, code, description, image, image_display, 
+                  coins, coins_display, methods, methods_display, status, 
+                  status_display}"""
+                },
               ),
             ],
           ),

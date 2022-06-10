@@ -96,10 +96,12 @@ class API {
   static Future<Response> list(
     String path, {
     Map<String, dynamic>? params,
+    Options? options,
   }) async {
     Response response;
     try {
-      response = await _dio.get(path, queryParameters: params);
+      response =
+          await _dio.get(path, queryParameters: params, options: options);
     } on DioError catch (e) {
       throw ErrorAPI.fromJson(e.response.toString());
     }

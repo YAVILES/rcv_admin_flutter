@@ -1,5 +1,12 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:responsive_table/responsive_table.dart';
 
 class GenericTableResponsive extends StatefulWidget {
@@ -7,6 +14,8 @@ class GenericTableResponsive extends StatefulWidget {
     Key? key,
     required this.headers,
     required this.onSource,
+    this.onExport,
+    this.filenameExport,
     this.params,
     this.selecteds,
     this.onSelect,
@@ -15,6 +24,8 @@ class GenericTableResponsive extends StatefulWidget {
 
   Future<ResponseData?> Function(Map<String, dynamic> params, String? url)
       onSource;
+  Future<Uint8List?> Function(Map<String, dynamic> params)? onExport;
+  String? filenameExport;
   List<DatatableHeader> headers;
   List<Map<String, dynamic>> source = [];
   Map<String, dynamic>? params;
@@ -133,6 +144,35 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                         refreshData();
                       },
                     ),
+                    if (widget.onExport != null)
+                      IconButton(
+                        icon: const Icon(Icons.download),
+                        onPressed: () async {
+                          if (!kIsWeb) {
+                            if (Platform.isIOS ||
+                                Platform.isAndroid ||
+                                Platform.isMacOS) {
+                              bool status = await Permission.storage.isGranted;
+
+                              if (!status) await Permission.storage.request();
+                            }
+                          }
+                          Uint8List? data =
+                              await widget.onExport!(widget.params ?? {});
+                          if (data != null) {
+                            MimeType type = MimeType.MICROSOFTEXCEL;
+                            String path = await FileSaver.instance.saveFile(
+                                widget.filenameExport ?? "", data, "xlsx",
+                                mimeType: type);
+                            if (kDebugMode) {
+                              print(path);
+                            }
+                          } else {
+                            NotificationService.showSnackbarError(
+                                'No se pudo descargar el excel');
+                          }
+                        },
+                      ),
                   ],
                 ),
               )

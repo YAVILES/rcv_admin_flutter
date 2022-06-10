@@ -1,3 +1,12 @@
+import 'dart:io';
+import 'dart:developer';
+import 'dart:typed_data';
+
+import 'package:file_saver/file_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as x;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -7,8 +16,7 @@ import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/providers/payment_provider.dart';
-import 'package:rcv_admin_flutter/src/router/route_names.dart';
-import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/payment_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
@@ -42,7 +50,7 @@ class _PaymentsViewState extends State<PaymentsView> {
         text: "Moneda",
         value: "coins_display",
         sourceBuilder: (value, row) {
-          return Text(row["coin_display"]["description"]);
+          return Center(child: Text(row["coin_display"]["description"]));
         },
       ),
       DatatableHeader(text: "Monto", value: "amount"),
@@ -84,11 +92,6 @@ class _PaymentsViewState extends State<PaymentsView> {
                     title: "Administración de Pagos",
                     subtitle: "Pagos",
                     actions: [
-                      CustomButtonPrimary(
-                        onPressed: () => NavigationService.navigateTo(
-                            context, paymentRoute, null),
-                        title: 'Nuevo',
-                      ),
                       if (obj.selecteds.isNotEmpty &&
                           obj.selecteds
                               .where(
@@ -218,6 +221,10 @@ class _PaymentsViewState extends State<PaymentsView> {
                 onSource: (Map<String, dynamic> params, String? url) {
                   return PaymentService.getPaymentsPaginated(params, url);
                 },
+                onExport: (params) {
+                  return PaymentService.export();
+                },
+                filenameExport: "pagos",
                 params: {
                   "query":
                       """{id, number, bank_display, coin_display, method_display, 

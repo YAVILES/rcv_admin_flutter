@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
@@ -147,6 +149,25 @@ class PaymentService {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
         return data.map((w) => Option.fromMap(w)).toList();
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
+  }
+
+  static Future<Uint8List?> export() async {
+    try {
+      final response = await API.list(
+        '$url/export/',
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data;
       } else {
         return null;
       }
