@@ -230,7 +230,7 @@ class _PaymentsViewState extends State<PaymentsView> {
                       """{id, number, bank_display, coin_display, method_display, 
                   amount, amount_display, policy_display {id, number}, status, 
                   status_display, change_factor, change_factor_display,
-                  reference}"""
+                  reference, archive_display}"""
                 },
                 showSelect: true,
                 onSelect: (_selecteds) {

@@ -1,11 +1,20 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:checkbox_grouped/checkbox_grouped.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:rcv_admin_flutter/src/components/document_vehicle.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 
 import 'package:rcv_admin_flutter/src/models/bank_model.dart';
 import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/providers/bank_provider.dart';
+import 'package:rcv_admin_flutter/src/services/bank_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/payment_service.dart';
@@ -51,6 +60,7 @@ class _BankViewState extends State<BankView> {
 
 class _BankViewBody extends StatefulWidget {
   Bank bank;
+  bool withImage = false;
 
   _BankViewBody({
     Key? key,
@@ -110,8 +120,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                           }
                           return null;
                         },
-                        onFieldSubmitted: (value) =>
-                            _saveBank(create, bankProvider, _bank),
+                        onFieldSubmitted: (value) => _saveBank(
+                            create, bankProvider, _bank, widget.withImage),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese la código.',
                           labelText: 'Código',
@@ -126,8 +136,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                           }
                           return null;
                         },
-                        onFieldSubmitted: (value) =>
-                            _saveBank(create, bankProvider, _bank),
+                        onFieldSubmitted: (value) => _saveBank(
+                            create, bankProvider, _bank, widget.withImage),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese la descripción.',
                           labelText: 'Descripción',
@@ -136,8 +146,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                       TextFormField(
                         initialValue: _bank.email ?? '',
                         onChanged: (value) => _bank.email = value,
-                        onFieldSubmitted: (value) =>
-                            _saveBank(create, bankProvider, _bank),
+                        onFieldSubmitted: (value) => _saveBank(
+                            create, bankProvider, _bank, widget.withImage),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el email.',
                           labelText: 'Email',
@@ -146,8 +156,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                       TextFormField(
                         initialValue: _bank.accountNumber ?? '',
                         onChanged: (value) => _bank.accountNumber = value,
-                        onFieldSubmitted: (value) =>
-                            _saveBank(create, bankProvider, _bank),
+                        onFieldSubmitted: (value) => _saveBank(
+                            create, bankProvider, _bank, widget.withImage),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el número de cuenta.',
                           labelText: 'Número de cuenta',
@@ -156,8 +166,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                       TextFormField(
                         initialValue: _bank.accountName ?? '',
                         onChanged: (value) => _bank.accountName = value,
-                        onFieldSubmitted: (value) =>
-                            _saveBank(create, bankProvider, _bank),
+                        onFieldSubmitted: (value) => _saveBank(
+                            create, bankProvider, _bank, widget.withImage),
                         decoration: CustomInputs.buildInputDecoration(
                           hintText: 'Ingrese el nombre de la cuenta.',
                           labelText: 'Nombre de la cuenta',
@@ -221,6 +231,59 @@ class __BankViewBodyState extends State<_BankViewBody> {
                               : const MyProgressIndicator();
                         },
                       ),
+                      DocumentUploadDownload(
+                        title: 'Imagen',
+                        imageUrl: _bank.imageDisplay,
+                        onDownload: _bank.id == null
+                            ? null
+                            : () async {
+                                if (!kIsWeb) {
+                                  if (Platform.isIOS ||
+                                      Platform.isAndroid ||
+                                      Platform.isMacOS) {
+                                    bool status =
+                                        await Permission.storage.isGranted;
+
+                                    if (!status) {
+                                      await Permission.storage.request();
+                                    }
+                                  }
+                                }
+                                Uint8List? data =
+                                    await BankService.downloadImage(_bank.id!);
+                                if (data != null) {
+                                  MimeType type = MimeType.JPEG;
+                                  String path =
+                                      await FileSaver.instance.saveFile(
+                                    "imagen_banco_${_bank.description.toString()}",
+                                    data,
+                                    "jpeg",
+                                    mimeType: type,
+                                  );
+                                  NotificationService.showSnackbarSuccess(
+                                      'Pago guardado en $path');
+                                } else {
+                                  NotificationService.showSnackbarError(
+                                      'No se pudo descargar el excel');
+                                }
+                              },
+                        onUpload: () async {
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles(
+                            // allowedExtensions: ['jpg'],
+                            allowMultiple: false,
+                          );
+
+                          if (result != null) {
+                            setState(() {
+                              _bank.image = result.files.first;
+                              widget.withImage = true;
+                            });
+                          } else {
+                            // User canceled the picker
+                          }
+                        },
+                      ),
                       SizedBox(
                         width: 155,
                         child: CustomCheckBox(
@@ -233,8 +296,8 @@ class __BankViewBodyState extends State<_BankViewBody> {
                         margin: const EdgeInsets.only(top: 30),
                         alignment: Alignment.center,
                         child: CustomButtonPrimary(
-                          onPressed: () =>
-                              _saveBank(create, bankProvider, _bank),
+                          onPressed: () => _saveBank(
+                              create, bankProvider, _bank, widget.withImage),
                           title: 'Guardar',
                         ),
                       ),
@@ -253,18 +316,22 @@ class __BankViewBodyState extends State<_BankViewBody> {
     bool create,
     BankProvider bankProvider,
     Bank _bank,
+    bool? withImage,
   ) async {
     {
       try {
         var saved = false;
         if (create) {
-          saved = await bankProvider.newBank(_bank) ?? false;
+          saved =
+              await bankProvider.newBank(_bank, withImage: withImage) ?? false;
           if (saved) {
             NotificationService.showSnackbarSuccess(
                 '${_bank.description} creado');
           }
         } else {
-          saved = await bankProvider.editBank(_bank.id!, _bank) ?? false;
+          saved = await bankProvider.editBank(_bank.id!, _bank,
+                  withImage: withImage) ??
+              false;
           if (saved) {
             NotificationService.showSnackbarSuccess(
               '${_bank.description} actualizado',

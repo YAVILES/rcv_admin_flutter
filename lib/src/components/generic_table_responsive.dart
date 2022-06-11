@@ -14,6 +14,7 @@ class GenericTableResponsive extends StatefulWidget {
     Key? key,
     required this.headers,
     required this.onSource,
+    this.onImport,
     this.onExport,
     this.filenameExport,
     this.params,
@@ -24,6 +25,7 @@ class GenericTableResponsive extends StatefulWidget {
 
   Future<ResponseData?> Function(Map<String, dynamic> params, String? url)
       onSource;
+  Future Function(Map<String, dynamic> params)? onImport;
   Future<Uint8List?> Function(Map<String, dynamic> params)? onExport;
   String? filenameExport;
   List<DatatableHeader> headers;
@@ -171,6 +173,15 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                             NotificationService.showSnackbarError(
                                 'No se pudo descargar el excel');
                           }
+                        },
+                      ),
+                    if (widget.onImport != null)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.upload,
+                        ),
+                        onPressed: () async {
+                          await widget.onImport!(widget.params ?? {});
                         },
                       ),
                   ],

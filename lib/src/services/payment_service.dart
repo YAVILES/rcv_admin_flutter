@@ -175,4 +175,23 @@ class PaymentService {
       return null;
     }
   }
+
+  static Future<Uint8List?> downloadArchive(String id) async {
+    try {
+      final response = await API.list(
+        '$url/$id/download_archive/',
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
+  }
 }

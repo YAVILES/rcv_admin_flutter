@@ -277,11 +277,17 @@ class _PaymentModalState extends State<PaymentModal> {
                                                 ),
                                               ),
                                             ),
-                                            DocumentVehicle(
+                                            DocumentUploadDownload(
                                               title: 'Documento',
-                                              imageUrl: paymentProvider.payment
-                                                      ?.archiveDisplay ??
-                                                  paymentProvider.archiveImage,
+                                              imageUrl:
+                                                  obj.payment?.archiveDisplay ??
+                                                      obj.archiveImage,
+                                              onDownload: obj.payment == null
+                                                  ? null
+                                                  : () async {
+                                                      await paymentProvider
+                                                          .downloadArchive();
+                                                    },
                                               onUpload: () async {
                                                 FilePickerResult? result =
                                                     await FilePicker.platform

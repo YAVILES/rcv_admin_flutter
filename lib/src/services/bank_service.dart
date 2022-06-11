@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:rcv_admin_flutter/src/models/bank_model.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
@@ -45,6 +45,43 @@ class BankService {
           followRedirects: false,
         ),
       );
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
+  }
+
+  static Future<Uint8List?> downloadImage(String id) async {
+    try {
+      final response = await API.list(
+        '$url/$id/download_image/',
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
+  }
+
+  static Future import(PlatformFile archive) async {
+    var file = MultipartFile.fromBytes(
+      archive.bytes!,
+      filename: archive.name,
+    );
+    FormData formData = FormData.fromMap({"file": file});
+    try {
+      final response = await API.add('$url/_import/', formData);
       if (response.statusCode == 200) {
         return response.data;
       } else {

@@ -479,7 +479,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                       ),
                       Wrap(
                         children: [
-                          DocumentVehicle(
+                          DocumentUploadDownload(
                             title: 'Cédula de Identidad o Rif',
                             imageUrl: _vehicle.ownerIdentityCardImage,
                             onUpload: () async {
@@ -498,7 +498,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                               }
                             },
                           ),
-                          DocumentVehicle(
+                          DocumentUploadDownload(
                             title: 'Licencia',
                             imageUrl: _vehicle.ownerLicense,
                             onUpload: () async {
@@ -516,7 +516,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                               }
                             },
                           ),
-                          DocumentVehicle(
+                          DocumentUploadDownload(
                             title: 'Carnet de Circulación o Titulo',
                             imageUrl: _vehicle.ownerCirculationCard,
                             onUpload: () async {

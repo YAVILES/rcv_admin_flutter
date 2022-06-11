@@ -1,11 +1,18 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rcv_admin_flutter/src/models/bank_model.dart';
 import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/payment_model.dart';
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/services/bank_service.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/payment_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
@@ -206,6 +213,29 @@ class PaymentProvider with ChangeNotifier {
     } on ErrorAPI catch (e) {
       loading = false;
       notifyListeners();
+    }
+  }
+
+  downloadArchive() async {
+    if (!kIsWeb) {
+      if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS) {
+        bool status = await Permission.storage.isGranted;
+
+        if (!status) await Permission.storage.request();
+      }
+    }
+    Uint8List? data = await PaymentService.downloadArchive(payment!.id!);
+    if (data != null) {
+      MimeType type = MimeType.JPEG;
+      String path = await FileSaver.instance.saveFile(
+        "pago ${payment?.number.toString()}",
+        data,
+        "jpeg",
+        mimeType: type,
+      );
+      NotificationService.showSnackbarSuccess('Pago guardado en $path');
+    } else {
+      NotificationService.showSnackbarError('No se pudo descargar el excel');
     }
   }
 }

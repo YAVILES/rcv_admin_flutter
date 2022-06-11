@@ -47,10 +47,17 @@ class BankProvider with ChangeNotifier {
     }
   }
 
-  Future<bool?> newBank(Bank bankRCV) async {
+  Future<bool?> newBank(Bank bankRCV, {bool? withImage}) async {
     if (validateForm()) {
-      final mapDAta = bankRCV.toMap();
-      final formData = FormData.fromMap(mapDAta);
+      final mapData = {
+        if (withImage == true)
+          'image': MultipartFile.fromBytes(
+            bankRCV.image!.bytes!,
+            filename: bankRCV.image!.name,
+          ),
+        ...bankRCV.toMap(),
+      };
+      final formData = FormData.fromMap(mapData);
       try {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
@@ -65,10 +72,17 @@ class BankProvider with ChangeNotifier {
     return null;
   }
 
-  Future<bool?> editBank(String id, Bank bankRCV) async {
+  Future<bool?> editBank(String id, Bank bankRCV, {bool? withImage}) async {
     if (validateForm()) {
-      final mapDAta = bankRCV.toMap();
-      final formData = FormData.fromMap(mapDAta);
+      final mapData = {
+        if (withImage == true)
+          'image': MultipartFile.fromBytes(
+            bankRCV.image!.bytes!,
+            filename: bankRCV.image!.name,
+          ),
+        ...bankRCV.toMap(),
+      };
+      final formData = FormData.fromMap(mapData);
 
       try {
         final response = await API.put('$url/$id/', formData);

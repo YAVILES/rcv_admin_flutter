@@ -1,9 +1,12 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/bank_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
@@ -18,6 +21,8 @@ class BanksView extends StatefulWidget {
 
 class _BanksViewState extends State<BanksView> {
   late List<DatatableHeader> _headers;
+  Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource =
+      (params, url) => BankService.getBanksPaginated(params, url);
 
   @override
   void initState() {
@@ -29,7 +34,10 @@ class _BanksViewState extends State<BanksView> {
       DatatableHeader(text: "Descripción", value: "description"),
       DatatableHeader(
           text: "Modenas", value: "coins_display", textAlign: TextAlign.left),
-      DatatableHeader(text: "Métodos de Pago", value: "methods_display"),
+      DatatableHeader(
+          text: "Métodos de Pago",
+          value: "methods_display",
+          textAlign: TextAlign.left),
       DatatableHeader(text: "Estatus", value: "status_display"),
       DatatableHeader(
         text: "Acciones",
@@ -75,10 +83,32 @@ class _BanksViewState extends State<BanksView> {
               GenericTableResponsive(
                 headers: _headers,
                 onSource: (Map<String, dynamic> params, String? url) {
-                  return BankService.getBanksPaginated(params, url);
+                  return onSource(params, url);
                 },
                 onExport: (params) {
                   return BankService.export();
+                },
+                onImport: (params) async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    // allowedExtensions: ['jpg'],
+                    allowMultiple: false,
+                  );
+
+                  if (result != null) {
+                    final resp = await BankService.import(result.files.first);
+                    if (resp != null) {
+                      setState(() {
+                        NotificationService.showSnackbarSuccess(
+                            'Carga masiva Exitosa');
+                      });
+                    } else {
+                      NotificationService.showSnackbarError(
+                          'No fue posible cargar la información');
+                    }
+                  } else {
+                    // User canceled the picker
+                  }
                 },
                 filenameExport: "bancos",
                 // ignore: prefer_const_literals_to_create_immutables

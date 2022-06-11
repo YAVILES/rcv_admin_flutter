@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
+
 class Bank {
   Bank({
     this.id,
@@ -18,6 +20,8 @@ class Bank {
     this.coins,
     this.status,
     this.statusDisplay,
+    this.image,
+    this.imageDisplay,
   });
 
   String? id;
@@ -32,6 +36,8 @@ class Bank {
   List<String>? coins;
   int? status;
   String? statusDisplay;
+  PlatformFile? image;
+  String? imageDisplay;
 
   factory Bank.fromJson(String str) => Bank.fromMap(json.decode(str));
 
@@ -52,6 +58,7 @@ class Bank {
         coins: json["coins"] == null ? [] : List<String>.from(json["coins"]),
         status: json["status"] ?? 1,
         statusDisplay: json["status_display"],
+        imageDisplay: json["image_display"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -67,5 +74,6 @@ class Bank {
         "coins": coins,
         "status": status,
         "status_display": statusDisplay,
+        "image_display": imageDisplay,
       };
 }

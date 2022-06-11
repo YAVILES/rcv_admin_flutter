@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class DocumentVehicle extends StatefulWidget {
+class DocumentUploadDownload extends StatefulWidget {
   final String title;
   final String? imageUrl;
   Function? onUpload;
   Function? onDownload;
-  DocumentVehicle({
+  DocumentUploadDownload({
     Key? key,
     required this.title,
     this.imageUrl,
@@ -14,10 +14,10 @@ class DocumentVehicle extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DocumentVehicleState createState() => _DocumentVehicleState();
+  _DocumentUploadDownloadState createState() => _DocumentUploadDownloadState();
 }
 
-class _DocumentVehicleState extends State<DocumentVehicle> {
+class _DocumentUploadDownloadState extends State<DocumentUploadDownload> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -62,8 +62,7 @@ class _DocumentVehicleState extends State<DocumentVehicle> {
                     padding: const EdgeInsets.all(10.0),
                     child: IconButton(
                       onPressed: () {
-                        if (widget.imageUrl != null &&
-                            widget.onDownload != null) {
+                        if (widget.onDownload != null) {
                           widget.onDownload!();
                         }
                       },
