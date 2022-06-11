@@ -1,6 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
@@ -10,8 +17,11 @@ import 'package:rcv_admin_flutter/src/models/premium_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/plan_service.dart';
+import 'package:rcv_admin_flutter/src/services/premium_service.dart';
 import 'package:rcv_admin_flutter/src/services/use_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/modals/premium_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
@@ -25,6 +35,8 @@ class PremiumsView extends StatefulWidget {
 }
 
 class _PremiumsViewState extends State<PremiumsView> {
+  String urlPath = PremiumService.url;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +61,60 @@ class _PremiumsViewState extends State<PremiumsView> {
               HeaderView(
                 title: "Administración de Sistema",
                 subtitle: "Gestión de primas",
+                actions: [
+                  CustomButtonPrimary(
+                    title: "Exportar Primas",
+                    onPressed: () async {
+                      if (!kIsWeb) {
+                        if (Platform.isIOS ||
+                            Platform.isAndroid ||
+                            Platform.isMacOS) {
+                          bool status = await Permission.storage.isGranted;
+
+                          if (!status) await Permission.storage.request();
+                        }
+                      }
+                      Uint8List? data = await UtilsService.export(urlPath);
+                      if (data != null) {
+                        MimeType type = MimeType.MICROSOFTEXCEL;
+                        String path = await FileSaver.instance
+                            .saveFile("primas", data, "xlsx", mimeType: type);
+                        if (kDebugMode) {
+                          print(path);
+                        }
+                      } else {
+                        NotificationService.showSnackbarError(
+                            'No se pudo descargar el excel');
+                      }
+                    },
+                  ),
+                  CustomButtonPrimary(
+                    title: "Importar Primas",
+                    onPressed: () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        // allowedExtensions: ['jpg'],
+                        allowMultiple: false,
+                      );
+
+                      if (result != null) {
+                        final resp = await UtilsService.import(
+                            urlPath, result.files.first);
+                        if (resp != null) {
+                          setState(() {
+                            NotificationService.showSnackbarSuccess(
+                                'Carga masiva Exitosa');
+                          });
+                        } else {
+                          NotificationService.showSnackbarError(
+                              'No fue posible cargar la información');
+                        }
+                      } else {
+                        // Coverager canceled the picker
+                      }
+                    },
+                  )
+                ],
               ),
               StreamBuilder(
                 stream: PlanService.getPlansAndUses(paramsPlans: {

@@ -181,6 +181,43 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                         ),
+                        Card(
+                          margin: const EdgeInsets.all(2.5),
+                          child: Container(
+                            padding: const EdgeInsets.all(2.5),
+                            width: 280,
+                            height: 120,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Icon(
+                                  Icons.payments_outlined,
+                                  size: 60,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Text(
+                                      "Pagos \n Pendientes",
+                                      style: TextStyle(fontSize: 24),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      '${data?["pending_payments"]}',
+                                      style: TextStyle(
+                                        fontSize: 35,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     )
                   : const MyProgressIndicator();

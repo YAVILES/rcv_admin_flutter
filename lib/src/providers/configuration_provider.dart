@@ -49,4 +49,19 @@ class ConfigurationProvider with ChangeNotifier {
       }
     }
   }
+
+  Future<bool?> saveMultiPle(List<Configuration> configs) async {
+    if (validateForm()) {
+      try {
+        final response = await API.put(
+            '$url/update_multiple/', configs.map((e) => e.toMap()).toList());
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          notifyListeners();
+          return true;
+        }
+      } on ErrorAPI {
+        rethrow;
+      }
+    }
+  }
 }

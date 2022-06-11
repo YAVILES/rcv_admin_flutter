@@ -214,13 +214,13 @@ class RouterGoRouter {
               name: branchOfficeDetailRoute,
               path: '$branchOfficeRoute/:id',
               pageBuilder: (context, state) {
-                BranchOffice branchOffice = _getBranchOffice(
-                  context,
-                  state.params['id'].toString(),
-                );
+                // BranchOffice branchOffice = _getBranchOffice(
+                //   context,
+                //   state.params['id'].toString(),
+                // );
                 return MaterialPage(
                   key: state.pageKey,
-                  child: BranchOfficeView(branchOffice: branchOffice),
+                  child: BranchOfficeView(uid: state.params['id'].toString()),
                   // child: BranchOfficeView(uid: state.params['id'].toString()),
                 );
               },

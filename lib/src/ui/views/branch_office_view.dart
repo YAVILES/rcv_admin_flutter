@@ -82,7 +82,7 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
           children: [
             HeaderView(
               title: 'Administración de Sistema',
-              subtitle: 'Usuario ${widget.branchOffice.code ?? ''}',
+              subtitle: 'Susursal ${widget.branchOffice.code ?? ''}',
             ),
             Column(
               children: [

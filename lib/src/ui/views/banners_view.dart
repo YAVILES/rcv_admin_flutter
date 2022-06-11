@@ -67,6 +67,13 @@ class _BannersViewState extends State<BannersView> {
         },
       ),
       DatatableHeader(
+        text: "Activo",
+        value: "is_active",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'Activo' : 'Inactivo'),
+        ),
+      ),
+      DatatableHeader(
         text: "Acciones",
         value: "id",
         sourceBuilder: (value, row) {

@@ -1,18 +1,19 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/coverage_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
+import 'package:rcv_admin_flutter/src/ui/chips/custom_chip.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class CoveragesView extends StatefulWidget {
   const CoveragesView({Key? key}) : super(key: key);
@@ -22,18 +23,101 @@ class CoveragesView extends StatefulWidget {
 }
 
 class _CoveragesViewState extends State<CoveragesView> {
+  late List<DatatableHeader> _headers;
+  String urlPath = CoverageService.url;
+  late Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<CoverageProvider>(context, listen: false).getCoverages();
+    onSource =
+        (params, url) => UtilsService.getListPaginated(params, url ?? urlPath);
+
+    /// set headers
+    _headers = [
+      DatatableHeader(text: "Código", value: "code"),
+      DatatableHeader(text: "Descripción", value: "description"),
+      DatatableHeader(
+        text: "Por defecto",
+        value: "default",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'SI' : 'NO'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Planes",
+        value: "plans_display",
+        flex: 2,
+        sourceBuilder: (value, row) {
+          return row["default"] == true
+              ? const Center(child: Text('TODOS'))
+              : Wrap(
+                  children: [
+                    ...value.map(
+                      (e) => Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: CustomChip(
+                          active: true,
+                          title: e["description"],
+                        ),
+                      ),
+                    )
+                  ],
+                );
+        },
+      ),
+      DatatableHeader(
+        text: "Fecha de Creación",
+        value: "created",
+        sourceBuilder: (value, row) {
+          var formatterDate = DateFormat('yyyy-MM-dd');
+          return Center(
+            child: Text(
+              formatterDate.format(
+                DateTime.parse(value),
+              ),
+            ),
+          );
+        },
+      ),
+      DatatableHeader(
+        text: "Fecha de actualización",
+        value: "updated",
+        sourceBuilder: (value, row) {
+          var formatterDate = DateFormat('yyyy-MM-dd');
+          return Center(
+            child: Text(
+              formatterDate.format(
+                DateTime.parse(value),
+              ),
+            ),
+          );
+        },
+      ),
+      DatatableHeader(
+        text: "Activo",
+        value: "is_active",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'Activo' : 'Inactivo'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Acciones",
+        value: "id",
+        sourceBuilder: (value, row) {
+          return _ActionsTable(item: row);
+        },
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final coverageProvider = Provider.of<CoverageProvider>(context);
-    final loading = coverageProvider.loading;
-    final coverages = coverageProvider.coverages;
-
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -42,9 +126,10 @@ class _CoveragesViewState extends State<CoveragesView> {
         },
       ),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
         child: CenteredView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               HeaderView(
                 title: "Administración de Sistema",
@@ -53,90 +138,46 @@ class _CoveragesViewState extends State<CoveragesView> {
                   CustomButtonPrimary(
                     onPressed: () => NavigationService.navigateTo(
                         context, coverageRoute, null),
-                    title: 'Nuevo',
+                    title: 'Nueva',
                   )
                 ],
               ),
-              (loading == true)
-                  ? const MyProgressIndicator()
-                  : GenericTable(
-                      onSelectChanged: (data) => {},
-                      onDeleteSelectedItems: (items) {
-                        final dialog = AlertDialog(
-                          title: const Text(
-                              '¿Estas seguro de eliminar los items seleccionados?'),
-                          content:
-                              const Text('Definitivamente deseas eliminar'),
-                          actions: [
-                            TextButton(
-                              child: const Text("No"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Si, eliminar"),
-                              onPressed: () async {
-                                try {
-                                  final deleted =
-                                      await Provider.of<CoverageProvider>(
-                                              context,
-                                              listen: false)
-                                          .deleteCoverages(items
-                                              .map((e) => e['id'].toString())
-                                              .toList());
-                                  if (deleted) {
-                                    NotificationService.showSnackbarSuccess(
-                                        'Coverage eliminado con exito.');
-                                  } else {
-                                    NotificationService.showSnackbarSuccess(
-                                        'No se pudo eliminar el coverage.');
-                                  }
-                                } on ErrorAPI catch (e) {
-                                  NotificationService.showSnackbarError(
-                                      e.detail.toString());
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                        showDialog(context: context, builder: (_) => dialog);
-                      },
-                      data: coverages,
-                      columns: [
-                        DTColumn(header: "Código", dataAttribute: 'code'),
-                        DTColumn(
-                            header: "Descripción",
-                            dataAttribute: 'description'),
-                        DTColumn(
-                          header: "Por defecto",
-                          dataAttribute: 'default',
-                          widget: (item) => item['default'] == true
-                              ? const Text('SI')
-                              : const Text('NO'),
-                        ),
-                        DTColumn(
-                          header: "Estatus",
-                          dataAttribute: 'is_active',
-                          widget: (item) => item['is_active'] == true
-                              ? const Text('Activo')
-                              : const Text('Inactivo'),
-                        ),
-                        DTColumn(
-                          header: "Acciones",
-                          dataAttribute: 'id',
-                          widget: (item) {
-                            return _ActionsTable(item: item);
-                          },
-                          onSort: false,
-                        ),
-                      ],
-                      onSearch: (value) {
-                        coverageProvider.search(value);
-                      },
-                      searchInitialValue: coverageProvider.searchValue,
-                    ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return onSource(params, url);
+                },
+                onExport: (params) {
+                  return UtilsService.export(urlPath);
+                },
+                onImport: (params) async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    // allowedExtensions: ['jpg'],
+                    allowMultiple: false,
+                  );
+
+                  if (result != null) {
+                    final resp =
+                        await UtilsService.import(urlPath, result.files.first);
+                    if (resp != null) {
+                      setState(() {
+                        onSource = (params, url) =>
+                            UtilsService.getListPaginated(
+                                params, url ?? urlPath);
+                        NotificationService.showSnackbarSuccess(
+                            'Carga masiva Exitosa');
+                      });
+                    } else {
+                      NotificationService.showSnackbarError(
+                          'No fue posible cargar la información');
+                    }
+                  } else {
+                    // Coverager canceled the picker
+                  }
+                },
+                filenameExport: "coberturas",
+              ),
             ],
           ),
         ),
@@ -146,7 +187,7 @@ class _CoveragesViewState extends State<CoveragesView> {
 }
 
 class _ActionsTable extends StatelessWidget {
-  Map<String, dynamic> item;
+  Map<String?, dynamic> item;
   _ActionsTable({
     Key? key,
     required this.item,

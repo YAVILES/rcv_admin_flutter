@@ -132,8 +132,8 @@ class ConfigurationBody extends StatelessWidget {
                                             child: DropdownSearch<User>(
                                               items: snapshot.data!,
                                               selectedItem: snapshot.data
-                                                  ?.where((user) =>
-                                                      user.id == conf.value)
+                                                  ?.where(
+                                                      (d) => d.id == conf.value)
                                                   .first,
                                               dropdownSearchDecoration:
                                                   const InputDecoration(
@@ -173,14 +173,15 @@ class ConfigurationBody extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    /*         Container(
+                    Container(
                       margin: const EdgeInsets.only(top: 30),
                       alignment: Alignment.center,
                       child: CustomButtonPrimary(
-                        onPressed: () => {}, //saveMultiple(),
+                        onPressed: () => configurationProvider
+                            .saveMultiPle(obj.configurations), //saveMultiple(),
                         title: 'Guardar',
                       ),
-                    ), */
+                    ),
                   ],
                 ),
               );

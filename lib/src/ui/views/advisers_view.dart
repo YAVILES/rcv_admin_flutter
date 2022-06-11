@@ -1,15 +1,15 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/user_provider.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
+import 'package:rcv_admin_flutter/src/services/user_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class AdvisersView extends StatefulWidget {
   const AdvisersView({Key? key}) : super(key: key);
@@ -19,17 +19,45 @@ class AdvisersView extends StatefulWidget {
 }
 
 class _AdvisersViewState extends State<AdvisersView> {
+  late List<DatatableHeader> _headers;
+  String urlPath = UserService.url;
+  late Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource;
+
   @override
   void initState() {
-    Provider.of<UserProvider>(context, listen: false).getUsers(isAdviser: true);
     super.initState();
+    onSource =
+        (params, url) => UtilsService.getListPaginated(params, url ?? urlPath);
+
+    /// set headers
+    _headers = [
+      DatatableHeader(text: "Advisere", value: "username"),
+      DatatableHeader(text: "Nombre", value: "full_name"),
+      DatatableHeader(text: "Correo", value: "email"),
+      DatatableHeader(
+        text: "Activo",
+        value: "is_active",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'Activo' : 'Inactivo'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Acciones",
+        value: "id",
+        sourceBuilder: (value, row) {
+          return _ActionsTable(item: row);
+        },
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-    final loading = userProvider.loading;
-    final advisers = userProvider.users;
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -38,123 +66,44 @@ class _AdvisersViewState extends State<AdvisersView> {
         },
       ),
       child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: CenteredView(
-            child: Column(
-              children: [
-                HeaderView(
-                  title: "Administración de Sistema",
-                  subtitle: "Asesores",
-                  actions: [
-                    CustomButtonPrimary(
-                      onPressed: () => NavigationService.navigateTo(
-                          context, adviserRoute, null),
-                      title: 'Nuevo',
-                    )
-                  ],
-                ),
-                (loading == true)
-                    ? const MyProgressIndicator()
-                    : GenericTable(
-                        data: advisers,
-                        columns: [
-                          DTColumn(
-                            header: "Foto",
-                            dataAttribute: 'photo',
-                            onSort: false,
-                            widget: (item) => Container(
-                              constraints: const BoxConstraints(maxWidth: 50),
-                              margin: const EdgeInsets.all(5),
-                              child: Hero(
-                                tag: item['id'],
-                                child: ClipOval(
-                                  child: Container(
-                                    constraints:
-                                        const BoxConstraints(maxWidth: 30),
-                                    child: item['photo'] != null
-                                        ? FadeInImage(
-                                            image: NetworkImage(
-                                              item['photo'],
-                                              headers: {
-                                                'accept': '*/*',
-                                              },
-                                            ),
-                                            placeholder: const AssetImage(
-                                                'assets/images/img_avatar.png'),
-                                          )
-                                        : Image.asset(
-                                            'assets/images/img_avatar.png'),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          DTColumn(
-                            header: "Usuario",
-                            dataAttribute: 'username',
-                          ),
-                          DTColumn(
-                            header: "Nombre",
-                            dataAttribute: 'full_name',
-                            widget: (item) => Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(item['name']),
-                                Text(item['last_name'])
-                              ],
-                            ),
-                          ),
-                          DTColumn(
-                            header: "Correo",
-                            dataAttribute: 'email',
-                          ),
-                          DTColumn(
-                            header: "Estatus",
-                            dataAttribute: 'is_active',
-                            widget: (item) => item['is_active'] == true
-                                ? const Text('Activo')
-                                : const Text('Inactivo'),
-                          ),
-                          DTColumn(
-                            header: "Fecha de creación",
-                            dataAttribute: 'created',
-                            type: TypeColumn.dateTime,
-                          ),
-                          DTColumn(
-                            header: "Fecha ult. actualización",
-                            dataAttribute: 'created',
-                            type: TypeColumn.dateTime,
-                          ),
-                          DTColumn(
-                            header: "Acciones",
-                            dataAttribute: 'id',
-                            widget: (item) {
-                              return _ActionsTable(item: item);
-                            },
-                            onSort: false,
-                          ),
-                        ],
-                        onSearch: (value) {
-                          userProvider.search(value, isAdviser: true);
-                        },
-                        searchInitialValue: userProvider.searchValue,
-                      ),
-              ],
-            ),
-          )),
+        child: CenteredView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              HeaderView(
+                title: "Administración de Sistema",
+                subtitle: "Adviseres",
+                actions: [
+                  CustomButtonPrimary(
+                    onPressed: () => NavigationService.navigateTo(
+                        context, adviserRoute, null),
+                    title: 'Nuevo',
+                  )
+                ],
+              ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return onSource(params, url);
+                },
+                // ignore: prefer_const_literals_to_create_immutables
+                params: {"is_adviser": true},
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-// ignore: must_be_immutable
 class _ActionsTable extends StatelessWidget {
+  Map<String?, dynamic> item;
   _ActionsTable({
     Key? key,
     required this.item,
   }) : super(key: key);
-
-  Map<String, dynamic> item;
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +115,7 @@ class _ActionsTable extends StatelessWidget {
             NavigationService.navigateTo(
               context,
               adviserDetailRoute,
-              {'id': item['id']},
+              {'id': item['id'].toString()},
             );
           },
         ),

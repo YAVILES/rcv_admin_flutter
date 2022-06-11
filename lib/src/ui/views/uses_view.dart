@@ -1,18 +1,18 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/use_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/use_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class UsesView extends StatefulWidget {
   const UsesView({Key? key}) : super(key: key);
@@ -22,18 +22,72 @@ class UsesView extends StatefulWidget {
 }
 
 class _UsesViewState extends State<UsesView> {
+  late List<DatatableHeader> _headers;
+  String urlPath = UseService.url;
+  late Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<UseProvider>(context, listen: false).getUses();
+    onSource =
+        (params, url) => UtilsService.getListPaginated(params, url ?? urlPath);
+
+    /// set headers
+    _headers = [
+      DatatableHeader(text: "Código", value: "code"),
+      DatatableHeader(text: "Descripción", value: "description"),
+      DatatableHeader(
+        text: "Fecha de Creación",
+        value: "created",
+        sourceBuilder: (value, row) {
+          var formatterDate = DateFormat('yyyy-MM-dd');
+          return Center(
+            child: Text(
+              formatterDate.format(
+                DateTime.parse(value),
+              ),
+            ),
+          );
+        },
+      ),
+      DatatableHeader(
+        text: "Fecha de actualización",
+        value: "updated",
+        sourceBuilder: (value, row) {
+          var formatterDate = DateFormat('yyyy-MM-dd');
+          return Center(
+            child: Text(
+              formatterDate.format(
+                DateTime.parse(value),
+              ),
+            ),
+          );
+        },
+      ),
+      DatatableHeader(
+        text: "Activo",
+        value: "is_active",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'Activo' : 'Inactivo'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Acciones",
+        value: "id",
+        sourceBuilder: (value, row) {
+          return _ActionsTable(item: row);
+        },
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final useProvider = Provider.of<UseProvider>(context);
-    final loading = useProvider.loading;
-    final uses = useProvider.uses;
-
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -42,9 +96,10 @@ class _UsesViewState extends State<UsesView> {
         },
       ),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
         child: CenteredView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               HeaderView(
                 title: "Administración de Sistema",
@@ -57,78 +112,42 @@ class _UsesViewState extends State<UsesView> {
                   )
                 ],
               ),
-              (loading == true)
-                  ? const MyProgressIndicator()
-                  : GenericTable(
-                      onSelectChanged: (data) => print(data.item.toString()),
-                      onDeleteSelectedItems: (items) {
-                        final dialog = AlertDialog(
-                          title: const Text(
-                              '¿Estas seguro de eliminar los items seleccionados?'),
-                          content:
-                              const Text('Definitivamente deseas eliminar'),
-                          actions: [
-                            TextButton(
-                              child: const Text("No"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Si, eliminar"),
-                              onPressed: () async {
-                                try {
-                                  final deleted =
-                                      await Provider.of<UseProvider>(context,
-                                              listen: false)
-                                          .deleteUses(items
-                                              .map((e) => e['id'].toString())
-                                              .toList());
-                                  if (deleted) {
-                                    NotificationService.showSnackbarSuccess(
-                                        'Use eliminado con exito.');
-                                  } else {
-                                    NotificationService.showSnackbarSuccess(
-                                        'No se pudo eliminar el use.');
-                                  }
-                                } on ErrorAPI catch (e) {
-                                  NotificationService.showSnackbarError(
-                                      e.detail.toString());
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                        showDialog(context: context, builder: (_) => dialog);
-                      },
-                      data: uses,
-                      columns: [
-                        DTColumn(header: "Código", dataAttribute: 'code'),
-                        DTColumn(
-                            header: "Descripción",
-                            dataAttribute: 'description'),
-                        DTColumn(
-                          header: "Estatus",
-                          dataAttribute: 'is_active',
-                          widget: (item) => item['is_active'] == true
-                              ? const Text('Activo')
-                              : const Text('Inactivo'),
-                        ),
-                        DTColumn(
-                          header: "Acciones",
-                          dataAttribute: 'id',
-                          widget: (item) {
-                            return _ActionsTable(item: item);
-                          },
-                          onSort: false,
-                        ),
-                      ],
-                      onSearch: (value) {
-                        useProvider.search(value);
-                      },
-                      searchInitialValue: useProvider.searchValue,
-                    ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return onSource(params, url);
+                },
+                onExport: (params) {
+                  return UtilsService.export(urlPath);
+                },
+                onImport: (params) async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    // allowedExtensions: ['jpg'],
+                    allowMultiple: false,
+                  );
+
+                  if (result != null) {
+                    final resp =
+                        await UtilsService.import(urlPath, result.files.first);
+                    if (resp != null) {
+                      setState(() {
+                        onSource = (params, url) =>
+                            UtilsService.getListPaginated(
+                                params, url ?? urlPath);
+                        NotificationService.showSnackbarSuccess(
+                            'Carga masiva Exitosa');
+                      });
+                    } else {
+                      NotificationService.showSnackbarError(
+                          'No fue posible cargar la información');
+                    }
+                  } else {
+                    // User canceled the picker
+                  }
+                },
+                filenameExport: "usos",
+              ),
             ],
           ),
         ),
@@ -138,7 +157,7 @@ class _UsesViewState extends State<UsesView> {
 }
 
 class _ActionsTable extends StatelessWidget {
-  Map<String, dynamic> item;
+  Map<String?, dynamic> item;
   _ActionsTable({
     Key? key,
     required this.item,
