@@ -90,7 +90,7 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
         clipBehavior: Clip.none,
         child: ResponsiveDatatable(
           showSelect: widget.showSelect ?? false,
-          reponseScreenSizes: const [ScreenSize.sm],
+          reponseScreenSizes: const [ScreenSize.xs, ScreenSize.sm],
           actions: [
             if (isSearch)
               Expanded(
