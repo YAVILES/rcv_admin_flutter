@@ -38,6 +38,13 @@ class _PaymentsViewState extends State<PaymentsView> {
       DatatableHeader(text: "Nro", value: "number"),
       DatatableHeader(text: "Referencia", value: "reference"),
       DatatableHeader(
+        text: "Poliza",
+        value: "policy_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value["number"].toString()),
+        ),
+      ),
+      DatatableHeader(
         text: "Moneda",
         value: "coins_display",
         sourceBuilder: (value, row) {

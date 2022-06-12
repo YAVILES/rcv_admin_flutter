@@ -35,6 +35,7 @@ dependencies:
   email_validator: ^2.0.1
   file_picker: ^4.3.0
   file_saver: ^0.1.0
+  fl_chart: ^0.51.0
   fluro: ^2.0.3
   flutter:
     sdk: flutter

@@ -74,7 +74,7 @@ class Policy {
 
   String toJson() => json.encode(toMap());
 
-  factory Policy.fromMap(Map<String, dynamic> json) => Policy(
+  factory Policy.fromMap(Map<String?, dynamic> json) => Policy(
         id: json["id"],
         created:
             json["created"] == null ? null : DateTime.parse(json["created"]),
