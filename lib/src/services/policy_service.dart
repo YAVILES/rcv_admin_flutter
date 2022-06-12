@@ -16,6 +16,25 @@ class PolicyService {
   static Future<Uint8List?> downloadPdf(String id) async {
     try {
       final response = await API.list(
+        '$url/$id/download_pdf/',
+        options: Options(
+          responseType: ResponseType.bytes,
+          followRedirects: false,
+        ),
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } on ErrorAPI {
+      return null;
+    }
+  }
+
+  static Future<Uint8List?> pdf(String id) async {
+    try {
+      final response = await API.list(
         '$url/$id/pdf/',
         options: Options(
           responseType: ResponseType.bytes,
