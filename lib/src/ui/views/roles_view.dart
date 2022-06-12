@@ -1,18 +1,17 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
-import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/providers/role_provider.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
+import 'package:rcv_admin_flutter/src/services/role_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class RolesView extends StatefulWidget {
   const RolesView({Key? key}) : super(key: key);
@@ -22,18 +21,43 @@ class RolesView extends StatefulWidget {
 }
 
 class _RolesViewState extends State<RolesView> {
+  late List<DatatableHeader> _headers;
+  String urlPath = RoleService.url;
+  late Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<RoleProvider>(context, listen: false).getRoles();
+    onSource =
+        (params, url) => UtilsService.getListPaginated(params, url ?? urlPath);
+
+    /// set headers
+    _headers = [
+      DatatableHeader(text: "Descripción", value: "name"),
+      DatatableHeader(
+        text: "Activo",
+        value: "is_active",
+        sourceBuilder: (value, row) => Center(
+          child: Text(value == true ? 'Activo' : 'Inactivo'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Acciones",
+        value: "id",
+        sourceBuilder: (value, row) {
+          return _ActionsTable(item: row);
+        },
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final roleProvider = Provider.of<RoleProvider>(context);
-    final loading = roleProvider.loading;
-    final roles = roleProvider.roles;
-
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -42,9 +66,10 @@ class _RolesViewState extends State<RolesView> {
         },
       ),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
         child: CenteredView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               HeaderView(
                 title: "Administración de Sistema",
@@ -57,34 +82,44 @@ class _RolesViewState extends State<RolesView> {
                   )
                 ],
               ),
-              (loading == true)
-                  ? const MyProgressIndicator()
-                  : GenericTable(
-                      data: roles,
-                      columns: [
-                        DTColumn(header: "Id", dataAttribute: 'id'),
-                        DTColumn(header: "Nombre", dataAttribute: 'name'),
-                        DTColumn(
-                          header: "Estatus",
-                          dataAttribute: 'is_active',
-                          widget: (item) => item['is_active'] == true
-                              ? const Text('Activo')
-                              : const Text('Inactivo'),
-                        ),
-                        DTColumn(
-                          header: "Acciones",
-                          dataAttribute: 'id',
-                          widget: (item) {
-                            return _ActionsTable(item: item);
-                          },
-                          onSort: false,
-                        ),
-                      ],
-                      onSearch: (value) {
-                        roleProvider.search(value);
-                      },
-                      searchInitialValue: roleProvider.searchValue,
-                    ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return onSource(params, url);
+                },
+                onExport: (params) {
+                  return UtilsService.export(urlPath);
+                },
+                onImport: (params) async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    // allowedExtensions: ['jpg'],
+                    allowMultiple: false,
+                  );
+
+                  if (result != null) {
+                    final resp =
+                        await UtilsService.import(urlPath, result.files.first);
+                    if (resp != null) {
+                      setState(() {
+                        onSource = (params, url) =>
+                            UtilsService.getListPaginated(
+                                params, url ?? urlPath);
+                        NotificationService.showSnackbarSuccess(
+                            'Carga masiva Exitosa');
+                      });
+                    } else {
+                      NotificationService.showSnackbarError(
+                          'No fue posible cargar la información');
+                    }
+                  } else {
+                    // User canceled the picker
+                  }
+                },
+                filenameExport: "roles",
+                // ignore: prefer_const_literals_to_create_immutables
+                params: {"query": "{id, name, is_active}"},
+              ),
             ],
           ),
         ),
@@ -94,7 +129,7 @@ class _RolesViewState extends State<RolesView> {
 }
 
 class _ActionsTable extends StatelessWidget {
-  Map<String, dynamic> item;
+  Map<String?, dynamic> item;
   _ActionsTable({
     Key? key,
     required this.item,
@@ -112,51 +147,6 @@ class _ActionsTable extends StatelessWidget {
               roleDetailRoute,
               {'id': item['id'].toString()},
             );
-            /*           showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              context: context,
-              builder: (_) => RoleModal(role: Role.fromMap(item)),
-            ); */
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete_outlined),
-          color: Colors.red,
-          onPressed: () {
-            final dialog = AlertDialog(
-              title: const Text('¿Estas seguro de eliminar?'),
-              content: const Text('Definitivamente deseas borrar'),
-              actions: [
-                TextButton(
-                  child: const Text("No"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text("Si, borrar"),
-                  onPressed: () async {
-                    try {
-                      final deleted = await Provider.of<RoleProvider>(context,
-                              listen: false)
-                          .deleteRole(item['id']);
-                      if (deleted) {
-                        NotificationService.showSnackbarSuccess(
-                            'Role eliminado con exito.');
-                      } else {
-                        NotificationService.showSnackbarSuccess(
-                            'No se pudo eliminar el role.');
-                      }
-                    } on ErrorAPI catch (e) {
-                      NotificationService.showSnackbarError(
-                          e.detail.toString());
-                    }
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-            showDialog(context: context, builder: (_) => dialog);
           },
         ),
       ],

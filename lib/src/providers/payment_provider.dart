@@ -235,7 +235,8 @@ class PaymentProvider with ChangeNotifier {
       );
       NotificationService.showSnackbarSuccess('Pago guardado en $path');
     } else {
-      NotificationService.showSnackbarError('No se pudo descargar el excel');
+      NotificationService.showSnackbarError(
+          'No se pudo descargar el documento');
     }
   }
 }

@@ -31,7 +31,7 @@ class _UsersViewState extends State<UsersView> {
 
     /// set headers
     _headers = [
-      DatatableHeader(text: "Usere", value: "username"),
+      DatatableHeader(text: "Usuario", value: "username"),
       DatatableHeader(text: "Nombre", value: "full_name"),
       DatatableHeader(text: "Correo", value: "email"),
       DatatableHeader(
@@ -89,6 +89,10 @@ class _UsersViewState extends State<UsersView> {
                 },
                 // ignore: prefer_const_literals_to_create_immutables
                 params: {"is_staff": true, "is_adviser": false},
+                onExport: (params) {
+                  return UtilsService.export(urlPath);
+                },
+                filenameExport: "usuarios",
               ),
             ],
           ),

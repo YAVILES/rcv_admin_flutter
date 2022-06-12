@@ -39,7 +39,7 @@ class Plan {
 
   String toJson() => json.encode(toMap());
 
-  factory Plan.fromMap(Map<String, dynamic> json) => Plan(
+  factory Plan.fromMap(Map<String?, dynamic> json) => Plan(
         id: json["id"],
         uses: json["uses"] == null
             ? []

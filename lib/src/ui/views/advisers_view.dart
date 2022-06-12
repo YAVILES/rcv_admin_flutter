@@ -31,7 +31,7 @@ class _AdvisersViewState extends State<AdvisersView> {
 
     /// set headers
     _headers = [
-      DatatableHeader(text: "Advisere", value: "username"),
+      DatatableHeader(text: "Usuario", value: "username"),
       DatatableHeader(text: "Nombre", value: "full_name"),
       DatatableHeader(text: "Correo", value: "email"),
       DatatableHeader(

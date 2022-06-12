@@ -31,7 +31,7 @@ class _ClientsViewState extends State<ClientsView> {
 
     /// set headers
     _headers = [
-      DatatableHeader(text: "Cliente", value: "username"),
+      DatatableHeader(text: "Usuario", value: "username"),
       DatatableHeader(text: "Nombre", value: "full_name"),
       DatatableHeader(text: "Correo", value: "email"),
       DatatableHeader(

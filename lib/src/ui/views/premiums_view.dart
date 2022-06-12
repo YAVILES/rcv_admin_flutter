@@ -8,9 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
@@ -26,6 +24,7 @@ import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/modals/premium_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class PremiumsView extends StatefulWidget {
   const PremiumsView({Key? key}) : super(key: key);
@@ -36,6 +35,8 @@ class PremiumsView extends StatefulWidget {
 
 class _PremiumsViewState extends State<PremiumsView> {
   String urlPath = PremiumService.url;
+  late List<DatatableHeader> _headers;
+  PlansUses plansAndUses = PlansUses();
 
   @override
   void initState() {
@@ -44,8 +45,6 @@ class _PremiumsViewState extends State<PremiumsView> {
 
   @override
   Widget build(BuildContext context) {
-    PlansUses plansAndUses = PlansUses();
-
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -130,57 +129,50 @@ class _PremiumsViewState extends State<PremiumsView> {
                 builder: (context, AsyncSnapshot<PlansUses?> snapshot) {
                   if (snapshot.hasData) {
                     plansAndUses = snapshot.data!;
+                    _headers = [
+                      DatatableHeader(text: "Plan", value: 'description'),
+                      ...?plansAndUses.uses
+                          ?.map(
+                            (use) => DatatableHeader(
+                              text: use.description ?? "",
+                              value: 'id',
+                              sourceBuilder: (value, plan) {
+                                Plan planMap = Plan.fromMap(plan);
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FutureBuilder(
+                                        future: UseService.getUse(
+                                            use.id!, planMap.id),
+                                        builder:
+                                            (_, AsyncSnapshot<Use?> snapshot) {
+                                          return snapshot.connectionState ==
+                                                  ConnectionState.done
+                                              ? TotalCoverage(
+                                                  plan: planMap,
+                                                  use: snapshot.data!,
+                                                  premiums:
+                                                      snapshot.data!.premiums!,
+                                                )
+                                              : const MyProgressIndicator();
+                                        }),
+                                  ],
+                                );
+                              },
+                            ),
+                          )
+                          .toList()
+                    ];
                   }
                   return snapshot.connectionState == ConnectionState.done
-                      ? GenericTable(
-                          withSearchEngine: false,
-                          dataRowHeight: 120,
-                          data: plansAndUses.plans != null
+                      ? GenericTableResponsive(
+                          headers: _headers,
+                          showSearch: false,
+                          sourceData: plansAndUses.plans != null
                               ? plansAndUses.plans!
                                   .map((e) => e.toMap())
                                   .toList()
                               : [],
-                          columns: [
-                            DTColumn(
-                                onSort: false,
-                                header: "Plan",
-                                dataAttribute: 'description'),
-                            ...?plansAndUses.uses
-                                ?.map(
-                                  (use) => DTColumn(
-                                    header: use.description,
-                                    dataAttribute: 'id',
-                                    widget: (plan) {
-                                      Plan planMap = Plan.fromMap(plan);
-                                      return Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          FutureBuilder(
-                                              future: UseService.getUse(
-                                                  use.id!, planMap.id),
-                                              builder: (_,
-                                                  AsyncSnapshot<Use?>
-                                                      snapshot) {
-                                                return snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done
-                                                    ? TotalCoverage(
-                                                        plan: planMap,
-                                                        use: snapshot.data!,
-                                                        premiums: snapshot
-                                                            .data!.premiums!,
-                                                      )
-                                                    : const MyProgressIndicator();
-                                              }),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                )
-                                .toList(),
-                          ],
-                          // searchInitialValue: premiumProvider.searchValue,
                         )
                       : const MyProgressIndicator();
                 },

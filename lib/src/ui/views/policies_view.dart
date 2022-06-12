@@ -1,22 +1,22 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
-
-import 'package:rcv_admin_flutter/src/components/generic_table/classes.dart';
-import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dart';
+import 'package:intl/intl.dart';
+import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
-import 'package:rcv_admin_flutter/src/models/policy_model.dart';
-import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
+import 'package:rcv_admin_flutter/src/models/response_list.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
+import 'package:rcv_admin_flutter/src/services/policy_service.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
-import 'package:rcv_admin_flutter/src/services/policy_service.dart';
+import 'package:rcv_admin_flutter/src/services/utils_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
-import 'package:rcv_admin_flutter/src/ui/modals/payment_modal.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
-import 'package:rcv_admin_flutter/src/utils/api.dart';
+import 'package:responsive_table/responsive_table.dart';
 
 class PoliciesView extends StatefulWidget {
   const PoliciesView({Key? key}) : super(key: key);
@@ -26,18 +26,98 @@ class PoliciesView extends StatefulWidget {
 }
 
 class _PoliciesViewState extends State<PoliciesView> {
+  late List<DatatableHeader> _headers;
+  String urlPath = PolicyService.url;
+  late Future<ResponseData?> Function(Map<String, dynamic>, String?) onSource;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<PolicyProvider>(context, listen: false).getPolicies();
+    onSource =
+        (params, url) => UtilsService.getListPaginated(params, url ?? urlPath);
+
+    /// set headers
+    _headers = [
+      DatatableHeader(text: "Nro.", value: "number"),
+      DatatableHeader(text: "Tipo", value: "type_display"),
+      DatatableHeader(
+        text: "Tomador",
+        value: "taker_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text('${value["full_name"]}'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Asegurado",
+        value: "vehicle_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text('${value["owner_name"]} ${value["owner_last_name"]}'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Asesor",
+        value: "adviser_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text('${value["full_name"]}'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Vehículo",
+        value: "vehicle_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text(
+              '${value["model_display"]["mark_display"]["description"]} ${value["model_display"]["description"]} ${value["color"]}'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Plan",
+        value: "plan_display",
+        sourceBuilder: (value, row) => Center(
+          child: Text('${value["description"]}'),
+        ),
+      ),
+      DatatableHeader(
+        text: "Creado por",
+        value: "created_by_display",
+        sourceBuilder: (value, row) {
+          return value == null
+              ? const SizedBox()
+              : Center(
+                  child: Text('${value["full_name"]}'),
+                );
+        },
+      ),
+      DatatableHeader(
+        text: "Fec. Vancimiento",
+        value: "due_date",
+        sourceBuilder: (value, row) => Center(
+          child: Text(
+            value == null
+                ? "N/A"
+                : DateFormat('yyyy-MM-dd').format(
+                    DateTime.parse(value),
+                  ),
+          ),
+        ),
+      ),
+      DatatableHeader(text: "Estatus", value: "status_display"),
+      DatatableHeader(
+        text: "Acciones",
+        value: "id",
+        sourceBuilder: (value, row) {
+          return _ActionsTable(item: row);
+        },
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final policyProvider = Provider.of<PolicyProvider>(context);
-    final loading = policyProvider.loading;
-    final policies = policyProvider.policies;
-
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -46,147 +126,39 @@ class _PoliciesViewState extends State<PoliciesView> {
         },
       ),
       child: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
         child: CenteredView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               HeaderView(
                 title: "Administración de Sistema",
-                subtitle: "Pólizas",
+                subtitle: "Polizas",
                 actions: [
                   CustomButtonPrimary(
                     onPressed: () => NavigationService.navigateTo(
                         context, policyRoute, null),
-                    title: 'Nueva',
+                    title: 'Nuevo',
                   )
                 ],
               ),
-              (loading == true)
-                  ? const MyProgressIndicator()
-                  : GenericTable(
-                      onSelectChanged: (data) => {},
-                      onDeleteSelectedItems: (items) {
-                        final dialog = AlertDialog(
-                          title: const Text(
-                              '¿Estas seguro de eliminar los items seleccionados?'),
-                          content:
-                              const Text('Definitivamente deseas eliminar'),
-                          actions: [
-                            TextButton(
-                              child: const Text("No"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text("Si, eliminar"),
-                              onPressed: () async {
-                                try {
-                                  final deleted =
-                                      await Provider.of<PolicyProvider>(context,
-                                              listen: false)
-                                          .deletePolicies(items
-                                              .map((e) => e['id'].toString())
-                                              .toList());
-                                  if (deleted) {
-                                    NotificationService.showSnackbarSuccess(
-                                        'Policy eliminado con exito.');
-                                  } else {
-                                    NotificationService.showSnackbarSuccess(
-                                        'No se pudo eliminar el Policy.');
-                                  }
-                                } on ErrorAPI catch (e) {
-                                  NotificationService.showSnackbarError(
-                                      e.detail.toString());
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                        showDialog(context: context, builder: (_) => dialog);
-                      },
-                      data: policies,
-                      columns: [
-                        DTColumn(
-                          header: "Nro.",
-                          dataAttribute: 'number',
-                        ),
-                        DTColumn(
-                          header: "Tipo",
-                          dataAttribute: 'type_display',
-                        ),
-                        DTColumn(
-                          header: "Tomador",
-                          dataAttribute: 'taker',
-                          widget: (item) {
-                            return Text(
-                                '${item["taker_display"]["name"]} ${item["taker_display"]["last_name"]}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Asegurado",
-                          dataAttribute: 'updated',
-                          widget: (item) {
-                            return Text(
-                                '${item["vehicle_display"]["owner_name"]} ${item["vehicle_display"]["owner_last_name"]}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Asesor",
-                          dataAttribute: 'adviser',
-                          widget: (item) {
-                            return Text(
-                                '${item["adviser_display"]["name"]} ${item["adviser_display"]["last_name"]}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Vehículo",
-                          dataAttribute: 'vehicle',
-                          widget: (item) {
-                            return Text(
-                                '${item["vehicle_display"]["model_display"]["mark_display"]["description"]} ${item["vehicle_display"]["model_display"]["description"]} ${item["vehicle_display"]["color"]}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Plan",
-                          dataAttribute: 'plan',
-                          widget: (item) {
-                            return Text(
-                                '${item["plan_display"]["description"]}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Creada por",
-                          dataAttribute: 'created_by',
-                          widget: (item) {
-                            return Text(
-                                '${item["created_by_display"]?["name"] ?? ''} ${item["created_by_display"]?["last_name"] ?? ''}');
-                          },
-                        ),
-                        DTColumn(
-                          header: "Fecha de vencimiento",
-                          dataAttribute: 'due_date',
-                          type: TypeColumn.dateTime,
-                        ),
-                        DTColumn(
-                          header: "Estatus",
-                          dataAttribute: 'status_display',
-                        ),
-                        DTColumn(
-                          header: "Acciones",
-                          dataAttribute: 'id',
-                          widget: (item) {
-                            return _ActionsTable(item: item);
-                          },
-                          onSort: false,
-                        ),
-                      ],
-                      onSearch: (value) {
-                        policyProvider.search(value);
-                      },
-                      searchInitialValue: policyProvider.searchValue,
-                    ),
+              GenericTableResponsive(
+                headers: _headers,
+                onSource: (Map<String, dynamic> params, String? url) {
+                  return onSource(params, url);
+                },
+                onExport: (params) {
+                  return UtilsService.export(urlPath);
+                },
+                filenameExport: "polizas",
+                // ignore: prefer_const_literals_to_create_immutables
+                params: {
+                  "query": """{id, number, type_display, taker_display 
+                {full_name}, vehicle_display {model_display, color, owner_name, owner_last_name}, adviser_display {full_name}, 
+                plan_display {description}, created_by_display {full_name}, 
+                due_date, status, status_display}"""
+                },
+              ),
             ],
           ),
         ),
@@ -195,12 +167,20 @@ class _PoliciesViewState extends State<PoliciesView> {
   }
 }
 
-class _ActionsTable extends StatelessWidget {
-  Map<String, dynamic> item;
+class _ActionsTable extends StatefulWidget {
+  Map<String?, dynamic> item;
+
   _ActionsTable({
     Key? key,
     required this.item,
   }) : super(key: key);
+
+  @override
+  State<_ActionsTable> createState() => _ActionsTableState();
+}
+
+class _ActionsTableState extends State<_ActionsTable> {
+  bool downloadinPdf = false;
 
   @override
   Widget build(BuildContext context) {
@@ -212,24 +192,41 @@ class _ActionsTable extends StatelessWidget {
             NavigationService.navigateTo(
               context,
               policyDetailRoute,
-              {'id': item['id'].toString()},
+              {'id': widget.item['id'].toString()},
             );
           },
         ),
-        if (item["status"] == PolicyService.outstanding ||
-            item["status"] == PolicyService.pendingApproval)
-          IconButton(
-            icon: const Icon(Icons.payment_outlined),
-            onPressed: () {
-              showMaterialModalBottomSheet(
-                expand: true,
-                context: context,
-                builder: (_) => PaymentModal(
-                  policy: Policy.fromMap(item),
+        if (widget.item["status"] == PolicyService.passed)
+          downloadinPdf == true
+              ? const MyProgressIndicator()
+              : IconButton(
+                  color: Theme.of(context).primaryColor,
+                  icon: const Icon(Icons.picture_as_pdf_sharp),
+                  onPressed: () async {
+                    setState(() {
+                      downloadinPdf = true;
+                    });
+                    Uint8List? data =
+                        await PolicyService.downloadPdf(widget.item["id"]);
+                    if (data != null) {
+                      MimeType type = MimeType.PDF;
+                      String path = await FileSaver.instance.saveFile(
+                        "poliza_${widget.item["number"]}",
+                        data,
+                        "pdf",
+                        mimeType: type,
+                      );
+                      NotificationService.showSnackbarSuccess(
+                          'Poliza guardado en $path');
+                    } else {
+                      NotificationService.showSnackbarError(
+                          'No se pudo descargar la poliza');
+                    }
+                    setState(() {
+                      downloadinPdf = false;
+                    });
+                  },
                 ),
-              );
-            },
-          ),
       ],
     );
   }

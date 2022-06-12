@@ -13,27 +13,31 @@ class GenericTableResponsive extends StatefulWidget {
   GenericTableResponsive({
     Key? key,
     required this.headers,
-    required this.onSource,
+    this.onSource,
     this.onImport,
     this.onExport,
     this.filenameExport,
     this.params,
+    this.sourceData,
     this.selecteds,
     this.onSelect,
     this.showSelect,
+    this.showSearch,
   }) : super(key: key);
 
-  Future<ResponseData?> Function(Map<String, dynamic> params, String? url)
+  Future<ResponseData?> Function(Map<String, dynamic> params, String? url)?
       onSource;
   Future Function(Map<String, dynamic> params)? onImport;
   Future<Uint8List?> Function(Map<String, dynamic> params)? onExport;
   String? filenameExport;
   List<DatatableHeader> headers;
   List<Map<String, dynamic>> source = [];
+  List<Map<String, dynamic>>? sourceData = [];
   Map<String, dynamic>? params;
   List<Map<String, dynamic>>? selecteds;
   dynamic Function(List<Map<String, dynamic>>)? onSelect;
   bool? showSelect;
+  bool? showSearch = true;
 
   @override
   State<GenericTableResponsive> createState() => _GenericTableResponsiveState();
@@ -58,16 +62,22 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
 
   refreshData({String? url}) async {
     setState(() => isLoading = true);
-
-    final data = await widget.onSource(widget.params ?? {}, url);
-    setState(() {
-      widget.source = data?.results ?? [];
-      next = data?.next;
-      previos = data?.previous;
-      total = data?.count ?? 0; // widget.source.length;
-      expanded = List.generate(total, (index) => false);
-    });
-
+    if (widget.sourceData == null) {
+      final data = await widget.onSource!(widget.params ?? {}, url);
+      setState(() {
+        widget.source = data?.results ?? [];
+        next = data?.next;
+        previos = data?.previous;
+        total = data?.count ?? 0;
+        expanded = List.generate(total, (index) => false);
+      });
+    } else {
+      setState(() {
+        widget.source = widget.sourceData!;
+        total = widget.sourceData!.length;
+        expanded = List.generate(total, (index) => false);
+      });
+    }
     setState(() => isLoading = false);
   }
 
@@ -92,7 +102,7 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
           showSelect: widget.showSelect ?? false,
           reponseScreenSizes: const [ScreenSize.xs, ScreenSize.sm],
           actions: [
-            if (isSearch)
+            if (isSearch && widget.showSearch != false)
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
@@ -132,20 +142,22 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.search),
-                      onPressed: () {
-                        setState(() {
-                          isSearch = true;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        refreshData();
-                      },
-                    ),
+                    if (widget.showSearch != false) ...[
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          setState(() {
+                            isSearch = true;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () {
+                          refreshData();
+                        },
+                      )
+                    ],
                     if (widget.onExport != null)
                       IconButton(
                         icon: const Icon(Icons.download),
@@ -230,79 +242,83 @@ class _GenericTableResponsiveState extends State<GenericTableResponsive> {
           },
           expanded: expanded,
           isLoading: isLoading,
-          footers: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: const Text("Filas por página:"),
-            ),
-            if (perPages.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: DropdownButton<int>(
-                  value: currentPerPage,
-                  items: perPages
-                      .map((e) => DropdownMenuItem<int>(
-                            child: Text("$e"),
-                            value: e,
-                          ))
-                      .toList(),
-                  onChanged: (dynamic value) {
-                    setState(() {
-                      currentPerPage = value;
-                      currentPerPageFinal = value;
-                      currentPage = 1;
-                      widget.params?["limit"] = value;
-                      refreshData();
-                      // _resetData();
-                    });
-                  },
-                  isExpanded: false,
-                ),
-              ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Text("$currentPage - $currentPerPageFinal de $total"),
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 16,
-              ),
-              onPressed: previos == null
-                  ? null
-                  : () {
-                      var nextSet = currentPage - currentPerPage!;
-                      setState(() {
-                        currentPage = nextSet > 1 ? nextSet : 1;
-                        currentPerPageFinal = nextSet > 1
-                            ? (currentPerPageFinal! - currentPerPage!)
-                            : currentPerPage;
-                        refreshData(url: previos);
-                        // _resetData(start: _currentPage - 1);
-                      });
-                    },
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-            ),
-            IconButton(
-              icon: const Icon(Icons.arrow_forward_ios, size: 16),
-              onPressed: next == null
-                  ? null
-                  : () {
-                      var nextSet = currentPage + currentPerPage!;
+          footers: widget.onSource == null
+              ? []
+              : [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: const Text("Filas por página:"),
+                  ),
+                  if (perPages.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: DropdownButton<int>(
+                        value: currentPerPage,
+                        items: perPages
+                            .map((e) => DropdownMenuItem<int>(
+                                  child: Text("$e"),
+                                  value: e,
+                                ))
+                            .toList(),
+                        onChanged: (dynamic value) {
+                          setState(() {
+                            currentPerPage = value;
+                            currentPerPageFinal = value;
+                            currentPage = 1;
+                            widget.params?["limit"] = value;
+                            refreshData();
+                            // _resetData();
+                          });
+                        },
+                        isExpanded: false,
+                      ),
+                    ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child:
+                        Text("$currentPage - $currentPerPageFinal de $total"),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 16,
+                    ),
+                    onPressed: previos == null
+                        ? null
+                        : () {
+                            var nextSet = currentPage - currentPerPage!;
+                            setState(() {
+                              currentPage = nextSet > 1 ? nextSet : 1;
+                              currentPerPageFinal = nextSet > 1
+                                  ? (currentPerPageFinal! - currentPerPage!)
+                                  : currentPerPage;
+                              refreshData(url: previos);
+                              // _resetData(start: _currentPage - 1);
+                            });
+                          },
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onPressed: next == null
+                        ? null
+                        : () {
+                            var nextSet = currentPage + currentPerPage!;
 
-                      setState(() {
-                        currentPage =
-                            nextSet < total ? nextSet : total - currentPerPage!;
-                        currentPerPageFinal = nextSet < total
-                            ? (currentPerPageFinal! + currentPerPage!)
-                            : total - currentPerPageFinal!;
-                        refreshData(url: next);
-                        // _resetData(start: _nextSet - 1);
-                      });
-                    },
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-            )
-          ],
+                            setState(() {
+                              currentPage = nextSet < total
+                                  ? nextSet
+                                  : total - currentPerPage!;
+                              currentPerPageFinal = nextSet < total
+                                  ? (currentPerPageFinal! + currentPerPage!)
+                                  : total - currentPerPageFinal!;
+                              refreshData(url: next);
+                              // _resetData(start: _nextSet - 1);
+                            });
+                          },
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                  )
+                ],
         ),
       ),
     );
