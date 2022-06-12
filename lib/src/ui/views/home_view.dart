@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/services/home_service.dart';
-import 'package:rcv_admin_flutter/src/utils/exmaple_char.dart';
 // import 'package:rcv_admin_flutter/src/ui/shared/widgets/centered_view.dart';
 // import 'package:responsive_builder/responsive_builder.dart';
 
