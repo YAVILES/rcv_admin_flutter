@@ -13,6 +13,11 @@ const bannersRoute = 'banners';
 const bannerRoute = 'banner';
 const bannerDetailRoute = 'details_banner';
 
+//Sections
+const sectionsRoute = 'sections';
+const sectionRoute = 'section';
+const sectionDetailRoute = 'details_section';
+
 // Users
 const usersRoute = 'users';
 const userRoute = 'user';

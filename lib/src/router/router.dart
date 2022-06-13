@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
 import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
+import 'package:rcv_admin_flutter/src/models/section_model.dart';
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/section_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart';
@@ -40,6 +42,8 @@ import 'package:rcv_admin_flutter/src/ui/views/policy_view_edit.dart';
 import 'package:rcv_admin_flutter/src/ui/views/premiums_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/role_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/roles_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/section_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/sections_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/use_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/user_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/users_view.dart';
@@ -104,13 +108,51 @@ class RouterGoRouter {
               name: bannerDetailRoute,
               path: '$bannerRoute/:id',
               pageBuilder: (context, state) {
-                BannerRCV banner = _getBannerRCV(
-                  context,
-                  state.params['id'].toString(),
-                );
+                // BannerRCV banner = _getBannerRCV(
+                //   context,
+                //   state.params['id'].toString(),
+                // );
                 return MaterialPage(
                   key: state.pageKey,
-                  child: BannerView(banner: banner),
+                  child: BannerView(
+                    uid: state.params['id'].toString(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+
+        //Secciones
+        GoRoute(
+          name: sectionsRoute,
+          path: '/$sectionsRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const SectionsView(),
+          ),
+          routes: [
+            GoRoute(
+              name: sectionRoute,
+              path: sectionRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: SectionView(
+                    uid: null,
+                  ),
+                );
+              },
+            ),
+            GoRoute(
+              name: sectionDetailRoute,
+              path: '$sectionRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: SectionView(
+                    uid: state.params['id'].toString(),
+                  ),
                 );
               },
             ),
@@ -645,15 +687,4 @@ BannerRCV _getBannerRCV(BuildContext context, String uid) {
       )
       .first;
   return BannerRCV.fromMap(bannerMap);
-}
-
-BranchOffice _getBranchOffice(BuildContext context, String uid) {
-  final branchOfficeMap =
-      Provider.of<BranchOfficeProvider>(context, listen: false)
-          .branchOffices
-          .where(
-            (b) => b['id'] == uid.toString(),
-          )
-          .first;
-  return BranchOffice.fromMap(branchOfficeMap);
 }

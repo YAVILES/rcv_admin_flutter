@@ -16,10 +16,11 @@ import 'package:rcv_admin_flutter/src/ui/shared/widgets/header_view.dart';
 
 class BannerView extends StatefulWidget {
   BannerRCV? banner;
-
+  String? uid;
   BannerView({
     Key? key,
     this.banner,
+    this.uid,
   }) : super(key: key);
 
   @override
@@ -29,8 +30,13 @@ class BannerView extends StatefulWidget {
 class _BannerViewState extends State<BannerView> {
   @override
   void initState() {
-    Provider.of<BannerRCVProvider>(context, listen: false).banner =
-        widget.banner ?? BannerRCV();
+    if (widget.uid != null) {
+      Provider.of<BannerRCVProvider>(context, listen: false)
+          .getBanner(widget.uid!);
+    } else {
+      Provider.of<BannerRCVProvider>(context, listen: false).banner =
+          widget.banner ?? BannerRCV();
+    }
     super.initState();
   }
 
