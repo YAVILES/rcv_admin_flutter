@@ -10,6 +10,15 @@ class SectionProvider with ChangeNotifier {
   String url = '/core/section';
   List<Map<String, dynamic>> sections = [];
   Section? section;
+  List<Map<String, dynamic>> _selecteds = [];
+
+  List<Map<String, dynamic>> get selecteds => _selecteds;
+
+  set selecteds(List<Map<String, dynamic>> selecteds) {
+    _selecteds = selecteds;
+    notifyListeners();
+  }
+
   bool loading = false;
   Option? type;
   late GlobalKey<FormState> formSectionKey;
@@ -22,6 +31,7 @@ class SectionProvider with ChangeNotifier {
 
   setType(Option? _type) {
     type = _type;
+    section!.type = _type?.value;
     notifyListeners();
   }
 
@@ -84,6 +94,7 @@ class SectionProvider with ChangeNotifier {
         final response = await API.add('$url/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
           section = Section.fromMap(response.data);
+          type = null;
           getSections();
           // sections.add(response.data);
           // notifyListeners();
@@ -121,6 +132,7 @@ class SectionProvider with ChangeNotifier {
         final response = await API.put('$url/$id/', formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
           section = Section.fromMap(response.data);
+          type = null;
           getSections();
 /*           sections = sections.map((_section) {
             if (_section['id'] == section!.id) {
@@ -153,17 +165,23 @@ class SectionProvider with ChangeNotifier {
   }
 
   Future deleteSections(List<String> ids) async {
+    loading = true;
     try {
       final resp = await API.delete('$url/remove_multiple/', ids: ids);
       if (resp.statusCode == 200) {
         sections
             .removeWhere((section) => ids.contains(section['id'].toString()));
+        loading = false;
         notifyListeners();
         return true;
       } else {
+        loading = false;
+        notifyListeners();
         return false;
       }
     } on ErrorAPI {
+      loading = false;
+      notifyListeners();
       rethrow;
     }
   }
