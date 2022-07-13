@@ -8,11 +8,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/generic_table_responsive.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/plan_model.dart';
 import 'package:rcv_admin_flutter/src/models/premium_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
+import 'package:rcv_admin_flutter/src/providers/premium_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
@@ -141,21 +143,24 @@ class _PremiumsViewState extends State<PremiumsView> {
                                 return Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    FutureBuilder(
-                                        future: UseService.getUse(
-                                            use.id!, planMap.id),
-                                        builder:
-                                            (_, AsyncSnapshot<Use?> snapshot) {
-                                          return snapshot.connectionState ==
-                                                  ConnectionState.done
-                                              ? TotalCoverage(
-                                                  plan: planMap,
-                                                  use: snapshot.data!,
-                                                  premiums:
-                                                      snapshot.data!.premiums!,
-                                                )
-                                              : const MyProgressIndicator();
-                                        }),
+                                    Consumer<PremiumProvider>(
+                                        builder: (context, obj, child) {
+                                      return FutureBuilder(
+                                          future: UseService.getUse(
+                                              use.id!, planMap.id),
+                                          builder: (_,
+                                              AsyncSnapshot<Use?> snapshot) {
+                                            return snapshot.connectionState ==
+                                                    ConnectionState.done
+                                                ? TotalCoverage(
+                                                    plan: planMap,
+                                                    use: snapshot.data!,
+                                                    premiums: snapshot
+                                                        .data!.premiums!,
+                                                  )
+                                                : const MyProgressIndicator();
+                                          });
+                                    }),
                                   ],
                                 );
                               },

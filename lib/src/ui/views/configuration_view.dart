@@ -75,44 +75,45 @@ class ConfigurationBody extends StatelessWidget {
                     Wrap(
                       children: [
                         ...obj.configurations.map((conf) {
-                          if (conf.key == 'CHANGE_FACTOR') {
-                            return SizedBox(
-                              width: 320,
-                              child: Row(
-                                children: [
-                                  Text(conf.helpText!),
-                                  const SizedBox(width: 15),
-                                  Expanded(
-                                    child: TextFormField(
-                                      initialValue: conf.value.toString(),
-                                      onChanged: (value) =>
-                                          conf.value = double.parse(value),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'El factor de cambio es obligatorio';
-                                        }
-                                        return null;
-                                      },
-                                      onFieldSubmitted: (value) => {
-                                        _saveConfig(configurationProvider, conf)
-                                      },
-                                      // _saveConfiguration(conf),
-                                      decoration:
-                                          CustomInputs.buildInputDecoration(
-                                        hintText:
-                                            'Ingrese el factor de cambio.',
-                                        labelText: conf.helpText!,
-                                        constraints:
-                                            const BoxConstraints(maxWidth: 140),
-                                      ),
+                          if (conf.key == 'CHANGE_FACTOR' ||
+                              conf.key == 'PHONES' ||
+                              conf.key == "FAX" ||
+                              conf.key == "DESCRIPTION" ||
+                              conf.key == "LOCATION_PRINCIPAL" ||
+                              conf.key == "LOCATION_PRINCIPAL_GOOGLE_MAPS" ||
+                              conf.key == "EMAIL") {
+                            return Row(
+                              children: [
+                                // Text(conf.helpText!),
+                                const SizedBox(width: 15),
+                                Expanded(
+                                  child: TextFormField(
+                                    initialValue: conf.value.toString(),
+                                    onChanged: (value) => conf.value = value,
+                                    validator: (value) {
+                                      if ((value == null || value.isEmpty) &&
+                                          conf.key == "CHANGE_FACTOR") {
+                                        return '${conf.helpText} es obligatorio';
+                                      }
+                                      return null;
+                                    },
+                                    onFieldSubmitted: (value) => {
+                                      _saveConfig(configurationProvider, conf)
+                                    },
+                                    // _saveConfiguration(conf),
+                                    decoration:
+                                        CustomInputs.buildInputDecoration(
+                                      hintText: '${conf.helpText}',
+                                      labelText: conf.helpText!,
+                                      constraints:
+                                          const BoxConstraints(maxWidth: 140),
                                     ),
                                   ),
-                                  const SizedBox(width: 20),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 20),
+                              ],
                             );
-                          }
-                          if (conf.key == 'ADVISER_DEFAULT_ID') {
+                          } else if (conf.key == 'ADVISER_DEFAULT_ID') {
                             return FutureBuilder(
                               future: UserService.getUsers({
                                 'not_paginator': true,
@@ -131,10 +132,12 @@ class ConfigurationBody extends StatelessWidget {
                                                 vertical: 8.0),
                                             child: DropdownSearch<User>(
                                               items: snapshot.data!,
-                                              selectedItem: snapshot.data
-                                                  ?.where(
-                                                      (d) => d.id == conf.value)
-                                                  .first,
+                                              selectedItem: conf.value != null
+                                                  ? snapshot.data
+                                                      ?.where((d) =>
+                                                          d.id == conf.value)
+                                                      .first
+                                                  : null,
                                               dropdownSearchDecoration:
                                                   const InputDecoration(
                                                 hintText:
@@ -162,13 +165,79 @@ class ConfigurationBody extends StatelessWidget {
                                               },
                                             ),
                                           )
-                                        : const Text(
-                                            'Nota: Debe crear al menos un asesor'))
+                                        : Row(
+                                            children: const [
+                                              Text(
+                                                  'Nota: Debe crear al menos un asesor'),
+                                            ],
+                                          ))
                                     : const MyProgressIndicator();
                               },
                             );
                           }
-                          return Container();
+                          /*      
+                          else if (conf.key == 'LOGO') {
+                            return Row(
+                              children: [
+                                const Text("Logo"),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Stack(
+                                  children: [
+                                    conf.value != null
+                                        ? Image.network(conf.value, width: 200)
+                                        : obj.logo != null
+                                            ? Image.memory(
+                                                Uint8List.fromList(
+                                                    obj.logo!.bytes!),
+                                                width: 200)
+                                            : Image.asset(
+                                                'assets/images/16410.png',
+                                                width: 200,
+                                              ),
+                                    Positioned(
+                                      bottom: 4,
+                                      right: 4,
+                                      child: Container(
+                                        height: 45,
+                                        width: 45,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          border: Border.all(
+                                              color: Colors.white, width: 5),
+                                        ),
+                                        child: FloatingActionButton(
+                                          backgroundColor: Colors.indigo,
+                                          elevation: 0,
+                                          onPressed: () async {
+                                            FilePickerResult? result =
+                                                await FilePicker.platform
+                                                    .pickFiles(
+                                              // allowedExtensions: ['jpg'],
+                                              allowMultiple: false,
+                                            );
+
+                                            if (result != null) {
+                                              obj.logo = result.files.first;
+                                            } else {
+                                              // User canceled the picker
+                                            }
+                                          },
+                                          child: const Icon(Icons.upload),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          } */
+
+                          else {
+                            return Container();
+                          }
                         }).toList()
                       ],
                     ),

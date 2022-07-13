@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/configuration_model.dart';
+import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class ConfigurationProvider with ChangeNotifier {
@@ -7,6 +10,14 @@ class ConfigurationProvider with ChangeNotifier {
   late double change_factor;
   List<Configuration> configurations = [];
   bool loading = false;
+  PlatformFile? _logo;
+
+  PlatformFile? get logo => _logo;
+
+  set logo(PlatformFile? logo) {
+    _logo = logo;
+    notifyListeners();
+  }
 
   late GlobalKey<FormState> formConfigurationKey;
 
@@ -52,16 +63,26 @@ class ConfigurationProvider with ChangeNotifier {
 
   Future<bool?> saveMultiPle(List<Configuration> configs) async {
     if (validateForm()) {
+      List<dynamic> configData = configs.map((e) {
+        // if (e.key == "LOGO" && logo != null) {
+        //   e.value = MultipartFile.fromBytes(
+        //     logo!.bytes!,
+        //     filename: logo!.name,
+        //   );
+        // }
+        return e.toMap();
+      }).toList();
       try {
-        final response = await API.put(
-            '$url/update_multiple/', configs.map((e) => e.toMap()).toList());
+        final response = await API.put('$url/update_multiple/', configData);
         if (response.statusCode == 200 || response.statusCode == 201) {
           notifyListeners();
+          NotificationService.showSnackbarSuccess('Guardado con exito');
           return true;
         }
       } on ErrorAPI {
         rethrow;
       }
     }
+    return null;
   }
 }
