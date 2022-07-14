@@ -22,7 +22,7 @@ class Configuration {
 
   factory Configuration.fromMap(Map<String, dynamic> json) {
     return Configuration(
-      id: json["id"],
+      id: int.parse(json["id"]),
       key: json["key"],
       defaultValue: json["default"],
       helpText: json["help_text"],

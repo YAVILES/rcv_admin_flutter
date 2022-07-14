@@ -23,6 +23,7 @@ import 'package:rcv_admin_flutter/src/ui/views/branch_offices_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/client_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/clients_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/configuration_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/contract_html_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
@@ -637,7 +638,15 @@ class RouterGoRouter {
             key: state.pageKey,
             child: ConfigurationView(),
           ),
-        )
+        ),
+        GoRoute(
+          name: contratHTMLRoute,
+          path: '/$contratHTMLRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const ContractHTMLView(),
+          ),
+        ),
       ],
       navigatorBuilder: (context, GoRouterState state, Widget child) {
         if (auth.loggedInStatus == Status.loggedIn) {

@@ -88,6 +88,9 @@ class WorkFlowService {
       case "home_repair_service_outlined":
         icon = Icons.home_repair_service_outlined;
         break;
+      case "rule_outlined":
+        icon = Icons.rule_outlined;
+        break;
       default:
         icon = Icons.nature;
     }

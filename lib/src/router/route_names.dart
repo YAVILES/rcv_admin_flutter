@@ -95,3 +95,6 @@ const paymentDetailRoute = 'details_payment';
 
 // Settings
 const settingsRoute = 'settings';
+
+// Contract HTML
+const contratHTMLRoute = 'contract';
