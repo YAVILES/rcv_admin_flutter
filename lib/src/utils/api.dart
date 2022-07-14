@@ -8,10 +8,10 @@ import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
 class API {
   // Development
-  static const String baseURL = "http://127.0.0.1:8000/api";
+  // static const String baseURL = "http://127.0.0.1:8000/api";
 
   // Production
-  // static const String baseURL = "http://194.163.161.64:6500/api";
+  static const String baseURL = "https://api-dev.segurosrc871.com/api";
   static final Dio _dio = Dio();
 
   static void configureDio() {
