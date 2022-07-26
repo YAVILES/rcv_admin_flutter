@@ -37,6 +37,8 @@ class _BranchOfficesViewState extends State<BranchOfficesView> {
       DatatableHeader(text: "Nro.", value: "number"),
       DatatableHeader(text: "Código", value: "code"),
       DatatableHeader(text: "Descripción", value: "description"),
+      DatatableHeader(text: "Correo", value: "email"),
+      DatatableHeader(text: "Teléfonos", value: "telephone"),
       DatatableHeader(
         text: "Fecha de Creación",
         value: "created",

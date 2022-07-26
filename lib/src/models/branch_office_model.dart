@@ -12,6 +12,9 @@ class BranchOffice {
     this.number,
     this.code,
     this.description,
+    this.email,
+    this.direction,
+    this.telephone,
     this.linkGoogleMaps,
     this.isActive,
   }) {
@@ -24,6 +27,9 @@ class BranchOffice {
   int? number;
   String? code;
   String? description;
+  String? email;
+  String? direction;
+  String? telephone;
   String? linkGoogleMaps;
   bool? isActive;
 
@@ -43,6 +49,9 @@ class BranchOffice {
             : null,
         code: json["code"],
         description: json["description"],
+        email: json["email"],
+        direction: json["direction"],
+        telephone: json["telephone"],
         linkGoogleMaps: json["link_google_maps"],
         isActive: json["is_active"] ?? true,
       );
@@ -54,6 +63,9 @@ class BranchOffice {
         "number": number,
         "code": code,
         "description": description,
+        "email": email,
+        "direction": direction,
+        "telephone": telephone,
         "link_google_maps": linkGoogleMaps,
         "is_active": isActive,
       };

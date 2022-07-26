@@ -137,6 +137,36 @@ class __BranchOfficeViewBodyState extends State<_BranchOfficeViewBody> {
                         ),
                       ),
                       TextFormField(
+                        initialValue: _branchOffice.email ?? '',
+                        onChanged: (value) => _branchOffice.email = value,
+                        onFieldSubmitted: (value) => _saveBranchOffice(
+                            create, branchOfficeProvider, _branchOffice),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el correo.',
+                          labelText: 'Correo',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _branchOffice.direction ?? '',
+                        onChanged: (value) => _branchOffice.direction = value,
+                        onFieldSubmitted: (value) => _saveBranchOffice(
+                            create, branchOfficeProvider, _branchOffice),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese la dirección.',
+                          labelText: 'Dirección',
+                        ),
+                      ),
+                      TextFormField(
+                        initialValue: _branchOffice.telephone ?? '',
+                        onChanged: (value) => _branchOffice.telephone = value,
+                        onFieldSubmitted: (value) => _saveBranchOffice(
+                            create, branchOfficeProvider, _branchOffice),
+                        decoration: CustomInputs.buildInputDecoration(
+                          hintText: 'Ingrese el teléfono.',
+                          labelText: 'Teléfono',
+                        ),
+                      ),
+                      TextFormField(
                         initialValue: _branchOffice.linkGoogleMaps ?? '',
                         onSaved: (value) =>
                             _branchOffice.linkGoogleMaps = value,
