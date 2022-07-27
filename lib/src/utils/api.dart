@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 
 import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 
@@ -14,22 +16,29 @@ class API {
   static const String baseURL = "https://api-dev.segurosrc871.com/api";
   static final Dio _dio = Dio();
 
-  static void configureDio() {
+  static void configureDio(context) {
     _dio.options.baseUrl = baseURL;
     _dio.options.headers = {
       'Authorization': 'Bearer ${Preferences.getToken()}',
       'accept': '*/*',
     };
-    initializedInterceptors();
+    if (context != null) {
+      initializedInterceptors(context);
+    }
   }
 
-  static initializedInterceptors() {
+  static initializedInterceptors(context) {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, errorHandler) async {
           if (kDebugMode) {
             print(
                 'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
+          }
+          if ((error.response?.statusCode == 403 ||
+                  error.response?.statusCode == 401) &&
+              error.requestOptions.path != '/refresh/') {
+            await Provider.of<AuthProvider>(context, listen: false).logout();
           }
           if ((error.response?.statusCode == 403 ||
                   error.response?.statusCode == 401) &&
@@ -40,7 +49,7 @@ class API {
               //get new tokens ...
               final data = response.data;
               Preferences.setToken(data['access'], data['refresh']);
-              API.configureDio();
+              API.configureDio(context);
               //create request with new access token
               final opts = Options(method: error.requestOptions.method);
               final cloneReq = await _dio.request(error.requestOptions.path,

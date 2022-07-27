@@ -29,7 +29,6 @@ import 'package:rcv_admin_flutter/src/app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Preferences.configurePrefs();
-  API.configureDio();
   // Flurorouter.configureRoute();
   runApp(const AppState());
 }
@@ -44,6 +43,7 @@ class AppState extends StatefulWidget {
 class _AppStateState extends State<AppState> {
   @override
   Widget build(BuildContext context) {
+    API.configureDio(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(lazy: false, create: (_) => AuthProvider()),

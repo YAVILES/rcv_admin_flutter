@@ -73,7 +73,7 @@ class AuthProvider with ChangeNotifier {
         if (data.user != null) user = data.user;
         Preferences.setToken(data.token, data.refresh);
         Preferences.setIdUser(data.user?.id ?? '');
-        API.configureDio();
+        API.configureDio(null);
         _loggedInStatus = Status.loggedIn;
         notifyListeners();
       } else {
