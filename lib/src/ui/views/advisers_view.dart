@@ -73,7 +73,7 @@ class _AdvisersViewState extends State<AdvisersView> {
             children: [
               HeaderView(
                 title: "Administración de Sistema",
-                subtitle: "Adviseres",
+                subtitle: "Gestión de Asesores",
                 actions: [
                   CustomButtonPrimary(
                     onPressed: () => NavigationService.navigateTo(

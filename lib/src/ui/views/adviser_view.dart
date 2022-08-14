@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
+import 'package:rcv_admin_flutter/src/models/option_model.dart';
 import 'package:rcv_admin_flutter/src/models/role_model.dart';
 
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
@@ -14,6 +16,7 @@ import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/services/role_service.dart';
 import 'package:rcv_admin_flutter/src/services/branch_office_service.dart';
+import 'package:rcv_admin_flutter/src/services/user_service.dart';
 import 'package:rcv_admin_flutter/src/ui/buttons/custom_button_primary.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_check_box.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
@@ -193,25 +196,78 @@ class __AdviserViewBodyState extends State<_AdviserViewBody> {
                           ),
                           const SizedBox(width: 20),
                           Expanded(
-                            child: TextFormField(
-                              // readOnly: !create,
-                              initialValue: _user.identificationNumber ?? '',
-                              onChanged: (value) =>
-                                  _user.identificationNumber = value,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'La cedula o el rif es obligatorio';
-                                }
-                                return null;
-                              },
-                              onFieldSubmitted: (value) =>
-                                  _saveAdviser(create, userProvider, _user),
-                              decoration: CustomInputs.buildInputDecoration(
-                                hintText: 'Ingrese la cedula o el rif.',
-                                labelText: 'Cedula o Rif',
-                                constraints:
-                                    const BoxConstraints(maxWidth: 350),
-                              ),
+                            child: Row(
+                              children: [
+                                FutureBuilder(
+                                    future: UserService.getDocumentTypes(),
+                                    builder: (_,
+                                        AsyncSnapshot<List<Option>?> snapshot) {
+                                      return snapshot.connectionState ==
+                                              ConnectionState.done
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                right: 10,
+                                              ),
+                                              child: SizedBox(
+                                                width: 60,
+                                                child: DropdownSearch<Option>(
+                                                  items: snapshot.data!,
+                                                  selectedItem: Option.fromMap({
+                                                    "value": _user.documentType
+                                                  }),
+                                                  dropdownSearchDecoration:
+                                                      const InputDecoration(
+                                                    hintText:
+                                                        "Seleccione el tipo de documento",
+                                                    labelText:
+                                                        "Tipo de Documento",
+                                                    contentPadding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 12, 0, 0),
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                  itemAsString:
+                                                      (Option? typeD) =>
+                                                          '${typeD!.value}',
+                                                  onChanged: (Option? typeD) {
+                                                    _user.documentType =
+                                                        typeD!.value;
+                                                  },
+                                                  validator: (Option? typeD) {
+                                                    if (typeD == null) {
+                                                      return "El tipo de documento es requerido";
+                                                    } else {
+                                                      return null;
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                          : const MyProgressIndicator();
+                                    }),
+                                TextFormField(
+                                  // readOnly: !create,
+                                  initialValue:
+                                      _user.identificationNumber ?? '',
+                                  onChanged: (value) =>
+                                      _user.identificationNumber = value,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'La cedula o el rif es obligatorio';
+                                    }
+                                    return null;
+                                  },
+                                  onFieldSubmitted: (value) =>
+                                      _saveAdviser(create, userProvider, _user),
+                                  decoration: CustomInputs.buildInputDecoration(
+                                    hintText: 'Ingrese la cedula o el rif.',
+                                    labelText: 'Cedula o Rif',
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 350),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

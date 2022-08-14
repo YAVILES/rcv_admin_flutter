@@ -48,6 +48,7 @@ class _PlansViewState extends State<PlansView> {
                 padding: const EdgeInsets.all(2.0),
                 child: CustomChip(
                   active: true,
+                  withGesture: false,
                   title: e["description"],
                 ),
               ),

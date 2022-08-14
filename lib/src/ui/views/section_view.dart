@@ -34,13 +34,6 @@ class SectionView extends StatefulWidget {
 class _SectionViewState extends State<SectionView> {
   @override
   void initState() {
-    if (widget.uid != null) {
-      Provider.of<SectionProvider>(context, listen: false)
-          .getSection(widget.uid!);
-    } else {
-      Provider.of<SectionProvider>(context, listen: false).section =
-          widget.section ?? Section();
-    }
     super.initState();
   }
 
@@ -55,7 +48,7 @@ class _SectionViewState extends State<SectionView> {
               title: 'Administración Web',
               subtitle: 'Sección ${widget.section?.title ?? ''}',
             ),
-            const _SectionForm(),
+            SectionForm(uid: widget.uid, section: widget.section),
           ],
         ),
       ),
@@ -63,20 +56,30 @@ class _SectionViewState extends State<SectionView> {
   }
 }
 
-class _SectionForm extends StatefulWidget {
-  const _SectionForm({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class SectionForm extends StatefulWidget {
+  String? uid;
+  Section? section;
+  SectionForm({Key? key, this.section, this.uid}) : super(key: key);
 
   @override
-  State<_SectionForm> createState() => _SectionFormState();
+  State<SectionForm> createState() => _SectionFormState();
 }
 
-class _SectionFormState extends State<_SectionForm> {
+class _SectionFormState extends State<SectionForm> {
   PlatformFile? image;
   PlatformFile? shape;
   PlatformFile? icon;
 
   @override
   void initState() {
+    if (widget.uid != null) {
+      Provider.of<SectionProvider>(context, listen: false)
+          .getSection(widget.uid!);
+    } else {
+      Provider.of<SectionProvider>(context, listen: false).section =
+          widget.section ?? Section();
+    }
     Provider.of<SectionProvider>(context, listen: false).formSectionKey =
         GlobalKey<FormState>();
     super.initState();

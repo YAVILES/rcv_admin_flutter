@@ -8,6 +8,7 @@ import 'package:rcv_admin_flutter/src/models/role_model.dart';
 
 class Client {
   String? id;
+  String? documentType;
   String? identificationNumber;
   String? username;
   String? email;
@@ -29,6 +30,7 @@ class Client {
 
   Client({
     this.id,
+    this.documentType,
     this.identificationNumber,
     this.username,
     this.email,
@@ -52,6 +54,7 @@ class Client {
   Map<String, dynamic> toMap({bool? excludePhoto = false}) {
     return {
       'id': id,
+      'document_type': documentType,
       'identification_number': identificationNumber,
       'username': username,
       'email': email,
@@ -76,6 +79,7 @@ class Client {
   factory Client.fromMap(Map<String, dynamic> map) {
     return Client(
       id: map['id'],
+      documentType: map['document_type'],
       identificationNumber: map['identification_number'],
       username: map['username'],
       email: map['email'],

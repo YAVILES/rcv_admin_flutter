@@ -233,7 +233,7 @@ class PaymentProvider with ChangeNotifier {
         "jpeg",
         mimeType: type,
       );
-      NotificationService.showSnackbarSuccess('Pago guardado en $path');
+      NotificationService.showSnackbarSuccess('Documento guardado en $path');
     } else {
       NotificationService.showSnackbarError(
           'No se pudo descargar el documento');

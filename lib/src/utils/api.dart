@@ -30,20 +30,19 @@ class API {
   static initializedInterceptors(context) {
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onError: (error, errorHandler) async {
+        onError: (error, ErrorInterceptorHandler errorHandler) async {
           if (kDebugMode) {
             print(
                 'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
           }
           if ((error.response?.statusCode == 403 ||
                   error.response?.statusCode == 401) &&
-              error.requestOptions.path != '/refresh/') {
+              error.requestOptions.path == '/refresh/') {
             await Provider.of<AuthProvider>(context, listen: false).logout();
           }
           if ((error.response?.statusCode == 403 ||
                   error.response?.statusCode == 401) &&
-              error.requestOptions.path != '/token/' &&
-              error.requestOptions.path != '/security/user/current/') {
+              error.requestOptions.path != '/token/') {
             Response response = await refreshToken();
             if (response.statusCode == 200) {
               //get new tokens ...

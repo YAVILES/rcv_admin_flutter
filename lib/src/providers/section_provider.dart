@@ -53,6 +53,7 @@ class SectionProvider with ChangeNotifier {
   }
 
   Future<Section?> getSection(String uid) async {
+    section = null;
     try {
       final response = await API.get('$url/$uid/');
       if (response.statusCode == 200) {
@@ -61,6 +62,7 @@ class SectionProvider with ChangeNotifier {
         notifyListeners();
         return section;
       } else {
+        notifyListeners();
         return null;
       }
     } on ErrorAPI {

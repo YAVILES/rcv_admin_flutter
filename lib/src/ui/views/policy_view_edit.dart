@@ -6,10 +6,7 @@ import 'package:rcv_admin_flutter/src/components/generic_table/generic_table.dar
 import 'package:rcv_admin_flutter/src/components/my_progress_indicator.dart';
 import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/models/use_model.dart';
-import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/plan_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/policy_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/vehicle_provider.dart';
 import 'package:rcv_admin_flutter/src/services/navigation_service.dart';
 import 'package:rcv_admin_flutter/src/services/notification_service.dart';
 import 'package:rcv_admin_flutter/src/ui/inputs/custom_inputs.dart';
