@@ -29,7 +29,7 @@ class ConfigurationProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/');
+      final response = await API.get('$url/');
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);

@@ -22,7 +22,7 @@ class UseProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/');
+      final response = await API.get('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         uses = responseData.results;
@@ -120,7 +120,7 @@ class UseProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/', params: {"search": value});
+      final response = await API.get('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         uses = responseData.results;

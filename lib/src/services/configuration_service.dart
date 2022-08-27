@@ -7,7 +7,7 @@ class ConfigurationService {
   static Future<Configuration?> get(String key) async {
     try {
       final response =
-          await API.list('$url/retrieve_for_key/', params: {"key": key});
+          await API.get('$url/retrieve_for_key/', params: {"key": key});
       if (response.statusCode == 200) {
         return Configuration.fromMap(response.data);
       }

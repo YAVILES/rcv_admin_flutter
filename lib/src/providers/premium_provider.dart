@@ -143,11 +143,11 @@ class PremiumProvider with ChangeNotifier {
     List<Map<String, dynamic>> plans = [];
     List<Map<String, dynamic>> uses = [];
     try {
-      final responsePlans = await API.list('/core/plan/', params: paramsPlans);
+      final responsePlans = await API.get('/core/plan/', params: paramsPlans);
       if (responsePlans.statusCode == 200) {
         plans = List<Map<String, dynamic>>.from(responsePlans.data);
       }
-      final responseUses = await API.list('/core/use/', params: paramsUses);
+      final responseUses = await API.get('/core/use/', params: paramsUses);
       if (responseUses.statusCode == 200) {
         uses = List<Map<String, dynamic>>.from(responseUses.data);
       }

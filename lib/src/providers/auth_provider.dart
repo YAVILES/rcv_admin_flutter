@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:rcv_admin_flutter/src/models/auth_model.dart';
 import 'package:rcv_admin_flutter/src/models/user_model.dart';
@@ -40,7 +41,7 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
     try {
-      final resp = await API.list('/security/user/current/');
+      final resp = await API.get('/security/user/current/');
       if (resp.statusCode == 200) {
         user = User.fromMap(resp.data!);
         _loggedInStatus = Status.loggedIn;
@@ -50,8 +51,7 @@ class AuthProvider with ChangeNotifier {
         return false;
       }
     } on ErrorAPI {
-      _loggedInStatus = Status.notLoggedIn;
-      notifyListeners();
+      logout();
       return false;
     }
   }

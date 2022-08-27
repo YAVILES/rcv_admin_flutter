@@ -13,7 +13,7 @@ class SectionService {
   static Future<List<Option>?> getTypes() async {
     try {
       final response =
-          await API.list('$url/field_options/', params: {"field": "type"});
+          await API.get('$url/field_options/', params: {"field": "type"});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);

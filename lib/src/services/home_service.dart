@@ -5,7 +5,7 @@ class HomeService {
 
   static Future<Map<String, dynamic>?> getData() async {
     try {
-      final response = await API.list('$url/data/');
+      final response = await API.get('$url/data/');
       if (response.statusCode == 200) {
         return Map<String, dynamic>.from(response.data);
       }
@@ -17,7 +17,7 @@ class HomeService {
 
   static Future<List<Map<String, dynamic>>> getPolicyForBranchOffice() async {
     try {
-      final response = await API.list('$url/policy_for_branch_office/');
+      final response = await API.get('$url/policy_for_branch_office/');
       if (response.statusCode == 200) {
         return List<Map<String, dynamic>>.from(response.data);
       }

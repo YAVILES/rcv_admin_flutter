@@ -33,7 +33,7 @@ class _BanksViewState extends State<BanksView> {
       DatatableHeader(text: "Código", value: "code"),
       DatatableHeader(text: "Descripción", value: "description"),
       DatatableHeader(
-          text: "Modenas", value: "coins_display", textAlign: TextAlign.left),
+          text: "Monedas", value: "coins_display", textAlign: TextAlign.left),
       DatatableHeader(
           text: "Métodos de Pago",
           value: "methods_display",

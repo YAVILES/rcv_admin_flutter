@@ -88,7 +88,11 @@ class _BannerFormState extends State<_BannerForm> {
               child: (image?.bytes != null)
                   ? Image.memory(Uint8List.fromList(image!.bytes!))
                   : bannerProvider.banner?.image != null
-                      ? Image.network(bannerProvider.banner!.image!)
+                      ? Image.network(
+                          bannerProvider.banner!.image!,
+                          loadingBuilder: (_, __, ___) =>
+                              Image.asset('assets/images/loading.gif'),
+                        )
                       : Image.asset('assets/images/upload.png'),
             ),
             Positioned(

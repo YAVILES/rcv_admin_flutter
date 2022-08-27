@@ -15,7 +15,7 @@ class PolicyService {
 
   static Future<Uint8List?> downloadPdf(String id) async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/$id/download_pdf/',
         options: Options(
           responseType: ResponseType.bytes,
@@ -34,7 +34,7 @@ class PolicyService {
 
   static Future<Uint8List?> pdf(String id) async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/$id/pdf/',
         options: Options(
           responseType: ResponseType.bytes,

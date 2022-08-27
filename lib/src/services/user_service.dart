@@ -9,7 +9,7 @@ class UserService {
     List<User> uses = [];
     try {
       final response =
-          await API.list('$url/', params: {'is_adviser': false, ...?params});
+          await API.get('$url/', params: {'is_adviser': false, ...?params});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -25,7 +25,7 @@ class UserService {
     List<User> uses = [];
     try {
       final response =
-          await API.list('$url/', params: {'is_adviser': true, ...?params});
+          await API.get('$url/', params: {'is_adviser': true, ...?params});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -55,7 +55,7 @@ class UserService {
     try {
       Response response;
       response = await API
-          .list('$url/field_options/', params: {"field": "document_type"});
+          .get('$url/field_options/', params: {"field": "document_type"});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);

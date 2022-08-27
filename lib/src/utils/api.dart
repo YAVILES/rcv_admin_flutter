@@ -35,33 +35,38 @@ class API {
             print(
                 'onErrorMessage: ${error.response} ${error.response?.statusCode} ${error.requestOptions.path}');
           }
-          if ((error.response?.statusCode == 403 ||
-                  error.response?.statusCode == 401) &&
-              error.requestOptions.path == '/refresh/') {
-            await Provider.of<AuthProvider>(context, listen: false).logout();
-          }
-          if ((error.response?.statusCode == 403 ||
-                  error.response?.statusCode == 401) &&
-              error.requestOptions.path != '/token/') {
-            Response response = await refreshToken();
-            if (response.statusCode == 200) {
-              //get new tokens ...
-              final data = response.data;
-              Preferences.setToken(data['access'], data['refresh']);
-              API.configureDio(context);
-              //create request with new access token
-              final opts = Options(method: error.requestOptions.method);
-              final cloneReq = await _dio.request(error.requestOptions.path,
-                  options: opts,
-                  data: error.requestOptions.data,
-                  queryParameters: error.requestOptions.queryParameters);
+          if (error.response?.statusCode == 403 ||
+              error.response?.statusCode == 401) {
+            // if (error.requestOptions.path == '/token/refresh/') {
 
-              return errorHandler.resolve(cloneReq);
+            //     await Provider.of<AuthProvider>(context, listen: false)
+            //         .logout();
+
+            // } else
+            if (error.requestOptions.path != '/token/' ||
+                error.requestOptions.path != '/security/user/current/') {
+              Response response = await refreshToken();
+              if (response.statusCode == 200) {
+                //get new tokens ...
+                final data = response.data;
+                Preferences.setToken(data['access'], data['refresh']);
+                API.configureDio(context);
+                //create request with new access token
+                final opts = Options(method: error.requestOptions.method);
+                final cloneReq = await _dio.request(error.requestOptions.path,
+                    options: opts,
+                    data: error.requestOptions.data,
+                    queryParameters: error.requestOptions.queryParameters);
+
+                return errorHandler.resolve(cloneReq);
+              }
+              return errorHandler.next(error);
+            } else {
+              return errorHandler.next(error);
             }
             return errorHandler.next(error);
-          } else {
-            return errorHandler.next(error);
           }
+          return errorHandler.next(error);
         },
         onRequest: (RequestOptions request, requestHandler) {
           if (kDebugMode) {
@@ -91,17 +96,7 @@ class API {
     return response;
   }
 
-  static Future<Response> get(String path) async {
-    Response response;
-    try {
-      response = await _dio.get(path);
-    } on DioError catch (e) {
-      throw ErrorAPI.fromJson(e.response.toString());
-    }
-    return response;
-  }
-
-  static Future<Response> list(
+  static Future<Response> get(
     String path, {
     Map<String, dynamic>? params,
     Options? options,

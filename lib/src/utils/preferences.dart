@@ -23,7 +23,7 @@ class Preferences {
     return prefs.getString("workflows");
   }
 
-  static void removetoken() async {
+  static Future<void> removetoken() async {
     prefs.remove("token");
     prefs.remove("refresh");
   }

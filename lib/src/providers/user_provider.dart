@@ -24,7 +24,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
     try {
       final response =
-          await API.list('$url/', params: {'is_adviser': isAdviser});
+          await API.get('$url/', params: {'is_adviser': isAdviser});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;
@@ -135,7 +135,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
     try {
       final response = await API
-          .list('$url/', params: {"search": value, "is_adviser": isAdviser});
+          .get('$url/', params: {"search": value, "is_adviser": isAdviser});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         users = responseData.results;

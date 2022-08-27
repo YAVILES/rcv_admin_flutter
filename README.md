@@ -16,4 +16,4 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 Build Web PROD
-flutter build web --release --web-renderer html
+flutter build web --web-renderer html --release

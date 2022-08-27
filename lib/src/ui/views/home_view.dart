@@ -178,7 +178,7 @@ class _HomeViewState extends State<HomeView> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         const Text(
-                                          "Vehiculos \n Asegurados",
+                                          "Vehículos \n Asegurados",
                                           style: TextStyle(fontSize: 24),
                                           textAlign: TextAlign.center,
                                         ),

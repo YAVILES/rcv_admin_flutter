@@ -161,7 +161,7 @@ class NavigationDrawer extends StatelessWidget {
               ),
               NavBarItem(
                 isActive: navDrawerProvider.routeCurrent == vehiclesRoute,
-                title: "Vehiculos",
+                title: "Vehículos",
                 navigationPath: vehiclesRoute,
                 icon: Icons.car_repair_outlined,
                 onPressed: () => navigateTo(context, vehiclesRoute),

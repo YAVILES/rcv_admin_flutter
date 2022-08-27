@@ -21,7 +21,7 @@ class BankProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/', params: {"not_paginator": true});
+      final response = await API.get('$url/', params: {"not_paginator": true});
       if (response.statusCode == 200) {
         banks = response.data!;
       }
@@ -133,7 +133,7 @@ class BankProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/', params: {"search": value});
+      final response = await API.get('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         banks = response.data!;
       }

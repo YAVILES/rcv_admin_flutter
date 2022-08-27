@@ -101,7 +101,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
           children: [
             HeaderView(
               title: 'Administración de Vehículos',
-              subtitle: 'Vehículo ${widget.vehicle.licensePlate ?? ''}',
+              subtitle: 'Vehiculo ${widget.vehicle.licensePlate ?? ''}',
               modal: widget.modal,
             ),
             Column(
@@ -110,7 +110,7 @@ class __VehicleViewBodyState extends State<_VehicleViewBody> {
                   key: vehicleProvider.formVehicleKey,
                   child: Column(
                     children: [
-                      const Text('Datos del Vehiculo'),
+                      const Text('Datos del Vehículo'),
                       TextFormField(
                         initialValue: _vehicle.licensePlate ?? '',
                         onChanged: (value) => _vehicle.licensePlate = value,

@@ -26,7 +26,7 @@ class PaymentService {
     List<Map<String, dynamic>> data = [];
     try {
       final response = await API
-          .list('$url/', params: {...params ?? {}, "not_paginator": true});
+          .get('$url/', params: {...params ?? {}, "not_paginator": true});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>>.from(response.data);
       }
@@ -39,7 +39,7 @@ class PaymentService {
   static Future<ResponseData?> getPaymentsPaginated(
       Map<String, dynamic>? params, String? _url) async {
     try {
-      final response = await API.list('${_url ?? url}/', params: params);
+      final response = await API.get('${_url ?? url}/', params: params);
       if (response.statusCode == 200) {
         return ResponseData.fromMap(response.data);
       }
@@ -129,7 +129,7 @@ class PaymentService {
   static Future<List<Option>?> getMethods() async {
     try {
       final response =
-          await API.list('$url/field_options/', params: {"field": "method"});
+          await API.get('$url/field_options/', params: {"field": "method"});
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -144,7 +144,7 @@ class PaymentService {
 
   static Future<List<Option>?> getCoins() async {
     try {
-      final response = await API.list('/coin/');
+      final response = await API.get('/coin/');
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -159,7 +159,7 @@ class PaymentService {
 
   static Future<Uint8List?> export() async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/export/',
         options: Options(
           responseType: ResponseType.bytes,
@@ -178,7 +178,7 @@ class PaymentService {
 
   static Future<Uint8List?> downloadArchive(String id) async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/$id/download_archive/',
         options: Options(
           responseType: ResponseType.bytes,

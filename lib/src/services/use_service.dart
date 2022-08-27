@@ -7,7 +7,7 @@ class UseService {
   static Future<List<Use>?> getUses(Map<String, dynamic>? params) async {
     List<Use> uses = [];
     try {
-      final response = await API.list('$url/', params: params);
+      final response = await API.get('$url/', params: params);
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);

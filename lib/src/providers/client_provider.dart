@@ -23,7 +23,7 @@ class ClientProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/');
+      final response = await API.get('$url/');
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         clients = responseData.results;
@@ -40,7 +40,7 @@ class ClientProvider with ChangeNotifier {
   Future<List<Client>> getAllClients(Map<String, dynamic>? params) async {
     List<Client> clients = [];
     try {
-      final response = await API.list('$url/', params: params);
+      final response = await API.get('$url/', params: params);
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -146,7 +146,7 @@ class ClientProvider with ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final response = await API.list('$url/', params: {"search": value});
+      final response = await API.get('$url/', params: {"search": value});
       if (response.statusCode == 200) {
         ResponseData responseData = ResponseData.fromMap(response.data);
         clients = responseData.results;

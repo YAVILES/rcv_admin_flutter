@@ -25,7 +25,7 @@ class PlanService {
   static Future<List<Plan>> getPlans(Map<String, dynamic>? params) async {
     List<Plan> plans = [];
     try {
-      final response = await API.list('$url/', params: params);
+      final response = await API.get('$url/', params: params);
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> data =
             List<Map<String, dynamic>>.from(response.data);
@@ -43,11 +43,11 @@ class PlanService {
     List<Map<String, dynamic>> plans = [];
     List<Map<String, dynamic>> uses = [];
     try {
-      final responsePlans = await API.list('$url/', params: paramsPlans);
+      final responsePlans = await API.get('$url/', params: paramsPlans);
       if (responsePlans.statusCode == 200) {
         plans = List<Map<String, dynamic>>.from(responsePlans.data);
       }
-      final responseUses = await API.list('/core/use/', params: paramsUses);
+      final responseUses = await API.get('/core/use/', params: paramsUses);
       if (responseUses.statusCode == 200) {
         uses = List<Map<String, dynamic>>.from(responseUses.data);
       }

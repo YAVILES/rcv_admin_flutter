@@ -9,7 +9,7 @@ class UtilsService {
   static Future<ResponseData?> getListPaginated(
       Map<String, dynamic>? params, String url) async {
     try {
-      final response = await API.list(url, params: params);
+      final response = await API.get(url, params: params);
       if (response.statusCode == 200) {
         return ResponseData.fromMap(response.data);
       }
@@ -39,7 +39,7 @@ class UtilsService {
 
   static Future<Uint8List?> export(url) async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/export/',
         options: Options(
           responseType: ResponseType.bytes,

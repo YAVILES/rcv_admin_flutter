@@ -10,7 +10,7 @@ class BankService {
 
   static Future getBanks(Map<String, dynamic>? params) async {
     try {
-      final response = await API.list('$url/', params: params);
+      final response = await API.get('$url/', params: params);
       if (response.statusCode == 200) {
         if (params?["not_paginator"] != null) {
           return List<Map<String, dynamic>>.from(response.data);
@@ -26,7 +26,7 @@ class BankService {
   static Future<ResponseData?> getBanksPaginated(
       Map<String, dynamic>? params, String? _url) async {
     try {
-      final response = await API.list('${_url ?? url}/', params: params);
+      final response = await API.get('${_url ?? url}/', params: params);
       if (response.statusCode == 200) {
         return ResponseData.fromMap(response.data);
       }
@@ -38,7 +38,7 @@ class BankService {
 
   static Future<Uint8List?> export() async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/export/',
         options: Options(
           responseType: ResponseType.bytes,
@@ -57,7 +57,7 @@ class BankService {
 
   static Future<Uint8List?> downloadImage(String id) async {
     try {
-      final response = await API.list(
+      final response = await API.get(
         '$url/$id/download_image/',
         options: Options(
           responseType: ResponseType.bytes,
