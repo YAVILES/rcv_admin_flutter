@@ -253,101 +253,106 @@ class _HomeViewState extends State<HomeView> {
                               ? Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(18)),
-                                  child: BarChart(
-                                    BarChartData(
-                                      barTouchData: BarTouchData(
-                                        touchTooltipData: BarTouchTooltipData(
-                                            tooltipBgColor: Colors.blueGrey,
-                                            getTooltipItem: (group, groupIndex,
-                                                rod, rodIndex) {
-                                              return BarTooltipItem(
-                                                snapshot.data!
-                                                        .where((e) =>
-                                                            e["number"] ==
-                                                            group.x)
-                                                        .first["description"] +
-                                                    '\n',
-                                                const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18,
-                                                ),
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text:
-                                                        'polizas: ${(rod.toY).toString()}',
-                                                    style: const TextStyle(
-                                                      color: Colors.yellow,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 25),
+                                    child: BarChart(
+                                      BarChartData(
+                                        barTouchData: BarTouchData(
+                                          touchTooltipData: BarTouchTooltipData(
+                                              tooltipBgColor: Colors.blueGrey,
+                                              getTooltipItem: (group,
+                                                  groupIndex, rod, rodIndex) {
+                                                return BarTooltipItem(
+                                                  snapshot.data!
+                                                              .where((e) =>
+                                                                  e["number"] ==
+                                                                  group.x)
+                                                              .first[
+                                                          "description"] +
+                                                      '\n',
+                                                  const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
                                                   ),
-                                                ],
-                                              );
-                                            }),
-                                        touchCallback: (FlTouchEvent event,
-                                            barTouchResponse) {},
-                                      ),
-                                      titlesData: FlTitlesData(
-                                        show: true,
-                                        leftTitles: AxisTitles(
-                                          axisNameSize: 30,
-                                          axisNameWidget: Text(
-                                            "Polizas",
-                                            style: styleTitles,
-                                          ),
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text:
+                                                          'polizas: ${(rod.toY).toString()}',
+                                                      style: const TextStyle(
+                                                        color: Colors.yellow,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }),
+                                          touchCallback: (FlTouchEvent event,
+                                              barTouchResponse) {},
                                         ),
-                                        rightTitles: AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                        topTitles: AxisTitles(
-                                          sideTitles:
-                                              SideTitles(showTitles: false),
-                                        ),
-                                        bottomTitles: AxisTitles(
-                                          axisNameSize: 30,
-                                          axisNameWidget: Text(
-                                            "Sucursales",
-                                            style: styleTitles,
-                                          ),
-                                          sideTitles: SideTitles(
-                                            showTitles: true,
-                                            getTitlesWidget: (value, meta) =>
-                                                Text(
-                                              snapshot.data!
-                                                  .where((e) =>
-                                                      e["number"] == value)
-                                                  .first["description"],
+                                        titlesData: FlTitlesData(
+                                          show: true,
+                                          leftTitles: AxisTitles(
+                                            axisNameSize: 30,
+                                            axisNameWidget: Text(
+                                              "Polizas",
                                               style: styleTitles,
                                             ),
-                                            reservedSize: 18,
+                                          ),
+                                          rightTitles: AxisTitles(
+                                            sideTitles:
+                                                SideTitles(showTitles: false),
+                                          ),
+                                          topTitles: AxisTitles(
+                                            sideTitles:
+                                                SideTitles(showTitles: false),
+                                          ),
+                                          bottomTitles: AxisTitles(
+                                            axisNameSize: 30,
+                                            axisNameWidget: Text(
+                                              "Sucursales",
+                                              style: styleTitles,
+                                            ),
+                                            sideTitles: SideTitles(
+                                              showTitles: true,
+                                              getTitlesWidget: (value, meta) =>
+                                                  Text(
+                                                snapshot.data!
+                                                    .where((e) =>
+                                                        e["number"] == value)
+                                                    .first["description"],
+                                                style: styleTitles,
+                                              ),
+                                              reservedSize: 18,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      barGroups: snapshot.data
-                                          ?.map(
-                                            (e) => BarChartGroupData(
-                                              x: e["number"],
-                                              barRods: [
-                                                BarChartRodData(
-                                                  toY: e["quantity"],
-                                                  color: Theme.of(context)
-                                                      .backgroundColor,
-                                                  width: 20,
-                                                  borderSide: const BorderSide(
-                                                      color: Colors.white,
-                                                      width: 0),
-                                                ),
-                                              ],
-                                              // showingTooltipIndicators: showTooltips,
-                                            ),
-                                          )
-                                          .toList(),
-                                      gridData: FlGridData(
-                                        show: true,
-                                        drawVerticalLine: false,
+                                        barGroups: snapshot.data
+                                            ?.map(
+                                              (e) => BarChartGroupData(
+                                                x: e["number"],
+                                                barRods: [
+                                                  BarChartRodData(
+                                                    toY: e["quantity"],
+                                                    color: Theme.of(context)
+                                                        .backgroundColor,
+                                                    width: 20,
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: Colors.white,
+                                                            width: 0),
+                                                  ),
+                                                ],
+                                                // showingTooltipIndicators: showTooltips,
+                                              ),
+                                            )
+                                            .toList(),
+                                        gridData: FlGridData(
+                                          show: true,
+                                          drawVerticalLine: false,
+                                        ),
                                       ),
                                     ),
                                   ),

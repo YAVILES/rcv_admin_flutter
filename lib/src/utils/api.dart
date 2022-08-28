@@ -37,34 +37,32 @@ class API {
           }
           if (error.response?.statusCode == 403 ||
               error.response?.statusCode == 401) {
-            // if (error.requestOptions.path == '/token/refresh/') {
-
-            //     await Provider.of<AuthProvider>(context, listen: false)
-            //         .logout();
-
-            // } else
-            if (error.requestOptions.path != '/token/' ||
-                error.requestOptions.path != '/security/user/current/') {
-              Response response = await refreshToken();
-              if (response.statusCode == 200) {
-                //get new tokens ...
-                final data = response.data;
-                Preferences.setToken(data['access'], data['refresh']);
-                API.configureDio(context);
-                //create request with new access token
-                final opts = Options(method: error.requestOptions.method);
-                final cloneReq = await _dio.request(error.requestOptions.path,
-                    options: opts,
-                    data: error.requestOptions.data,
-                    queryParameters: error.requestOptions.queryParameters);
-
-                return errorHandler.resolve(cloneReq);
-              }
+            if (error.requestOptions.path == '/token/refresh/') {
               return errorHandler.next(error);
+            } else if (error.requestOptions.path != '/token/' ||
+                error.requestOptions.path != '/security/user/current/') {
+              try {
+                Response response = await refreshToken();
+                if (response.statusCode == 200) {
+                  //get new tokens ...
+                  final data = response.data;
+                  Preferences.setToken(data['access'], data['refresh']);
+                  API.configureDio(context);
+                  //create request with new access token
+                  final opts = Options(method: error.requestOptions.method);
+                  final cloneReq = await _dio.request(error.requestOptions.path,
+                      options: opts,
+                      data: error.requestOptions.data,
+                      queryParameters: error.requestOptions.queryParameters);
+
+                  return errorHandler.resolve(cloneReq);
+                }
+              } on ErrorAPI {
+                return errorHandler.next(error);
+              }
             } else {
               return errorHandler.next(error);
             }
-            return errorHandler.next(error);
           }
           return errorHandler.next(error);
         },

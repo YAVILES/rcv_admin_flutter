@@ -48,12 +48,13 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
         return true;
       } else {
+        logout();
         return false;
       }
-    } on ErrorAPI {
+    } catch (e) {
       logout();
-      return false;
     }
+    return false;
   }
 
   Future<void> login(
