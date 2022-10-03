@@ -51,7 +51,7 @@ class BannerRCVProvider with ChangeNotifier {
     }
   }
 
-  Future newBanner(BannerRCV bannerRCV, PlatformFile? image) async {
+  Future<bool?> newBanner(BannerRCV bannerRCV, PlatformFile? image) async {
     if (validateForm()) {
       final mapDAta = {
         if (image?.bytes != null)
@@ -70,14 +70,16 @@ class BannerRCVProvider with ChangeNotifier {
           // banners.add(response.data);
           // notifyListeners();
         }
-        return response;
+        return true;
       } on ErrorAPI {
         rethrow;
       }
     }
+    return null;
   }
 
-  Future editBanner(String id, BannerRCV bannerRCV, PlatformFile? image) async {
+  Future<bool?> editBanner(
+      String id, BannerRCV bannerRCV, PlatformFile? image) async {
     if (validateForm()) {
       final mapDAta = {
         if (image?.bytes != null)
@@ -106,6 +108,7 @@ class BannerRCVProvider with ChangeNotifier {
         rethrow;
       }
     }
+    return null;
   }
 
   Future deleteBanner(String id) async {

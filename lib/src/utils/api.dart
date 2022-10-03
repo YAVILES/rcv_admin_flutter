@@ -1,10 +1,7 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
-import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 
 import 'package:rcv_admin_flutter/src/utils/preferences.dart';
 

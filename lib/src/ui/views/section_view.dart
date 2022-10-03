@@ -123,7 +123,7 @@ class _SectionFormState extends State<SectionForm> {
                               },
                               validator: (Option? item) {
                                 if (item == null) {
-                                  return "Debe seleccionar la moneda obligatoriamente";
+                                  return "Debe seleccionar el tipo de sección obligatoriamente";
                                 } else {
                                   return null;
                                 }
@@ -137,98 +137,33 @@ class _SectionFormState extends State<SectionForm> {
               Consumer<SectionProvider>(builder: (context, obj, child) {
                 return Column(
                   children: [
-                    Wrap(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Stack(
-                            children: [
-                              SizedBox(
-                                width: 200,
-                                child: Hero(
-                                  tag: sectionProvider.section?.id ??
-                                      'newSection',
-                                  child: (image?.bytes != null)
-                                      ? Image.memory(
-                                          Uint8List.fromList(image!.bytes!),
-                                          fit: BoxFit.contain)
-                                      : sectionProvider.section?.imageDisplay !=
-                                              null
-                                          ? Image.network(
-                                              sectionProvider
-                                                  .section!.imageDisplay!,
-                                              fit: BoxFit.contain)
-                                          : Image.asset(
-                                              'assets/images/upload.png',
-                                              fit: BoxFit.contain),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 4,
-                                right: 4,
-                                child: Container(
-                                  height: 45,
-                                  width: 45,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(
-                                        color: Colors.white, width: 5),
-                                  ),
-                                  child: FloatingActionButton(
-                                    backgroundColor: Colors.indigo,
-                                    elevation: 0,
-                                    onPressed: () async {
-                                      FilePickerResult? result =
-                                          await FilePicker.platform.pickFiles(
-                                        // allowedExtensions: ['jpg'],
-                                        allowMultiple: false,
-                                      );
-
-                                      if (result != null) {
-                                        setState(
-                                            () => image = result.files.first);
-
-                                        /*  print(file.name);
-                                        print(file.bytes);
-                                        print(file.size);
-                                        print(file.extension);
-                                        // print(file.path); */
-                                        /*    await userFormProvider.uploadImage(
-                                            'security/user/${user?.id}', file.bytes!); */
-                                      } else {
-                                        // User canceled the picker
-                                      }
-                                    },
-                                    child:
-                                        const Icon(Icons.upload_file_outlined),
-                                  ),
-                                ),
-                              ),
-                              const Text('Imagen')
-                            ],
-                          ),
-                        ),
-                        if (sectionProvider.type?.value ==
-                            SectionService.box) ...[
+                    if (sectionProvider.type?.value != SectionService.about)
+                      Wrap(
+                        children: [
                           Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Stack(
                               children: [
                                 SizedBox(
                                   width: 200,
-                                  child: (shape?.bytes != null)
-                                      ? Image.memory(
-                                          Uint8List.fromList(shape!.bytes!),
-                                          fit: BoxFit.contain)
-                                      : sectionProvider.section?.shapeDisplay !=
-                                              null
-                                          ? Image.network(
-                                              sectionProvider
-                                                  .section!.shapeDisplay!,
-                                              fit: BoxFit.contain)
-                                          : Image.asset(
-                                              'assets/images/upload.png',
-                                              fit: BoxFit.contain),
+                                  child: Hero(
+                                    tag: sectionProvider.section?.id ??
+                                        'newSection',
+                                    child: (image?.bytes != null)
+                                        ? Image.memory(
+                                            Uint8List.fromList(image!.bytes!),
+                                            fit: BoxFit.contain)
+                                        : sectionProvider
+                                                    .section?.imageDisplay !=
+                                                null
+                                            ? Image.network(
+                                                sectionProvider
+                                                    .section!.imageDisplay!,
+                                                fit: BoxFit.contain)
+                                            : Image.asset(
+                                                'assets/images/upload.png',
+                                                fit: BoxFit.contain),
+                                  ),
                                 ),
                                 Positioned(
                                   bottom: 4,
@@ -253,7 +188,7 @@ class _SectionFormState extends State<SectionForm> {
 
                                         if (result != null) {
                                           setState(
-                                              () => shape = result.files.first);
+                                              () => image = result.files.first);
 
                                           /*  print(file.name);
                                         print(file.bytes);
@@ -271,78 +206,151 @@ class _SectionFormState extends State<SectionForm> {
                                     ),
                                   ),
                                 ),
-                                const Text('Imagen Forma')
+                                const Text('Imagen')
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Stack(
-                              children: [
-                                SizedBox(
-                                  width: 200,
-                                  child: (icon?.bytes != null)
-                                      ? Image.memory(
-                                          Uint8List.fromList(icon!.bytes!),
-                                          fit: BoxFit.contain)
-                                      : sectionProvider.section?.iconDisplay !=
-                                              null
-                                          ? Image.network(
-                                              sectionProvider
-                                                  .section!.iconDisplay!,
-                                              fit: BoxFit.contain)
-                                          : Image.asset(
-                                              'assets/images/upload.png',
-                                              fit: BoxFit.contain),
-                                ),
-                                Positioned(
-                                  bottom: 4,
-                                  right: 4,
-                                  child: Container(
-                                    height: 45,
-                                    width: 45,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100),
-                                      border: Border.all(
-                                          color: Colors.white, width: 5),
-                                    ),
-                                    child: FloatingActionButton(
-                                      backgroundColor: Colors.indigo,
-                                      elevation: 0,
-                                      onPressed: () async {
-                                        FilePickerResult? result =
-                                            await FilePicker.platform.pickFiles(
-                                          // allowedExtensions: ['jpg'],
-                                          allowMultiple: false,
-                                        );
+                          if (sectionProvider.type?.value ==
+                              SectionService.box) ...[
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    width: 200,
+                                    child: (shape?.bytes != null)
+                                        ? Image.memory(
+                                            Uint8List.fromList(shape!.bytes!),
+                                            fit: BoxFit.contain)
+                                        : sectionProvider
+                                                    .section?.shapeDisplay !=
+                                                null
+                                            ? Image.network(
+                                                sectionProvider
+                                                    .section!.shapeDisplay!,
+                                                fit: BoxFit.contain)
+                                            : Image.asset(
+                                                'assets/images/upload.png',
+                                                fit: BoxFit.contain),
+                                  ),
+                                  Positioned(
+                                    bottom: 4,
+                                    right: 4,
+                                    child: Container(
+                                      height: 45,
+                                      width: 45,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        border: Border.all(
+                                            color: Colors.white, width: 5),
+                                      ),
+                                      child: FloatingActionButton(
+                                        backgroundColor: Colors.indigo,
+                                        elevation: 0,
+                                        onPressed: () async {
+                                          FilePickerResult? result =
+                                              await FilePicker.platform
+                                                  .pickFiles(
+                                            // allowedExtensions: ['jpg'],
+                                            allowMultiple: false,
+                                          );
 
-                                        if (result != null) {
-                                          setState(
-                                              () => icon = result.files.first);
+                                          if (result != null) {
+                                            setState(() =>
+                                                shape = result.files.first);
 
-                                          /*  print(file.name);
+                                            /*  print(file.name);
                                         print(file.bytes);
                                         print(file.size);
                                         print(file.extension);
                                         // print(file.path); */
-                                          /*    await userFormProvider.uploadImage(
+                                            /*    await userFormProvider.uploadImage(
                                             'security/user/${user?.id}', file.bytes!); */
-                                        } else {
-                                          // User canceled the picker
-                                        }
-                                      },
-                                      child: const Icon(
-                                          Icons.upload_file_outlined),
+                                          } else {
+                                            // User canceled the picker
+                                          }
+                                        },
+                                        child: const Icon(
+                                            Icons.upload_file_outlined),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const Text('Icono')
-                              ],
+                                  const Text('Imagen Forma')
+                                ],
+                              ),
                             ),
-                          ),
-                        ]
-                      ],
-                    ),
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Stack(
+                                children: [
+                                  SizedBox(
+                                    width: 200,
+                                    child: (icon?.bytes != null)
+                                        ? Image.memory(
+                                            Uint8List.fromList(icon!.bytes!),
+                                            fit: BoxFit.contain)
+                                        : sectionProvider
+                                                    .section?.iconDisplay !=
+                                                null
+                                            ? Image.network(
+                                                sectionProvider
+                                                    .section!.iconDisplay!,
+                                                fit: BoxFit.contain)
+                                            : Image.asset(
+                                                'assets/images/upload.png',
+                                                fit: BoxFit.contain),
+                                  ),
+                                  Positioned(
+                                    bottom: 4,
+                                    right: 4,
+                                    child: Container(
+                                      height: 45,
+                                      width: 45,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        border: Border.all(
+                                            color: Colors.white, width: 5),
+                                      ),
+                                      child: FloatingActionButton(
+                                        backgroundColor: Colors.indigo,
+                                        elevation: 0,
+                                        onPressed: () async {
+                                          FilePickerResult? result =
+                                              await FilePicker.platform
+                                                  .pickFiles(
+                                            // allowedExtensions: ['jpg'],
+                                            allowMultiple: false,
+                                          );
+
+                                          if (result != null) {
+                                            setState(() =>
+                                                icon = result.files.first);
+
+                                            /*  print(file.name);
+                                        print(file.bytes);
+                                        print(file.size);
+                                        print(file.extension);
+                                        // print(file.path); */
+                                            /*    await userFormProvider.uploadImage(
+                                            'security/user/${user?.id}', file.bytes!); */
+                                          } else {
+                                            // User canceled the picker
+                                          }
+                                        },
+                                        child: const Icon(
+                                            Icons.upload_file_outlined),
+                                      ),
+                                    ),
+                                  ),
+                                  const Text('Icono')
+                                ],
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),
                     TextFormField(
                       initialValue: sectionProvider.section!.title,
                       validator: (value) {
@@ -381,12 +389,6 @@ class _SectionFormState extends State<SectionForm> {
                       initialValue: sectionProvider.section!.url ?? '',
                       onChanged: (value) =>
                           sectionProvider.section!.url = value,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'La url es obligatoria';
-                        }
-                        return null;
-                      },
                       decoration: CustomInputs.buildInputDecoration(
                         hintText: 'Ingrese la  url',
                         labelText: 'Url',
@@ -405,24 +407,30 @@ class _SectionFormState extends State<SectionForm> {
                           try {
                             final bool create =
                                 sectionProvider.section!.id == null;
-
+                            bool? res;
                             if (create) {
-                              await sectionProvider.newSection(
+                              res = await sectionProvider.newSection(
                                   sectionProvider.section!, image, shape, icon);
-                              NotificationService.showSnackbarSuccess(
-                                  '${sectionProvider.section!.title} creado');
+                              if (res == true) {
+                                NotificationService.showSnackbarSuccess(
+                                    '${sectionProvider.section!.title} creado');
+                              }
                             } else {
-                              await sectionProvider.editSection(
+                              res = await sectionProvider.editSection(
                                   sectionProvider.section!.id!,
                                   sectionProvider.section!,
                                   image,
                                   shape,
                                   icon);
-                              NotificationService.showSnackbarSuccess(
-                                '${sectionProvider.section!.title} actualizado',
-                              );
+                              if (res == true) {
+                                NotificationService.showSnackbarSuccess(
+                                  '${sectionProvider.section!.title} actualizado',
+                                );
+                              }
                             }
-                            NavigationService.back(context);
+                            if (res == true) {
+                              NavigationService.back(context);
+                            }
                           } catch (e) {
                             NotificationService.showSnackbarError(
                               'No se pudo guardar el section',

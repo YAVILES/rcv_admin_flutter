@@ -143,6 +143,12 @@ class _BannerFormState extends State<_BannerForm> {
               TextFormField(
                 initialValue: bannerProvider.banner!.title,
                 onChanged: (value) => bannerProvider.banner!.title = value,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'El titulo es obligatorio';
+                  }
+                  return null;
+                },
                 decoration: CustomInputs.buildInputDecoration(
                   hintText: 'Ingrese el titulo',
                   labelText: 'Titulo',
@@ -168,12 +174,6 @@ class _BannerFormState extends State<_BannerForm> {
               TextFormField(
                 initialValue: bannerProvider.banner!.url ?? '',
                 onChanged: (value) => bannerProvider.banner!.url = value,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'La url es obligatoria';
-                  }
-                  return null;
-                },
                 decoration: CustomInputs.buildInputDecoration(
                   hintText: 'Ingrese la  url',
                   labelText: 'Url',
@@ -190,22 +190,28 @@ class _BannerFormState extends State<_BannerForm> {
                   onPressed: () async {
                     try {
                       final bool create = bannerProvider.banner!.id == null;
-
+                      bool? res;
                       if (create) {
-                        await bannerProvider.newBanner(
+                        res = await bannerProvider.newBanner(
                             bannerProvider.banner!, image);
-                        NotificationService.showSnackbarSuccess(
-                            '${bannerProvider.banner!.title} creado');
+                        if (res != null) {
+                          NotificationService.showSnackbarSuccess(
+                              '${bannerProvider.banner!.title} creado');
+                        }
                       } else {
-                        await bannerProvider.editBanner(
+                        res = await bannerProvider.editBanner(
                             bannerProvider.banner!.id!,
                             bannerProvider.banner!,
                             image);
-                        NotificationService.showSnackbarSuccess(
-                          '${bannerProvider.banner!.title} actualizado',
-                        );
+                        if (res != null) {
+                          NotificationService.showSnackbarSuccess(
+                            '${bannerProvider.banner!.title} actualizado',
+                          );
+                        }
                       }
-                      NavigationService.back(context);
+                      if (res != null) {
+                        NavigationService.back(context);
+                      }
                     } catch (e) {
                       NotificationService.showSnackbarError(
                         'No se pudo guardar el banner',

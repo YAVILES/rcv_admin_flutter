@@ -70,7 +70,7 @@ class SectionProvider with ChangeNotifier {
     }
   }
 
-  Future newSection(Section sectionRCV, PlatformFile? image,
+  Future<bool?> newSection(Section sectionRCV, PlatformFile? image,
       PlatformFile? shape, PlatformFile? icon) async {
     if (validateForm()) {
       final mapDAta = {
@@ -101,14 +101,15 @@ class SectionProvider with ChangeNotifier {
           // sections.add(response.data);
           // notifyListeners();
         }
-        return response;
+        return true;
       } on ErrorAPI {
         rethrow;
       }
     }
+    return null;
   }
 
-  Future editSection(String id, Section sectionRCV, PlatformFile? image,
+  Future<bool?> editSection(String id, Section sectionRCV, PlatformFile? image,
       PlatformFile? shape, PlatformFile? icon) async {
     if (validateForm()) {
       final mapDAta = {
@@ -127,6 +128,7 @@ class SectionProvider with ChangeNotifier {
             icon!.bytes!,
             filename: icon.name,
           ),
+        ...sectionRCV.toMap()
       };
       final formData = FormData.fromMap(mapDAta);
 
@@ -143,11 +145,14 @@ class SectionProvider with ChangeNotifier {
             return _section;
           }).toList(); */
           // notifyListeners();
+          return true;
         }
+        return false;
       } on ErrorAPI {
         rethrow;
       }
     }
+    return null;
   }
 
   Future deleteSection(String id) async {
