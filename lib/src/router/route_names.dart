@@ -98,3 +98,8 @@ const settingsRoute = 'settings';
 
 // Contract HTML
 const contratHTMLRoute = 'contract';
+
+// Incidences
+const incidencesRoute = 'incidences';
+const incidenceRoute = 'incidence';
+const incidenceDetailRoute = 'details_incidence';

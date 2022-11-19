@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:rcv_admin_flutter/src/models/policy_model.dart';
 import 'package:rcv_admin_flutter/src/utils/api.dart';
 
 class PolicyService {
@@ -48,6 +49,21 @@ class PolicyService {
       }
     } on ErrorAPI {
       return null;
+    }
+  }
+
+  static Future<List<Policy>?> getPolicies(String vehicleId) async {
+    try {
+      final response =
+          await API.get('$url/?vehicle=$vehicleId&not_paginator=true');
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(response.data);
+        return data.map((w) => Policy.fromMap(w)).toList();
+      }
+      return null;
+    } on ErrorAPI {
+      rethrow;
     }
   }
 }

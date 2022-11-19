@@ -8,6 +8,7 @@ import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/client_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/configuration_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/coverage_provider.dart';
+import 'package:rcv_admin_flutter/src/providers/incidence_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/mark_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/model_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/payment_provider.dart';
@@ -65,6 +66,7 @@ class _AppStateState extends State<AppState> {
         ChangeNotifierProvider(create: (_) => BankProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => SectionProvider()),
+        ChangeNotifierProvider(create: (_) => IncidenceProvider()),
       ],
       child: const MyApp(),
     );

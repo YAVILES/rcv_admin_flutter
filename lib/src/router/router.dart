@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rcv_admin_flutter/src/models/banner_model.dart';
-import 'package:rcv_admin_flutter/src/models/branch_office_model.dart';
-import 'package:rcv_admin_flutter/src/models/section_model.dart';
 import 'package:rcv_admin_flutter/src/providers/auth_provider.dart';
 import 'package:rcv_admin_flutter/src/providers/banner_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/branch_office_provider.dart';
-import 'package:rcv_admin_flutter/src/providers/section_provider.dart';
 import 'package:rcv_admin_flutter/src/router/route_names.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/auth/auth_layout.dart';
 import 'package:rcv_admin_flutter/src/ui/layouts/dashboard/dashboard_layout.dart';
@@ -27,6 +23,8 @@ import 'package:rcv_admin_flutter/src/ui/views/contract_html_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverage_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/coverages_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/home_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/incidence_view.dart';
+import 'package:rcv_admin_flutter/src/ui/views/incidences_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/login_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/mark_view.dart';
 import 'package:rcv_admin_flutter/src/ui/views/marks_view.dart';
@@ -594,6 +592,38 @@ class RouterGoRouter {
                 return MaterialPage(
                   key: state.pageKey,
                   child: PaymentView(uid: state.params['id'].toString()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        // Incidencias
+        GoRoute(
+          name: incidencesRoute,
+          path: '/$incidencesRoute',
+          pageBuilder: (context, state) => MaterialPage(
+            key: state.pageKey,
+            child: const IncidencesView(),
+          ),
+          routes: [
+            GoRoute(
+              name: incidenceRoute,
+              path: incidenceRoute,
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: IncidenceView(),
+                );
+              },
+            ),
+            GoRoute(
+              name: incidenceDetailRoute,
+              path: '$incidencesRoute/:id',
+              pageBuilder: (context, state) {
+                return MaterialPage(
+                  key: state.pageKey,
+                  child: PolicyViewEdit(uid: state.params['id'].toString()),
                 );
               },
             ),
